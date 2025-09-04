@@ -54,10 +54,10 @@ class CustomButton extends StatelessWidget {
     return CustomContainer(
       elevation: elevation,
       onTap: onPressed,
-      color: backgroundColor ?? AppColors.primaryColor,
-      height: height ?? 42.h,
+      color: backgroundColor ?? AppColors.secondaryColor,
+      height: height ?? 46.h,
       width: width ?? double.infinity,
-      radiusAll: radius ?? 100.r,
+      radiusAll: radius ?? 10.r,
       bordersColor: bordersColor,
       child:child?? Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,7 +85,7 @@ class CustomButton extends StatelessWidget {
                 color: foregroundColor ?? Colors.white,
                 fontName: fontName ?? 'Inter',
                 fontWeight: fontWeight ?? FontWeight.w500,
-                fontSize: fontSize ?? 18.sp,
+                fontSize: fontSize ?? 16.sp,
               ),
             ),
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/widgets/custom_app_bar.dart';
 
 
 class AboutScreen extends StatelessWidget {
@@ -12,7 +14,7 @@ class AboutScreen extends StatelessWidget {
     final sizeH = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
-      appBar: AppBar(title:Text("About Us")),
+      appBar: CustomAppBar(title:"About Us",borderColor: AppColors.secondaryColor,),
       body:  ListView(
         padding: EdgeInsets.all(sizeH * .02),
         physics: const AlwaysScrollableScrollPhysics(),

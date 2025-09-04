@@ -21,14 +21,26 @@ class $AssetsIconsGen {
   /// File path: assets/icons/about.svg
   SvgGenImage get about => const SvgGenImage('assets/icons/about.svg');
 
+  /// File path: assets/icons/arrow_right.svg
+  SvgGenImage get arrowRight =>
+      const SvgGenImage('assets/icons/arrow_right.svg');
+
+  /// File path: assets/icons/back_button.svg
+  SvgGenImage get backButton =>
+      const SvgGenImage('assets/icons/back_button.svg');
+
+  /// File path: assets/icons/bottom_profile.svg
+  SvgGenImage get bottomProfile =>
+      const SvgGenImage('assets/icons/bottom_profile.svg');
+
+  /// File path: assets/icons/camera_add.svg
+  SvgGenImage get cameraAdd => const SvgGenImage('assets/icons/camera_add.svg');
+
   /// File path: assets/icons/chat.svg
   SvgGenImage get chat => const SvgGenImage('assets/icons/chat.svg');
 
   /// File path: assets/icons/clean_icon.svg
   SvgGenImage get cleanIcon => const SvgGenImage('assets/icons/clean_icon.svg');
-
-  /// File path: assets/icons/coin.svg
-  SvgGenImage get coin => const SvgGenImage('assets/icons/coin.svg');
 
   /// File path: assets/icons/comment.svg
   SvgGenImage get comment => const SvgGenImage('assets/icons/comment.svg');
@@ -42,15 +54,8 @@ class $AssetsIconsGen {
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
 
-  /// File path: assets/icons/filter_icon.svg
-  SvgGenImage get filterIcon =>
-      const SvgGenImage('assets/icons/filter_icon.svg');
-
   /// File path: assets/icons/gender.svg
   SvgGenImage get gender => const SvgGenImage('assets/icons/gender.svg');
-
-  /// File path: assets/icons/gift.svg
-  SvgGenImage get gift => const SvgGenImage('assets/icons/gift.svg');
 
   /// File path: assets/icons/goal.svg
   SvgGenImage get goal => const SvgGenImage('assets/icons/goal.svg');
@@ -111,6 +116,9 @@ class $AssetsIconsGen {
   SvgGenImage get profileEdit =>
       const SvgGenImage('assets/icons/profile_edit.svg');
 
+  /// File path: assets/icons/session.svg
+  SvgGenImage get session => const SvgGenImage('assets/icons/session.svg');
+
   /// File path: assets/icons/setting.svg
   SvgGenImage get setting => const SvgGenImage('assets/icons/setting.svg');
 
@@ -128,25 +136,20 @@ class $AssetsIconsGen {
   /// File path: assets/icons/terms.svg
   SvgGenImage get terms => const SvgGenImage('assets/icons/terms.svg');
 
-  /// File path: assets/icons/wallet.svg
-  SvgGenImage get wallet => const SvgGenImage('assets/icons/wallet.svg');
-
-  /// File path: assets/icons/weight.svg
-  SvgGenImage get weight => const SvgGenImage('assets/icons/weight.svg');
-
   /// List of all assets
   List<SvgGenImage> get values => [
     about,
+    arrowRight,
+    backButton,
+    bottomProfile,
+    cameraAdd,
     chat,
     cleanIcon,
-    coin,
     comment,
     date,
     delete,
     email,
-    filterIcon,
     gender,
-    gift,
     goal,
     height,
     home,
@@ -165,13 +168,12 @@ class $AssetsIconsGen {
     postUpload,
     profile,
     profileEdit,
+    session,
     setting,
     splashLogo,
     successPopupIcon,
     support,
     terms,
-    wallet,
-    weight,
   ];
 }
 

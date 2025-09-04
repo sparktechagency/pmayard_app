@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../app/utils/app_colors.dart';
+import '../../../widgets/custom_app_bar.dart';
+
 
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -14,7 +17,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
     final sizeH = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
-      appBar: AppBar(title:Text("Privacy Policy")),
+      appBar: CustomAppBar(title:"Privacy Policy",borderColor: AppColors.secondaryColor,),
+
       body:  ListView(
         padding: EdgeInsets.all(sizeH * .02),
         physics: const AlwaysScrollableScrollPhysics(),

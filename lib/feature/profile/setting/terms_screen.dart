@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
+import '../../../app/utils/app_colors.dart';
+import '../../../widgets/custom_app_bar.dart';
+
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
@@ -13,7 +16,8 @@ class TermsScreen extends StatelessWidget {
     final sizeH = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
-      appBar:  AppBar(title:Text("Terms & Condition")),
+      appBar: CustomAppBar(title:"Terms & Condition",borderColor: AppColors.secondaryColor),
+
       body:  ListView(
         padding: EdgeInsets.all(sizeH * .02),
         physics: const AlwaysScrollableScrollPhysics(),

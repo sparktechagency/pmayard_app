@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/widgets/custom_app_bar.dart';
+import 'package:pmayard_app/widgets/custom_button.dart';
+import 'package:pmayard_app/widgets/custom_container.dart';
+import 'package:pmayard_app/widgets/custom_image_avatar.dart';
+import 'package:pmayard_app/widgets/custom_list_tile.dart';
+import 'package:pmayard_app/widgets/custom_scaffold.dart';
+import 'package:pmayard_app/widgets/custom_text.dart';
+import '../../custom_assets/assets.gen.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScaffold(
+      paddingSide: 0,
+      appBar: CustomAppBar(
+        titleWidget: CustomListTile(
+          imageRadius: 24.r,
+          contentPaddingHorizontal: 16.w,
+          titleColor: Colors.white,
+          title: 'Welcome!',
+          titleFontSize: 12.sp,
+          subTitle: 'Riko Gomez',
+          subtitleFontSize: 14.sp,
+          statusColor: Colors.white,
+        ),
+        actions: [
+          IconButton(onPressed: (){}, icon: Assets.icons.notification.svg()),
+        ],
+        toolbarHeight: 90.h,
+        backgroundColor: AppColors.secondaryColor,
+      ),
+
+
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomText(
+            top: 24.h,
+            bottom: 24.h,
+              left: 16.w,
+              right: 16.w,
+              text: 'Assigned Parent',fontWeight: FontWeight.w600,fontSize: 16.sp),
+
+          SizedBox(
+            height: 180.h,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(4, (index) {
+                  return CustomContainer(
+                    paddingVertical: 10.h,
+                    paddingHorizontal: 10.w,
+                    marginRight: 14.w,
+                    marginLeft: index == 0 ? 14.w : 0,
+                    radiusAll: 8.r,
+                    height: 170.h,
+                    width: 170.w,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        offset: Offset(0, 4),
+                        blurRadius: 4,
+                      ),
+
+                    ],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomImageAvatar(radius: 26.r),
+                        SizedBox(height: 8.h),
+                        CustomText(text: 'Eva',fontWeight: FontWeight.w500,fontSize: 16.sp,),
+                        CustomText(
+                          bottom: 8.h,
+                            text: 'Parent',color: AppColors.appGreyColor),
+
+                        Row(
+                          children: [
+                            Expanded(
+                                child: CustomButton(
+                                  height: 28.h,
+                                  fontSize: 10.sp,
+                                  backgroundColor: AppColors.primaryColor,
+                                  onPressed: (){},label: 'View Profile',)),
+                            SizedBox(width: 4.w),
+                            Expanded(child: CustomButton(
+                              height: 28.h,
+                              fontSize: 10.sp,
+                              backgroundColor: AppColors.primaryColor,
+                              onPressed: (){},label: 'Message',)),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+
+          CustomText(
+              top: 24.h,
+              bottom: 24.h,
+              left: 16.w,
+              right: 16.w,
+              text: 'Upcoming Sessions',fontWeight: FontWeight.w600,fontSize: 16.sp),
+
+        ],
+      ),
+    );
+  }
+}

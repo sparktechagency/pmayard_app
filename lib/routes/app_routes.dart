@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pmayard_app/feature/bottom_nav_bar/customtom_bottom_nav.dart';
+import 'package:pmayard_app/feature/chat/inbox_screen.dart';
+import 'package:pmayard_app/feature/profile/personal_info_screen.dart';
+import 'package:pmayard_app/feature/profile/setting/about_screen.dart';
+import 'package:pmayard_app/feature/profile/setting/change%20password/setting_change_password.dart';
+import 'package:pmayard_app/feature/profile/setting/privacy_policy_screen.dart';
+import 'package:pmayard_app/feature/profile/setting/setting_screen.dart';
+import 'package:pmayard_app/feature/profile/setting/terms_screen.dart';
 
 import '../feature/splash_screen/splash_screen.dart';
 abstract class AppRoutes {
@@ -44,7 +52,8 @@ abstract class AppRoutes {
   static const String bankInfoScreen = '/bankInfoScreen';
   static const String joinGuestScreen = '/joinGuestScreen';
   static const String galleryScreen = '/galleryScreen';
-  static const String editPostScreen = '/editPostScreen';
+  static const String personalInfoScreen = '/personalInfoScreen';
+  static const String inboxScreen = '/inboxScreen';
 
 
 
@@ -52,6 +61,14 @@ abstract class AppRoutes {
   ///  ============= > routes < ==============
   static final routes = <String, WidgetBuilder>{
     splashScreen : (context) => SplashScreen(),
+    customBottomNavBar : (context) => CustomBottomNavBar(),
+    settingScreen : (context) => SettingScreen(),
+    termsScreen : (context) => TermsScreen(),
+    policyScreen : (context) => PrivacyPolicyScreen(),
+    aboutScreen : (context) => AboutScreen(),
+    changePassScreen : (context) => SettingChangePassword(),
+    personalInfoScreen : (context) => PersonalInfoScreen(),
+    inboxScreen : (context) => InboxScreen(),
 
   };
 }

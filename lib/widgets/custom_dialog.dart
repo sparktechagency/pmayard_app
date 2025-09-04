@@ -36,7 +36,7 @@ class CustomDialog extends StatelessWidget {
               alignment: Alignment.topRight,
               child: GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
-                child: Icon(Icons.close, size: 24.sp, color: Colors.black),
+                child: Icon(Icons.close, size: 22.sp, color: Colors.black),
               ),
             ),
             SizedBox(height: 8.h),
@@ -58,7 +58,7 @@ class CustomDialog extends StatelessWidget {
                   child: TextButton(
                     onPressed: onCancel,
                     style: TextButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor.withOpacity(0.2),
+                      backgroundColor: AppColors.secondaryColor.withOpacity(0.2),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
                       ),
@@ -78,7 +78,7 @@ class CustomDialog extends StatelessWidget {
                   child: TextButton(
                     onPressed: onConfirm,
                     style: TextButton.styleFrom(
-                      backgroundColor:confirmButtonColor?? AppColors.primaryColor,
+                      backgroundColor:confirmButtonColor?? AppColors.secondaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
                       ),

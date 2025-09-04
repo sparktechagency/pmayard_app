@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/internet/connectivity.dart';
 import 'package:pmayard_app/services/internet/no_internet_wrapper.dart';
@@ -10,6 +12,7 @@ import 'app/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   
   Get.put(ConnectivityController());
 

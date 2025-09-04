@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
 
 import '../../../../widgets/widgets.dart';
 
@@ -23,7 +24,10 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(
+        title: 'Change Password',
+        borderColor: AppColors.secondaryColor,
+      ),
       body: SingleChildScrollView(
         child: Form(
           key: _globalKey,
@@ -35,6 +39,7 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
                 height: 50.h,
               ),
               CustomTextField(
+                labelText: 'Old Password',
                 controller: _oldPassTEController,
                 hintText: "Old Password",
                 isPassword: true,
@@ -48,6 +53,7 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
                 },
               ),
               CustomTextField(
+                labelText: 'New Password',
                 controller: _passTEController,
                 hintText: "New Password",
                 isPassword: true,
@@ -61,6 +67,7 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
                 },
               ),
               CustomTextField(
+                labelText: 'Confirm Password',
                 controller: _rePassTEController,
                 hintText: "Confirm Password",
                 isPassword: true,
@@ -73,7 +80,7 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
                   return null;
                 },
               ),
-        
+
         SizedBox(height: 32.h,),
               CustomButton(
                   label: "Update",

@@ -2,79 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/custom_assets/assets.gen.dart';
+import 'package:pmayard_app/custom_assets/fonts.gen.dart';
+import 'package:pmayard_app/feature/chat/chat_screen.dart';
+import 'package:pmayard_app/feature/home/home_screen.dart';
+import 'package:pmayard_app/feature/profile/profile_screen.dart';
+import 'package:pmayard_app/feature/session/session_screen.dart';
 import '../../app/utils/app_colors.dart';
-import '../../widgets/widgets.dart';
 import '../bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   CustomBottomNavBar({super.key});
 
-  final CustomBottomNavBarController _navBarController = Get.put(CustomBottomNavBarController());
+  final CustomBottomNavBarController _navBarController =
+  Get.put(CustomBottomNavBarController());
 
+  final List<Widget> _screens =  [
+    HomeScreen(),
+    SessionScreen(),
+    ChatScreen(),
+    ProfileScreen(),
+  ];
 
-  final List<Widget> _screens = const [
-    // HomeScreen(),
-    // PlanScreen(),
-    // ProgressScreen(),
-    // ProfileScreen(),
+  final List<Map<String, dynamic>> _navItems = [
+    {"icon": Assets.icons.home.path, "label": "Home"},
+    {"icon": Assets.icons.session.path, "label": "Session"},
+    {"icon": Assets.icons.chat.path, "label": "Chat"},
+    {"icon": Assets.icons.bottomProfile.path, "label": "Profile"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
-          body: _screens[_navBarController.selectedIndex.value],
-          bottomNavigationBar: CustomContainer(
-            paddingTop: 6.h,
-            linearColors: <Color>[
-              Color(0xff393939),
-              Color(0xff393939).withOpacity(0.5),
-            ],
-            child: SafeArea(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(
-                    _navItems.length, (index) => _buildNavItem(index)),
+      backgroundColor: AppColors.primaryColor,
+      body: _screens[_navBarController.selectedIndex.value],
+      bottomNavigationBar: SafeArea(
+        child: CurvedNavigationBar(
+          backgroundColor: Colors.white,
+          color: AppColors.primaryColor,
+          buttonBackgroundColor: AppColors.secondaryColor,
+          index: _navBarController.selectedIndex.value,
+          items: List.generate(_navItems.length, (index) {
+            bool isSelected = _navBarController.selectedIndex.value == index;
+            return CurvedNavigationBarItem(
+              child: SvgPicture.asset(
+                _navItems[index]["icon"],
+                color: isSelected ? Colors.white : AppColors.secondaryColor,
+                width: isSelected ? 24.w : 24.w,
+                height: isSelected ? 24.h : 24.h,
               ),
-            ),
-          ),
-        ));
-  }
-
-  Widget _buildNavItem(int index) {
-    bool isSelected = _navBarController.selectedIndex.value == index;
-    return GestureDetector(
-      onTap: () => _navBarController.onChange(index),
-      child: SizedBox(
-        width: 60.w,
-        height: 36.h,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              _navItems[index]["icon"],
-              color: isSelected ? AppColors.primaryColor : Colors.grey,
-              width: isSelected ? 16.w : 18.w,
-              height: isSelected ? 16.h : 18.h,
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              _navItems[index]["label"],
-              style: TextStyle(
+              label: _navItems[index]["label"],
+              labelStyle: TextStyle(
+                fontFamily: FontFamily.inter,
                 fontSize: 10.sp,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? AppColors.primaryColor : Colors.grey,
+                color: isSelected ? Colors.transparent : AppColors.secondaryColor,
               ),
-            ),
-          ],
+            );
+          }),
+          onTap: (index) => _navBarController.onChange(index),
         ),
       ),
-    );
+    ));
   }
-
-  final List<Map<String, dynamic>> _navItems = [
-    // {"icon": Assets.icons.homeBottom.path, "label": "Home"},
-    // {"icon": Assets.icons.planBottom.path, "label": "Plan"},
-    // {"icon": Assets.icons.progress.path, "label": "Progress"},
-    // {"icon": Assets.icons.profileNav.path, "label": "Profile"},
-  ];
 }

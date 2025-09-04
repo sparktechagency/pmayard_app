@@ -75,7 +75,7 @@ class PhotoPickerHelper {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppColors.secondaryColorShade100,
+              color: AppColors.secondaryColor.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             padding:  EdgeInsets.all(16.r),

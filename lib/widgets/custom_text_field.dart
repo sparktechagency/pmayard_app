@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../app/utils/app_colors.dart';
 import '../app/utils/app_constants.dart';
+import '../custom_assets/fonts.gen.dart';
 import '../widgets/widgets.dart';
 
 
@@ -99,8 +100,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.labelText != null)
           CustomText(
             text: widget.labelText ?? '',
-            //fontName: FontFamily.inter,
-            color: AppColors.appGreyColor,
+            fontName: FontFamily.inter,
+            color: AppColors.darkColor,
             bottom: 4.h,
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
@@ -135,10 +136,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
               (value) {
                 if (widget.isEmail == false) {
                   if (value!.isEmpty) {
-                    return "Please enter ${widget.hintText!.toLowerCase()}";
+                    return "Please  ${widget.hintText!.toLowerCase()}";
                   } else if (widget.isPassword) {
                     if (value.isEmpty) {
-                      return "Please enter ${widget.hintText!.toLowerCase()}";
+                      return "Please  ${widget.hintText!.toLowerCase()}";
                     } else if (value.length < 8) {
                       return "Password: 8 characters min!";
                     }
@@ -146,7 +147,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 } else {
                   bool data = AppConstants.emailValidate.hasMatch(value!);
                   if (value.isEmpty) {
-                    return "Please enter ${widget.hintText!.toLowerCase()}";
+                    return "Please  ${widget.hintText!.toLowerCase()}";
                   } else if (!data) {
                     return "Please check your email!";
                   }
@@ -163,7 +164,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(
                   horizontal: widget.contentPaddingHorizontal ?? 20.w,
-                  vertical: widget.contentPaddingVertical ?? 10.h),
+                  vertical: widget.contentPaddingVertical ?? 12.h),
               fillColor: widget.filColor ?? Colors.transparent,
               filled: true,
               prefixIcon: widget.prefixIcon != null ? Padding(
@@ -201,28 +202,28 @@ class _CustomTextFieldState extends State<CustomTextField> {
   _suffixIcon(IconData icon) {
     return Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Icon(icon, color: AppColors.darkColor));
+        child: Icon(icon, color: AppColors.appGreyColor));
   }
 
   OutlineInputBorder focusedBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 10.r),
+      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
       borderSide: BorderSide(
-          width: 0.8, color: widget.borderColor ?? AppColors.borderColor),
+          width: 0.8, color: widget.borderColor ?? AppColors.grayShade100),
     );
   }
 
   OutlineInputBorder enabledBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 10.r),
+      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
       borderSide: BorderSide(
-          width: 1, color: widget.borderColor ?? AppColors.borderColor),
+          width: 1, color: widget.borderColor ?? AppColors.grayShade100),
     );
   }
 
   OutlineInputBorder errorBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 10.r),
+      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
       borderSide:
           BorderSide(color: widget.borderColor ?? Colors.red, width: 1),
     );

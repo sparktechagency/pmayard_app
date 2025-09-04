@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import '../../../custom_assets/assets.gen.dart';
 import '../../../widgets/widgets.dart';
 
 class ProfileListTile extends StatelessWidget {
@@ -22,11 +24,12 @@ class ProfileListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomContainer(
       onTap: onTap,
-      verticalMargin: 7.h,
-      paddingHorizontal: 16.w ,
-      paddingVertical: 10.h,
+      verticalMargin: 12.h,
+      horizontalMargin: 24.w,
+      paddingHorizontal: 10.w ,
+      paddingVertical: 8.h,
+     border: Border(bottom: BorderSide(color: AppColors.secondaryColor)),
      // color: color ?? AppColors.textColor171717,
-      radiusAll: 12.r,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -36,16 +39,12 @@ class ProfileListTile extends StatelessWidget {
             child: CustomText(
               text: title,
               textAlign: TextAlign.start,
-              color: textColor ?? Colors.white,
-              fontSize: 14.sp,
+              color: textColor ?? Color(0xff111111),
+              fontSize: 16.sp,
             ),
           ),
           if (noIcon != true)
-            Icon(
-              Icons.arrow_right,
-              size: 20.h,
-              color: Colors.white,
-            ),
+            Assets.icons.arrowRight.svg(),
         ],
       ),
     );

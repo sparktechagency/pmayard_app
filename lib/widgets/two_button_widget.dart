@@ -13,7 +13,8 @@ class TwoButtonWidget extends StatelessWidget {
     super.key,
     required this.buttons,
     required this.selectedValue,
-    required this.onTap, this.fontSize,
+    required this.onTap,
+    this.fontSize,
   });
 
   @override
@@ -24,16 +25,26 @@ class TwoButtonWidget extends StatelessWidget {
         return Expanded(
           child: GestureDetector(
             onTap: () => onTap(item['value']!),
-            child: CustomContainer(
-              horizontalMargin: 6.w,
-              radiusAll: 10.r,
-              paddingVertical: 8.h,
-              color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
-              child: CustomText(
-                text: item['label']!,
-                color: isSelected ? Colors.white : Colors.grey,
-                fontSize: fontSize ?? 15.sp,
-                fontWeight: FontWeight.w500,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.fastOutSlowIn,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.secondaryColor : Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.secondaryColor,
+                    width: 2,
+                  ),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 12.h),
+              child: Center(
+                child: CustomText(
+                  text: item['label']!,
+                  color: isSelected ? Colors.white : Colors.grey,
+                  fontSize: fontSize ?? 15.sp,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),

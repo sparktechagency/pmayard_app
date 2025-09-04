@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 
+import '../../../custom_assets/assets.gen.dart';
 import '../../../widgets/widgets.dart';
 import '../widgets/profile_list_tile.dart';
-
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -12,67 +14,118 @@ class SettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: AppBar(title:Text("Settings")),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        child: Column(
-          children: [
-            ProfileListTile(
-              icon: const Icon(Icons.lock,color: Colors.white),
-              title: "Change Password",
-              onTap: () {
-                //Get.toNamed(AppRoutes.changePassword);
-              },
-            ),
-            ProfileListTile(
-              icon: const Icon(Icons.lock,color: Colors.white),
-              title: "Terms & Conditions",
-              onTap: () {
-               // Get.toNamed(AppRoutes.termsScreen);
-              },
-            ),
-            ProfileListTile(
-              icon: const Icon(Icons.lock,color: Colors.white),
-              title: "Privacy Policy",
-              onTap: () {
-               // Get.toNamed(AppRoutes.privacyPolicyScreen);
-              },
-            ),
-          ProfileListTile(
-            icon: const Icon(Icons.lock,color: Colors.white),
-              title: "About Us",
-              onTap: () {
-               // Get.toNamed(AppRoutes.aboutScreen);
-              },
-            ),
+      appBar: CustomAppBar(
+        title: 'Settings',
+          borderColor: AppColors.secondaryColor),
+      body: Column(
+        children: [
+          SizedBox(height: 32.h),
 
-            const Spacer(),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 30.h),
-              child: ProfileListTile(
-                icon: const Icon(Icons.delete_outline,color: Colors.red),
-                  title: 'Delete Account',
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => CustomDialog(
-                        title: "Do you want to delete your account?",
-                        confirmButtonText: 'Delete',
-                        onCancel: () {
-                          Get.back();
-                        },
-                        onConfirm: () {
-                          //Get.offAllNamed(AppRoutes.signUpScreen);
-                        },
-                      ),
-                    );
+
+
+          _buildSettingTile(
+            icon: Assets.icons.password.svg(),
+            label: 'Change Password',
+            onTap: () {
+              Get.toNamed(AppRoutes.changePassScreen);
+            },
+          ),
+
+
+
+          _buildSettingTile(
+            icon: Assets.icons.terms.svg(),
+            label: 'Terms & Condition',
+            onTap: () {
+              Get.toNamed(AppRoutes.termsScreen);
+            },
+          ),
+
+
+
+          _buildSettingTile(
+            icon: Assets.icons.policy.svg(),
+            label: 'Privacy Policy',
+            onTap: () {
+              Get.toNamed(AppRoutes.policyScreen);
+            },
+          ),
+
+
+
+          _buildSettingTile(
+            icon: Assets.icons.about.svg(),
+            label: 'About Us',
+            onTap: () {
+              Get.toNamed(AppRoutes.aboutScreen);
+            },
+          ),
+
+
+
+          _buildSettingTile(
+            icon: Assets.icons.delete.svg(),
+            label: 'Delete Account',
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => CustomDialog(
+                  title: "Do you want to delete your account?",
+                  confirmButtonText: 'Delete',
+                  confirmButtonColor: AppColors.errorColor,
+                  onCancel: () {
+                    Get.back();
                   },
-                  noIcon: true,
-                  color: Colors.red.withOpacity(0.2),
-                  textColor: Colors.red),
-            ),
-          ],
+                  onConfirm: () {
+                    //Get.offAllNamed(AppRoutes.signUpScreen);
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingTile({
+    required Widget icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return CustomContainer(
+      onTap: onTap,
+      marginBottom: 16.h,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          offset: Offset(0, 6),
+          blurRadius: 4,
         ),
+
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          offset: Offset(0, -1),
+          blurRadius: 8,
+        ),
+      ],
+      radiusAll: 8.r,
+      paddingHorizontal: 10.h,
+      paddingVertical: 14.h,
+      color: Colors.white,
+      child: Row(
+        children: [
+          icon,
+          SizedBox(width: 10.w),
+          Expanded(
+            child: CustomText(
+              fontWeight: FontWeight.w500,
+              textAlign: TextAlign.start,
+              text: label,
+            ),
+          ),
+          Icon(Icons.arrow_right_sharp),
+        ],
       ),
     );
   }
