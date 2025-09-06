@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import '../../../controllers/auth/auth_controller.dart';
 import '../../../widgets/widgets.dart';
 import '../widgets/app_logo.dart';
@@ -23,33 +24,39 @@ class _ForgetScreenState extends State<ForgetScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar:  AppBar(),
+      appBar:  CustomAppBar(title: 'Forget Password',),
       body: SingleChildScrollView(
         child: Form(
           key: _globalKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 24.h),
               AppLogo(
-                title: 'Forget Your \n Password?',
-                subtitle: 'Please enter your email to reset your password.',
+                title: 'Forget Your Password?',
+                subtitle: 'Don’t worry! It happens. Please enter the email associated with your account.',
               ),
-              SizedBox(height: 56.h),
+              SizedBox(height: 40.h),
               CustomTextField(
-                prefixIcon: Icon(Icons.email_sharp, color: Colors.white),
+                labelText: 'Email',
                 controller: _authController.forgotEmailController,
                 hintText: "Email",
                 keyboardType: TextInputType.emailAddress,
                 isEmail: true,
               ),
               SizedBox(height: 36.h),
-              GetBuilder<AuthController>(
-                builder: (controller) {
-                  return controller.isLoadingForgot ? CustomLoader() : CustomButton(
-                    label: "Get Verification Code",
-                    onPressed: _onGetVerificationCode,
-                  );
-                }
+              // GetBuilder<AuthController>(
+              //   builder: (controller) {
+              //     return controller.isLoadingForgot ? CustomLoader() : CustomButton(
+              //       label: "Get Verification Code",
+              //       onPressed: _onGetVerificationCode,
+              //     );
+              //   }
+              // ),
+
+              CustomButton(
+                label: "Get Verification Code",
+                onPressed: _onGetVerificationCode,
               ),
               SizedBox(height: 18.h),
             ],
@@ -62,7 +69,8 @@ class _ForgetScreenState extends State<ForgetScreen> {
 
   void _onGetVerificationCode(){
     if(!_globalKey.currentState!.validate()) return;
-    _authController.forgot();
+    Get.toNamed(AppRoutes.otpScreen);
+   // _authController.forgot();
   }
 
 }

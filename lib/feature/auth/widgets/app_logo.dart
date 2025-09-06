@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../app/utils/app_colors.dart';
+import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import '../../../widgets/widgets.dart';
 
 class AppLogo extends StatelessWidget {
@@ -9,26 +8,28 @@ class AppLogo extends StatelessWidget {
     super.key,
     this.title,
     this.subtitle,
-    this.height = 41,
-    this.spacing,
+    this.size = 62,
+    this.spacing, this.showLogo = false,
   });
 
   final String? title, subtitle;
-  final double height;
+  final double size;
   final double? spacing;
+  final bool showLogo;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        //Assets.icons.logo.svg(height: height.h),
-        SizedBox(height: spacing ?? 30.h),
+        if(showLogo)
+        Assets.icons.splashLogo.svg(height: size.h,width: size.w),
+        SizedBox(height: spacing ?? 20.h),
         if (title != null) ...[
           CustomText(
             text: title ?? '',
             fontSize: 24.sp,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
           SizedBox(height: 6.h),
         ],
@@ -37,7 +38,7 @@ class AppLogo extends StatelessWidget {
           CustomText(
             text: subtitle ?? '',
             fontSize: 12.sp,
-           // color: AppColors.textColor4D4D4D,
+           color: Color(0xff5C5C5C),
           ),
       ],
     );

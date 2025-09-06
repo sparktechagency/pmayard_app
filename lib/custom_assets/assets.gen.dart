@@ -21,6 +21,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/about.svg
   SvgGenImage get about => const SvgGenImage('assets/icons/about.svg');
 
+  /// File path: assets/icons/arrow_onboarding.svg
+  SvgGenImage get arrowOnboarding =>
+      const SvgGenImage('assets/icons/arrow_onboarding.svg');
+
   /// File path: assets/icons/arrow_right.svg
   SvgGenImage get arrowRight =>
       const SvgGenImage('assets/icons/arrow_right.svg');
@@ -42,9 +46,6 @@ class $AssetsIconsGen {
   /// File path: assets/icons/clean_icon.svg
   SvgGenImage get cleanIcon => const SvgGenImage('assets/icons/clean_icon.svg');
 
-  /// File path: assets/icons/comment.svg
-  SvgGenImage get comment => const SvgGenImage('assets/icons/comment.svg');
-
   /// File path: assets/icons/date.svg
   SvgGenImage get date => const SvgGenImage('assets/icons/date.svg');
 
@@ -53,9 +54,6 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
-
-  /// File path: assets/icons/gender.svg
-  SvgGenImage get gender => const SvgGenImage('assets/icons/gender.svg');
 
   /// File path: assets/icons/goal.svg
   SvgGenImage get goal => const SvgGenImage('assets/icons/goal.svg');
@@ -112,6 +110,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/profile.svg
   SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
 
+  /// File path: assets/icons/profile_camera.svg
+  SvgGenImage get profileCamera =>
+      const SvgGenImage('assets/icons/profile_camera.svg');
+
   /// File path: assets/icons/profile_edit.svg
   SvgGenImage get profileEdit =>
       const SvgGenImage('assets/icons/profile_edit.svg');
@@ -139,17 +141,16 @@ class $AssetsIconsGen {
   /// List of all assets
   List<SvgGenImage> get values => [
     about,
+    arrowOnboarding,
     arrowRight,
     backButton,
     bottomProfile,
     cameraAdd,
     chat,
     cleanIcon,
-    comment,
     date,
     delete,
     email,
-    gender,
     goal,
     height,
     home,
@@ -167,6 +168,7 @@ class $AssetsIconsGen {
     policy,
     postUpload,
     profile,
+    profileCamera,
     profileEdit,
     session,
     setting,
@@ -183,6 +185,12 @@ class $AssetsImagesGen {
   /// File path: assets/images/app_logo.png
   AssetGenImage get appLogo =>
       const AssetGenImage('assets/images/app_logo.png');
+
+  /// File path: assets/images/img.png
+  AssetGenImage get img => const AssetGenImage('assets/images/img.png');
+
+  /// File path: assets/images/img_1.png
+  AssetGenImage get img1 => const AssetGenImage('assets/images/img_1.png');
 
   /// File path: assets/images/location_image.png
   AssetGenImage get locationImage =>
@@ -211,6 +219,8 @@ class $AssetsImagesGen {
   /// List of all assets
   List<AssetGenImage> get values => [
     appLogo,
+    img,
+    img1,
     locationImage,
     onboardingImage,
     splashBottom,

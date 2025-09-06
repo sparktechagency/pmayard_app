@@ -34,10 +34,10 @@ class CustomPinCodeTextField extends StatelessWidget {
           height: 46.h,
           textStyle: TextStyle(color: AppColors.darkColor, fontSize: 16.sp),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            //shape: BoxShape.circle,
             color: AppColors.bgColor,
-            //borderRadius: BorderRadius.circular(0),
-            border: Border.all(color: AppColors.primaryColor),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.grayShade100),
           ),
         ),
         focusedPinTheme: PinTheme(
@@ -45,10 +45,10 @@ class CustomPinCodeTextField extends StatelessWidget {
           height: 46.h,
           textStyle: const TextStyle(color: AppColors.darkColor, fontSize: 20),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            //shape: BoxShape.circle,
             color: AppColors.bgColor,
-           // borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.primaryColor),
+           borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.grayShade100),
           ),
         ),
         cursor: Column(
@@ -62,7 +62,7 @@ class CustomPinCodeTextField extends StatelessWidget {
           ],
         ),
         keyboardType: TextInputType.number,
-        obscureText: false,
+        //obscureText: true,
         autofocus: true,
         onChanged: (value) {},
         obscuringCharacter: '-');

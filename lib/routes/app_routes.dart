@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pmayard_app/feature/auth/complete_profile/complete_profile_first_page.dart';
+import 'package:pmayard_app/feature/auth/forget/forget_screen.dart';
+import 'package:pmayard_app/feature/auth/login/log_in_screen.dart';
+import 'package:pmayard_app/feature/auth/otp/otp_screen.dart';
+import 'package:pmayard_app/feature/auth/reset_pass/reset_password_screen.dart';
+import 'package:pmayard_app/feature/auth/sign_up/sign_up_screen.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/customtom_bottom_nav.dart';
 import 'package:pmayard_app/feature/chat/inbox_screen.dart';
+import 'package:pmayard_app/feature/onboarding_screen.dart';
 import 'package:pmayard_app/feature/profile/personal_info_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/about_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/change%20password/setting_change_password.dart';
@@ -54,6 +61,7 @@ abstract class AppRoutes {
   static const String galleryScreen = '/galleryScreen';
   static const String personalInfoScreen = '/personalInfoScreen';
   static const String inboxScreen = '/inboxScreen';
+  static const String completeProfileFirstPage = '/completeProfileFirstPage';
 
 
 
@@ -69,6 +77,13 @@ abstract class AppRoutes {
     changePassScreen : (context) => SettingChangePassword(),
     personalInfoScreen : (context) => PersonalInfoScreen(),
     inboxScreen : (context) => InboxScreen(),
+    onboardingScreen : (context) => OnboardingScreen(),
+    loginScreen : (context) => LoginScreen(),
+    forgotScreen : (context) => ForgetScreen(),
+    otpScreen : (context) => OtpScreen(),
+    resetPasswordScreen : (context) => ResetPasswordScreen(),
+    signUpScreen : (context) => SignUpScreen(),
+    completeProfileFirstPage : (context) => CompleteProfileFirstPage(),
 
   };
 }

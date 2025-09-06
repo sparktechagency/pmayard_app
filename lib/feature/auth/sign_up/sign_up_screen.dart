@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../controllers/auth/auth_controller.dart';
 import '../../../widgets/widgets.dart';
@@ -21,43 +22,74 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final AuthController _registerController = Get.find<AuthController>();
 
+
+  String selectedValueType = 'professional';
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: AppBar(),
+      appBar: CustomAppBar(
+        title: 'Sign Up',
+      ),
       body: SingleChildScrollView(
         child: Form(
           key: _globalKey,
           child: Column(
-            spacing: 10.h,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 16.h),
               AppLogo(
-                title: 'Hello! Register to get started',
-                subtitle: 'Make sure your account keep secure',
+                showLogo: true,
+                title: 'Join With Us!',
+                subtitle: 'Make sure your account keep secure.',
+              ),
+
+              SizedBox(height: 24.h),
+              CustomContainer(
+                height: 29.h,
+                radiusAll: 16.r,
+                width: 320.w,
+                bordersColor: AppColors.goldColor,
+                child: Row(
+                  children: ["professional", "parent"].map((type) {
+                    final isSelected = selectedValueType == type;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedValueType = type;
+                          });
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.goldColor : Colors.transparent,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          alignment: Alignment.center,
+                          child: CustomText(
+                            text: type == "professional" ? "Professional" : "Parent",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            color: isSelected ? Colors.white : AppColors.goldColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
               SizedBox(height: 16.h),
               CustomTextField(
-                prefixIcon: Icon(Icons.person, color: Colors.white),
-                controller: _registerController.usernameController,
-                hintText: "User Name",
-                keyboardType: TextInputType.text,
-              ),
-              CustomTextField(
-                prefixIcon: Icon(Icons.email_sharp, color: Colors.white),
+                labelText: 'Email',
                 controller: _registerController.emailController,
                 hintText: "Email",
                 keyboardType: TextInputType.emailAddress,
                 isEmail: true,
               ),
               CustomTextField(
-                prefixIcon: Icon(Icons.phone, color: Colors.white),
-                controller: _registerController.phoneController,
-                hintText: "Phone",
-                keyboardType: TextInputType.number,
-              ),
-              CustomTextField(
-                prefixIcon: Icon(Icons.lock, color: Colors.white),
+                labelText: 'Password',
                 controller: _registerController.passwordController,
                 hintText: "Password",
                 isPassword: true,
@@ -71,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 },
               ),
               CustomTextField(
-                prefixIcon: Icon(Icons.lock, color: Colors.white),
+                labelText: 'Confirm Password',
                 controller: _registerController.confirmPassController,
                 hintText: "Confirm Password",
                 isPassword: true,
@@ -91,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return Checkbox(
                         value: controller.isChecked,
                         onChanged: (value) => controller.onChanged(value),
-                        activeColor: AppColors.primaryColor,
+                        activeColor: AppColors.secondaryColor,
                       );
                     }
                   ),
@@ -108,22 +140,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   return controller.isLoadingRegister ? CustomLoader() : CustomButton(label: "Sign Up", onPressed: _onSignUp);
                 }
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 24.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomText(
+                    color: AppColors.grayShade100,
                     text: "Already have an account?  ",
-                    fontSize: 16.sp,
+                    fontSize: 14.sp,
                   ),
                   CustomText(
                     onTap: () {
-                     // Get.offAllNamed(AppRoutes.loginScreen);
+                     Get.offAllNamed(AppRoutes.loginScreen);
                     },
                     text: "Sign In",
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondaryColor,
                   ),
                 ],
               ),
