@@ -36,81 +36,111 @@ class HomeScreen extends StatelessWidget {
       ),
 
 
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CustomText(
-            top: 24.h,
-            bottom: 24.h,
-              left: 16.w,
-              right: 16.w,
-              text: 'Assigned Parent',fontWeight: FontWeight.w600,fontSize: 16.sp),
-
-          SizedBox(
-            height: 180.h,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(4, (index) {
-                  return CustomContainer(
-                    paddingVertical: 10.h,
-                    paddingHorizontal: 10.w,
-                    marginRight: 14.w,
-                    marginLeft: index == 0 ? 14.w : 0,
-                    radiusAll: 8.r,
-                    height: 170.h,
-                    width: 170.w,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        offset: Offset(0, 4),
-                        blurRadius: 4,
-                      ),
-
-                    ],
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomImageAvatar(radius: 26.r),
-                        SizedBox(height: 8.h),
-                        CustomText(text: 'Eva',fontWeight: FontWeight.w500,fontSize: 16.sp,),
-                        CustomText(
-                          bottom: 8.h,
-                            text: 'Parent',color: AppColors.appGreyColor),
-
-                        Row(
-                          children: [
-                            Expanded(
-                                child: CustomButton(
-                                  height: 28.h,
-                                  fontSize: 10.sp,
-                                  backgroundColor: AppColors.primaryColor,
-                                  onPressed: (){},label: 'View Profile',)),
-                            SizedBox(width: 4.w),
-                            Expanded(child: CustomButton(
-                              height: 28.h,
-                              fontSize: 10.sp,
-                              backgroundColor: AppColors.primaryColor,
-                              onPressed: (){},label: 'Message',)),
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ),
-
-          CustomText(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomText(
               top: 24.h,
               bottom: 24.h,
-              left: 16.w,
-              right: 16.w,
-              text: 'Upcoming Sessions',fontWeight: FontWeight.w600,fontSize: 16.sp),
+                left: 16.w,
+                right: 16.w,
+                text: 'Assigned Parent',fontWeight: FontWeight.w600,fontSize: 16.sp),
+        
+            SizedBox(
+              height: 180.h,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(4, (index) {
+                    return CustomContainer(
+                      paddingVertical: 10.h,
+                      paddingHorizontal: 10.w,
+                      marginRight: 14.w,
+                      marginLeft: index == 0 ? 14.w : 0,
+                      radiusAll: 8.r,
+                      height: 170.h,
+                      width: 170.w,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          offset: Offset(0, 4),
+                          blurRadius: 4,
+                        ),
+        
+                      ],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomImageAvatar(radius: 26.r),
+                          SizedBox(height: 8.h),
+                          CustomText(text: 'Eva',fontWeight: FontWeight.w500,fontSize: 16.sp,),
+                          CustomText(
+                            bottom: 8.h,
+                              text: 'Parent',color: AppColors.appGreyColor),
+        
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: CustomButton(
+                                    height: 28.h,
+                                    fontSize: 10.sp,
+                                    backgroundColor: AppColors.primaryColor,
+                                    onPressed: (){},label: 'View Profile',)),
+                              SizedBox(width: 4.w),
+                              Expanded(child: CustomButton(
+                                height: 28.h,
+                                fontSize: 10.sp,
+                                backgroundColor: AppColors.primaryColor,
+                                onPressed: (){},label: 'Message',)),
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+        
+            CustomText(
+                top: 24.h,
+                bottom: 10.h,
+                left: 16.w,
+                right: 16.w,
+                text: 'Upcoming Sessions',fontWeight: FontWeight.w600,fontSize: 16.sp),
+        
+        
+        
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 10,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+              return Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 6.h),
+                child: CustomListTile(
+                  contentPaddingVertical: 6.h,
+                  borderRadius: 8.r,
+                  borderColor: AppColors.borderColor,
+                  image: '',
+                  title: 'Annette Black',
+                  subTitle: '08/08/25 at 4:30 PM',
+                  titleFontSize: 16.sp,
+                  trailing: CustomButton(
+                    radius: 8.r,
+                    height: 25.h,
+                    fontSize: 10.sp,
+                      onPressed: (){},label: 'View Detail'),
+                ),
+              );
+            },),
 
-        ],
+            SizedBox(height: 44.h),
+        
+          ],
+        ),
       ),
     );
   }
