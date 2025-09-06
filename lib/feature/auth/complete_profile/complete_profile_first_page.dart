@@ -150,7 +150,7 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
                         readOnly: true,
                         labelText: 'Subjects You Teach',
                         controller: _subjectsController,
-                        //hintText: "Subjects You Teach",
+                        hintText: "Subjects You Teach",
                       ),
                     ),
                   ),

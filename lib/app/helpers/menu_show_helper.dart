@@ -12,6 +12,7 @@ class MenuShowHelper {
 
   static final List<String> genderOptions = ["Male", "Female"];
   static final List<String> subjects = [
+    "French",
     "Mathematics",
     "Physics",
     "Chemistry",
