@@ -128,9 +128,8 @@ class $AssetsIconsGen {
   SvgGenImage get splashLogo =>
       const SvgGenImage('assets/icons/splash_logo.svg');
 
-  /// File path: assets/icons/success_popup_icon.svg
-  SvgGenImage get successPopupIcon =>
-      const SvgGenImage('assets/icons/success_popup_icon.svg');
+  /// File path: assets/icons/success.svg
+  SvgGenImage get success => const SvgGenImage('assets/icons/success.svg');
 
   /// File path: assets/icons/support.svg
   SvgGenImage get support => const SvgGenImage('assets/icons/support.svg');
@@ -173,7 +172,7 @@ class $AssetsIconsGen {
     session,
     setting,
     splashLogo,
-    successPopupIcon,
+    success,
     support,
     terms,
   ];

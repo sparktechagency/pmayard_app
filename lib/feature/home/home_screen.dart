@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
@@ -87,13 +90,17 @@ class HomeScreen extends StatelessWidget {
                                     height: 28.h,
                                     fontSize: 10.sp,
                                     backgroundColor: AppColors.primaryColor,
-                                    onPressed: (){},label: 'View Profile',)),
+                                    onPressed: (){
+                                      Get.toNamed(AppRoutes.profileViewScreen);
+                                    },label: 'View Profile',)),
                               SizedBox(width: 4.w),
                               Expanded(child: CustomButton(
                                 height: 28.h,
                                 fontSize: 10.sp,
                                 backgroundColor: AppColors.primaryColor,
-                                onPressed: (){},label: 'Message',)),
+                                onPressed: (){
+                                  Get.toNamed(AppRoutes.inboxScreen);
+                                },label: 'Message',)),
                             ],
                           )
                         ],
@@ -132,7 +139,9 @@ class HomeScreen extends StatelessWidget {
                     radius: 8.r,
                     height: 25.h,
                     fontSize: 10.sp,
-                      onPressed: (){},label: 'View Detail'),
+                      onPressed: (){
+                      Get.find<CustomBottomNavBarController>().onChange(1);
+                      },label: 'View Detail'),
                 ),
               );
             },),
