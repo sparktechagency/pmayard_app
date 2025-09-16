@@ -5,6 +5,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
+import 'package:pmayard_app/widgets/custom_container.dart';
 import 'package:pmayard_app/widgets/custom_dialog.dart';
 import 'package:pmayard_app/widgets/custom_list_tile.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
@@ -29,10 +30,11 @@ class _SessionScreenState extends State<SessionScreen> {
         title: 'Session',
       ),
 
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            TableCalendar(
+      body: Column(
+        children: [
+          CustomContainer(
+            color: Colors.white,
+            child: TableCalendar(
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
@@ -65,12 +67,14 @@ class _SessionScreenState extends State<SessionScreen> {
                 ),
               ),
             ),
+          ),
 
-        
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+
+          Expanded(
+            child: ListView.builder(
+              //physics: NeverScrollableScrollPhysics(),
               itemCount: 10,
-              shrinkWrap: true,
+              //shrinkWrap: true,
               itemBuilder: (context, index) {
                 return Padding(
                   padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 6.h),
@@ -130,8 +134,8 @@ class _SessionScreenState extends State<SessionScreen> {
                   ),
                 );
               },),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

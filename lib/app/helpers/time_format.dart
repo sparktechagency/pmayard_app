@@ -49,10 +49,9 @@ class TimeFormatHelper {
     return DateFormat('MMMM').format(dateTime); // Only day (date)
   }
 
-  static String formatMonthOrDate(String date) {
-    DateTime dateTime = DateTime.parse(date).toLocal(); // Local timezone
+  static String formatMonthOrDate(DateTime date) {
 
-    return DateFormat('MMM d').format(dateTime);
+    return DateFormat('MMM yyyy').format(date);
   }
 
 

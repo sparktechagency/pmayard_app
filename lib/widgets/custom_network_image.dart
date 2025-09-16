@@ -96,11 +96,11 @@ class CustomNetworkImage extends StatelessWidget {
                     ]
                         : null),
                 border: border,
-                color: Colors.grey.withOpacity(0.6),
+                color: Colors.transparent,
                 borderRadius: borderRadius != null ?  BorderRadius.circular(borderRadius ?? 0) : null,
                 shape: boxShape,
               ),
-              child: const Icon(Icons.error),
+              child: const Icon(Icons.broken_image_outlined,color: Colors.grey,),
             ));
   }
 }

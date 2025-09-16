@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 
@@ -160,7 +162,7 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
                     label: "Next",
                     onPressed: (){
                       if (!_globalKey.currentState!.validate()) return;
-
+                      Get.toNamed(AppRoutes.scheduleScreen);
                     },
                   ),
                   SizedBox(

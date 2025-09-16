@@ -46,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Assets.icons.date.svg(),
             title: "Edit Schedule",
             onTap: () {
-             // Get.toNamed(AppRoutes.settingScreen);
+             Get.toNamed(AppRoutes.editScheduleScreen);
             },
           ),
           ProfileListTile(

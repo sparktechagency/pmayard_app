@@ -32,7 +32,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       appBar: CustomAppBar(
         actions: [
           TextButton(onPressed: (){
-            Get.offAllNamed(AppRoutes.customBottomNavBar);
+            Get.offAllNamed(AppRoutes.loginScreen);
           }, child: CustomText(text: 'Skip',fontWeight: FontWeight.w500,color: AppColors.secondaryColor,),)
         ],
       ),
