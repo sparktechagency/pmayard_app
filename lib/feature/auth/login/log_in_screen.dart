@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password is required';
-                  } else if (_authController.loginPasswordController.text.length < 8) {
+                  } else if (_authController.loginPasswordController.text.length < 6) {
                     return 'Password must be 8+ chars';
                   }
                   return null;
@@ -70,17 +70,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: 111.h),
-              // GetBuilder<AuthController>(
-              //   builder: (controller) {
-              //     return controller.isLoadingLogin ? CustomLoader() : CustomButton(
-              //       label: "Sign In",
-              //       onPressed: _onSingUp,
-              //     );
-              //   }
-              // ),
-              CustomButton(
-                label: "Sign In",
-                onPressed: _onSingUp,
+              GetBuilder<AuthController>(
+                builder: (controller) {
+                  return controller.isLoadingLogin ? CustomLoader() : CustomButton(
+                    label: "Sign In",
+                    onPressed: _onSingUp,
+                  );
+                }
               ),
               SizedBox(height: 18.h),
               Row(
@@ -112,8 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onSingUp() {
     if (!_globalKey.currentState!.validate()) return;
-    Get.toNamed(AppRoutes.completeProfileFirstPage);
-   // _authController.login();
+    //Get.toNamed(AppRoutes.completeProfileFirstPage);
+    _authController.login();
   }
 
 }

@@ -17,7 +17,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
- // final String role = Get.arguments['role'];
+ final String role = Get.arguments['role'];
 
   final AuthController _authController = Get.find<AuthController>();
 
@@ -46,20 +46,17 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
 
             SizedBox(height: 36.h),
-            // GetBuilder<AuthController>(
-            //   builder: (controller) {
-            //     return controller.isLoadingOtp
-            //         ? CustomLoader()
-            //         : CustomButton(
-            //           label: "Verify",
-            //           onPressed: _onTapNextScreen,
-            //         );
-            //   },
-            // ),
-            CustomButton(
-              label: "Verify",
-              onPressed: _onTapNextScreen,
+            GetBuilder<AuthController>(
+              builder: (controller) {
+                return controller.isLoadingOtp
+                    ? CustomLoader()
+                    : CustomButton(
+                      label: "Verify",
+                      onPressed: _onTapNextScreen,
+                    );
+              },
             ),
+
             SizedBox(height: 18.h),
           ],
         ),
@@ -69,17 +66,15 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void _onTapNextScreen() async {
     if (!_globalKey.currentState!.validate()) return;
-    Get.toNamed(AppRoutes.resetPasswordScreen);
+    final bool isSuccess = await _authController.verifyOTP();
 
-    //final bool isSuccess = await _authController.verifyOTP();
-
-    // if (isSuccess) {
-    //   if (role == 'sign_up') {
-    //     //Get.offAllNamed(AppRoutes.loginScreen);
-    //   } else {
-    //     //Get.toNamed(AppRoutes.resetPasswordScreen);
-    //   }
-    // }
+    if (isSuccess) {
+      if (role == 'sign_up') {
+        Get.offAllNamed(AppRoutes.loginScreen);
+      } else {
+        Get.toNamed(AppRoutes.resetPasswordScreen);
+      }
+    }
   }
 
 

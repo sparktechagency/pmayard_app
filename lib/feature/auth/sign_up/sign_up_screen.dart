@@ -23,8 +23,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final AuthController _registerController = Get.find<AuthController>();
 
 
-  String selectedValueType = 'professional';
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -50,34 +48,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 radiusAll: 16.r,
                 width: 320.w,
                 bordersColor: AppColors.goldColor,
-                child: Row(
-                  children: ["professional", "parent"].map((type) {
-                    final isSelected = selectedValueType == type;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedValueType = type;
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.goldColor : Colors.transparent,
-                            borderRadius: BorderRadius.circular(16.r),
+                child: GetBuilder<AuthController>(
+                  builder: (controller) {
+                    return Row(
+                      children: ["professional", "parent"].map((type) {
+                        final isSelected = controller.selectedValueType == type;
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => controller.roleChange(type),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppColors.goldColor : Colors.transparent,
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              alignment: Alignment.center,
+                              child: CustomText(
+                                text: type == "professional" ? "Professional" : "Parent",
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: isSelected ? Colors.white : AppColors.goldColor,
+                              ),
+                            ),
                           ),
-                          alignment: Alignment.center,
-                          child: CustomText(
-                            text: type == "professional" ? "Professional" : "Parent",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: isSelected ? Colors.white : AppColors.goldColor,
-                          ),
-                        ),
-                      ),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  }
                 ),
               ),
               SizedBox(height: 16.h),
@@ -173,7 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       showToast('Please check the privacy policy');
       return;
     }
-    //_registerController.register();
+    _registerController.register();
   }
 
 

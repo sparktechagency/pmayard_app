@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,10 +9,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
-import 'package:pmayard_app/widgets/custom_app_bar.dart';
-import 'package:pmayard_app/widgets/custom_scaffold.dart';
-
-import '../../../widgets/widgets.dart';
+import 'package:pmayard_app/widgets/widgets.dart';
 
 class CompleteProfileFirstPage extends StatefulWidget {
   const CompleteProfileFirstPage({super.key});
@@ -33,6 +31,9 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
 
   PhoneNumber number = PhoneNumber(isoCode: 'US');
 
+
+  File? _image;
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -48,14 +49,24 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
             Stack(
               children: [
                 CustomImageAvatar(
+                  fileImage: _image,
                   radius: 60.r,
                   image: '',
                 ),
 
                 Positioned(
-                  bottom: 8.h,
-                  right: 0,
-                  child: Assets.icons.profileCamera.svg(),
+                  bottom: 12.h,
+                  right: 6.w,
+                  child: GestureDetector(
+                    onTap: (){
+                      PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
+                        _image = File(image.path);
+                        setState(() {
+                        });
+
+                      });
+                    },
+                      child: Assets.icons.profileCamera.svg()),
                 )
 
               ],
@@ -88,7 +99,7 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
 
                   InternationalPhoneNumberInput(
                     selectorTextStyle: TextStyle(
-                      fontSize: 12.sp, // ছোট font size
+                      fontSize: 12.sp,
                     ),
                     onInputChanged: (PhoneNumber num) {
                       print("Changed: ${num.phoneNumber}");
@@ -117,8 +128,8 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
-                    selectorButtonOnErrorPadding: 0, // flag আর text এর মাঝে কম gap
-                    spaceBetweenSelectorAndTextField: 0, // spacing কমানো
+                    selectorButtonOnErrorPadding: 0,
+                    spaceBetweenSelectorAndTextField: 0,
                   ),
 
 

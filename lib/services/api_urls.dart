@@ -1,22 +1,22 @@
 class ApiUrls {
   //static const String baseUrl = "http://217.15.170.117";
-  static const String baseUrl = "https://kisdate.merinasib.shop";
+  static const String baseUrl = "https://mihad4000.merinasib.shop/api/v1";
 
 
   //static const String imageBaseUrl = "http://217.15.170.117/";
-  static const String imageBaseUrl = "https://kisdate.merinasib.shop/";
+  static const String imageBaseUrl = "https://mihad4000.merinasib.shop/";
 
 
   //static const String socketUrl = "http://217.15.170.117";
-  static const String socketUrl = "https://kisdate.merinasib.shop";
+  static const String socketUrl = "https://mihad4000.merinasib.shop";
 
-  static const String register = '/auth/register';
+  static const String register = '/users/register';
   static const String verifyOtp = '/auth/verify-otp';
   static const String uploadPhoto = '/gallery/upload';
   static const String login = '/auth/login';
-  static const String forgetPassword = '/auth/resend-otp-forget';
+  static const String forgetPassword = '/auth/forget-password';
   static  const String  resendOtp = '/auth/resend-otp';
-  static  const String  resetPassword = '/auth/forget-password';
+  static  const String  resetPassword = '/auth/reset-password';
   static  const String  profiles = '/profiles';
   static  const String  interest = '/profiles/interest-values';
   static  const String  location = '/profiles/location';
