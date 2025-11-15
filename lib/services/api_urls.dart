@@ -20,6 +20,7 @@ class ApiUrls {
   static  const String  profiles = '/profiles';
   static  const String  interest = '/profiles/interest-values';
   static  const String  location = '/profiles/location';
+  static   String  resendVerifyOtp(String userEmail) => 'auth/resend-otp/$userEmail';
   static   String  swipeProfile(limit,page,goal,age,minimumDistance) => '/profiles/v2?limit=$limit&page=$page&goal=$goal&age=$age&minimumDistance=$minimumDistance';
   static   String  matchCreate(String userId) => '/match?userID=$userId';
   static   String  profileDetails(String userId) => '/profiles/$userId';
@@ -57,11 +58,5 @@ class ApiUrls {
   static   String  postDeleted(String id) => '/timeline/post/$id';
   static   String  postEdit(String id) => '/timeline/post/$id';
   static   String  postSearch(String term,int page,int limit) => '/users/find?page=$page&limit=$limit&term=$term';
-
-
-
-
-
-
 
 }

@@ -17,14 +17,13 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
- final String role = Get.arguments['role'];
-
+  final String role = Get.arguments['role'];
   final AuthController _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: CustomAppBar(title: 'Verify',),
+      appBar: CustomAppBar(title: 'Verify'),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,6 +43,20 @@ class _OtpScreenState extends State<OtpScreen> {
                 textEditingController: _authController.otpController,
               ),
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text('Didn\'t get the Code ?'),
+                  TextButton(
+                    onPressed: _onTapResendButtonHandler,
+                    child: Text('Resend'),
+                  ),
+                ],
+              ),
+            ),
 
             SizedBox(height: 36.h),
             GetBuilder<AuthController>(
@@ -51,9 +64,9 @@ class _OtpScreenState extends State<OtpScreen> {
                 return controller.isLoadingOtp
                     ? CustomLoader()
                     : CustomButton(
-                      label: "Verify",
-                      onPressed: _onTapNextScreen,
-                    );
+                        label: "Verify",
+                        onPressed: _onTapNextScreen,
+                      );
               },
             ),
 
@@ -77,5 +90,7 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
-
+  void _onTapResendButtonHandler() {
+    _authController.resentVerifyOTP();
+  }
 }

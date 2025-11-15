@@ -25,9 +25,78 @@ class ProfileConfirmController extends GetxController{
   Future<void> profileConfirm() async {
     isLoading = true;
     update();
+    /*
+    *
+    *
 
+  /*
+  *
+  *
+  *
+  *
+  {
+        "name": "Dr. John Doe",
+        "bio": "Experienced professional with expertise in various subjects.",
+        "phoneNumber": "+1234567890",
+        "qualification": "PhD in Mathematics",
+        "subjects": [
+            "Mathematics",
+            "Physics"
+        ],
+        * IMAGE :
+        *
+        *
+        *
+        *
+        "availability": [
+            {
+                "day": "Monday",
+                "timeSlots": [
+                    {
+                        "startTime": "09:00 AM",
+                        "endTime": "10:00 AM",
+                        "status": "available"
+                    },
+                    {
+                        "startTime": "11:00 AM",
+                        "endTime": "12:00 PM",
+                        "status": "booked"
+                    }
+                ]
+            },
+            {
+                "day": "Tuesday",
+                "timeSlots": [
+                    {
+                        "startTime": "01:00 PM",
+                        "endTime": "02:00 PM",
+                        "status": "available"
+                    },
+                    {
+                        "startTime": "03:00 PM",
+                        "endTime": "04:00 PM",
+                        "status": "disabled"
+                    }
+                ]
+            }
+        ]
+    }
+  *
+  * */
+    *
+    *
+    *
+    *
+    * */
     final requestBody = {
-
+      "name": nameController.text,
+      "bio": bioController.text,
+      "phoneNumber": "",
+      "qualification": "PhD in Mathematics",
+      "subjects": [
+        "Mathematics",
+        "Physics"
+      ]
     };
 
     final response = await ApiClient.postData(
