@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:mime_type/mime_type.dart';
+
 import '../app/helpers/prefs_helper.dart';
 import '../app/utils/app_constants.dart';
-import 'package:mime_type/mime_type.dart';
 import 'api_urls.dart';
 import 'error_response.dart';
 import 'logger.dart';

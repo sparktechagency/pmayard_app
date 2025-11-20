@@ -1,16 +1,20 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/prefs_helper.dart';
 import 'package:pmayard_app/app/utils/app_constants.dart';
+import 'package:pmayard_app/app/utils/app_subject_list.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/models/availability_model.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/models/profile_model.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/models/time_slot_model.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
+
 import '../../../services/api_urls.dart';
 
 class ProfileConfirmController extends GetxController{
-
-
 
   bool isLoading = false;
   File? selectedImage;
@@ -20,19 +24,26 @@ class ProfileConfirmController extends GetxController{
   final TextEditingController bioController = TextEditingController();
   final TextEditingController qualificationController = TextEditingController();
   final TextEditingController subjectsController = TextEditingController();
+  final List<String> subjectList = [];
+  DateTime? selectedDate;
+  final String startTime = "";
+  final String endTime = "";
 
 
   Future<void> profileConfirm() async {
+
+    print(numberController);
+    print(nameController);
+    print(bioController);
+    print(qualificationController);
+    print(subjectsController);
+
     isLoading = true;
     update();
     /*
-    *
-    *
+
 
   /*
-  *
-  *
-  *
   *
   {
         "name": "Dr. John Doe",
@@ -43,11 +54,6 @@ class ProfileConfirmController extends GetxController{
             "Mathematics",
             "Physics"
         ],
-        * IMAGE :
-        *
-        *
-        *
-        *
         "availability": [
             {
                 "day": "Monday",
@@ -83,21 +89,28 @@ class ProfileConfirmController extends GetxController{
     }
   *
   * */
-    *
-    *
-    *
+
     *
     * */
-    final requestBody = {
-      "name": nameController.text,
-      "bio": bioController.text,
-      "phoneNumber": "",
-      "qualification": "PhD in Mathematics",
-      "subjects": [
-        "Mathematics",
-        "Physics"
-      ]
-    };
+    ProfileModel requestBody = ProfileModel(
+      name: nameController.text,
+      bio: bioController.text,
+      phoneNumber: numberController.text,
+      qualification: qualificationController.text,
+      subjects: subjectList,
+      availability: [
+        AvailabilityModel(
+          day: "Monday",
+          timeSlots: [
+            TimeSlotModel(
+              startTime: "09:00 AM",
+              endTime: "10:00 AM",
+              status: "available",
+            ),
+          ],
+        ),
+      ],
+    );
 
     final response = await ApiClient.postData(
       ApiUrls.register,

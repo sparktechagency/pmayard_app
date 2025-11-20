@@ -10,6 +10,7 @@ class ApiUrls {
   //static const String socketUrl = "http://217.15.170.117";
   static const String socketUrl = "https://mihad4000.merinasib.shop";
 
+  static const String userData = '/users/me';
   static const String register = '/users/register';
   static const String verifyOtp = '/auth/verify-otp';
   static const String uploadPhoto = '/gallery/upload';

@@ -1,8 +1,11 @@
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/auth/auth_controller.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 class DependencyInjection implements Bindings {
   @override
   void dependencies() {
     Get.put(AuthController());
-
+    Get.put(ProfileConfirmController());
+    Get.put(UserController());
   }}

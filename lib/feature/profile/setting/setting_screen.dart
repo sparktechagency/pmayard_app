@@ -77,6 +77,7 @@ class SettingScreen extends StatelessWidget {
                     Get.back();
                   },
                   onConfirm: () {
+
                     //Get.offAllNamed(AppRoutes.signUpScreen);
                   },
                 ),

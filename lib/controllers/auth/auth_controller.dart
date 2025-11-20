@@ -30,7 +30,6 @@ class AuthController extends GetxController {
 
   String selectedValueType = 'professional';
 
-
   void roleChange(type) {
     selectedValueType = type;
     update();
@@ -60,16 +59,26 @@ class AuthController extends GetxController {
     );
 
     final responseBody = response.body;
-
+    print(response);
     if (response.statusCode == 200) {
-      var responseBody = response.body;
+      print('65 no line');
+      // var responseBody = response.body;
 
       // Check if responseBody is not null and contains the expected data
       if (responseBody != null && responseBody['data'] != null) {
-        await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['accessToken'] ?? '');
-        await PrefsHelper.setString(AppConstants.email, requestBody['email']);
-        await PrefsHelper.setString(AppConstants.role, responseBody['role'] ?? ''); // Make sure 'role' exists
-        Get.toNamed(AppRoutes.otpScreen,arguments: {'role' : 'sign_up'});
+        await PrefsHelper.setString(
+          AppConstants.bearerToken,
+          responseBody['data']?['accessToken'] ?? '',
+        );
+        await PrefsHelper.setString(
+          AppConstants.email,
+          requestBody['email'] ?? '',
+        );
+        await PrefsHelper.setString(
+          AppConstants.role,
+          responseBody['role'] ?? '',
+        );
+        Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
         cleanFieldRegister();
       } else {
         // Handle unexpected response structure or missing data
@@ -102,15 +111,12 @@ class AuthController extends GetxController {
 
     final String email = await PrefsHelper.getString(AppConstants.email);
 
-
     bool success = false;
 
-    final requestBody = {
-      'email': email,
-      'otp': otpController.text.trim(),
-    };
+    final requestBody = {'email': email, 'otp': otpController.text.trim()};
 
     final response = await ApiClient.postData(ApiUrls.verifyOtp, requestBody);
+
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
@@ -137,19 +143,21 @@ class AuthController extends GetxController {
 
     bool success = false;
 
-    final requestBody = {
-      'email': email,
-      'otp': otpController.text.trim(),
-    };
+    final requestBody = {'email': email, 'otp': otpController.text.trim()};
 
     final response = await ApiClient.postData(
-      ApiUrls.resendVerifyOtp(email), requestBody,
-      headers: {'Content-Type': 'application/json'},);
+      ApiUrls.resendVerifyOtp(email),
+      requestBody,
+      headers: {'Content-Type': 'application/json'},
+    );
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
       success = true;
-      //await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['token'] ?? '');
+      await PrefsHelper.setString(
+        AppConstants.bearerToken,
+        responseBody['data']?['token'] ?? '',
+      );
       showToast(responseBody['message']);
       otpController.clear();
       Get.toNamed(AppRoutes.loginScreen);
@@ -182,23 +190,40 @@ class AuthController extends GetxController {
     };
 
     final response = await ApiClient.postData(ApiUrls.login, requestBody);
+
+    print('Response body 187 no line $response');
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
       await PrefsHelper.setString(
-          AppConstants.bearerToken, responseBody['data']?['accessToken'] ?? '');
-      await PrefsHelper.setString(
-          AppConstants.role, responseBody['data']?['role'] ?? '');
-      Get.toNamed(AppRoutes.completeProfileFirstPage);
+        AppConstants.bearerToken,
+        responseBody['data']?['accessToken'] ?? '',
+      );
 
-      //cleanFieldLogin();
+      String accessTocken = await PrefsHelper.getString(
+        AppConstants.bearerToken,
+      );
+      // await PrefsHelper.setString(
+      //     AppConstants.role, responseBody['data']?['role'] ?? '');
+      // Get.toNamed(AppRoutes.completeProfileFirstPage);
+
+      if (accessTocken.isNotEmpty) {
+        if (AppConstants.role == 'professional') {
+          Get.offAllNamed(AppRoutes.customBottomNavBar);
+        } else {
+          Get.offAllNamed(AppRoutes.customBottomNavBar);
+        }
+      } else {
+        Get.offAllNamed(AppRoutes.splashScreen);
+      }
+
+      cleanFieldLogin();
     } else {
       if ((response.statusCode == 403 || response.statusCode == 400) &&
           ((responseBody['message']?.toString().toLowerCase() ==
               "you are not verified".toLowerCase()) ||
               (responseBody['message']?.toString().toLowerCase() ==
                   "the same user already exists".toLowerCase()))) {
-        print("Maruf");
         Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       }
       showToast(responseBody['message']);
@@ -220,17 +245,19 @@ class AuthController extends GetxController {
     isLoadingForgot = true;
     update();
 
-    final requestBody = {
-      'email': forgotEmailController.text.trim(),
-    };
+    final requestBody = {'email': forgotEmailController.text.trim()};
 
     final response = await ApiClient.postData(
-        ApiUrls.forgetPassword, requestBody);
+      ApiUrls.forgetPassword,
+      requestBody,
+    );
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
       await PrefsHelper.setString(
-          AppConstants.email, forgotEmailController.text.trim());
+        AppConstants.email,
+        forgotEmailController.text.trim(),
+      );
       Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'forgot'});
       showToast(responseBody['message']);
       cleanFieldForgot();
@@ -245,7 +272,8 @@ class AuthController extends GetxController {
   /// <======================= reset Password ===========================>
   bool isLoadingReset = false;
   final TextEditingController resetPasswordController = TextEditingController();
-  final TextEditingController newResetPasswordController = TextEditingController();
+  final TextEditingController newResetPasswordController =
+  TextEditingController();
 
   void cleanFieldReset() {
     resetPasswordController.clear();
@@ -264,7 +292,9 @@ class AuthController extends GetxController {
     };
 
     final response = await ApiClient.postData(
-        ApiUrls.resetPassword, requestBody);
+      ApiUrls.resetPassword,
+      requestBody,
+    );
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
@@ -278,6 +308,26 @@ class AuthController extends GetxController {
     isLoadingReset = false;
     update();
   }
+
+  /// <======================= Log out related work are here  ===========================>
+
+  void logOut() async {
+    await PrefsHelper.remove('accessToken');
+    await PrefsHelper.remove('role');
+    update();
+    Get.offAllNamed(AppRoutes.loginScreen);
+  }
+
+  /// <======================= Delete user credential ===========================>
+  // Future<void> userData() async {
+  //   String data = await PrefsHelper.getString(AppConstants.bearerToken);
+  //
+  //   final response = ApiClient.getData(ApiUrls.userData, headers: {
+  //     'Authorization': 'Bearer $data'
+  //   });
+  //   print(response);
+  // }
+
 
   /// <======================= dispose all controllers ===========================>
   @override

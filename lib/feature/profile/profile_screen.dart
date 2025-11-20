@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/controllers/auth/auth_controller.dart';
 import 'package:pmayard_app/feature/profile/widgets/profile_list_tile.dart';
 import '../../custom_assets/assets.gen.dart';
 import '../../routes/app_routes.dart';
@@ -28,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
                   radius: 44.r,
                   image: '',
                 ),
-                CustomText(text: "Eva", fontSize: 18.h,fontWeight: FontWeight.w500,top: 4.h,bottom : 8.h ,color: Colors.white),
+                CustomText(text: "Maruf", fontSize: 18.h,fontWeight: FontWeight.w500,top: 4.h,bottom : 8.h ,color: Colors.white),
               ],
             ),
           ),
@@ -70,9 +71,10 @@ class ProfileScreen extends StatelessWidget {
                   onCancel: () {
                     Get.back();
                   },
-                  onConfirm: () {
-                    //Get.offAllNamed(AppRoutes.loginScreen);
-                  },
+                  // onConfirm: () {
+                  //   //Get.offAllNamed(AppRoutes.loginScreen);
+                  // },
+                  onConfirm: () => AuthController()..logOut()
                 ),
               );
             },

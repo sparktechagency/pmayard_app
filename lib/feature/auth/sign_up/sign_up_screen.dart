@@ -173,7 +173,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
     _registerController.register();
   }
-
-
-
 }
