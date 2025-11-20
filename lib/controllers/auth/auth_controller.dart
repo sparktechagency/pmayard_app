@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,12 +17,6 @@ class AuthController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
-
-  @override
-  void onInit() {
-    super.onInit();
-    onChanged('professional');
-  }
 
   void onChanged(value) {
     isChecked = !isChecked;
@@ -59,44 +54,24 @@ class AuthController extends GetxController {
     );
 
     final responseBody = response.body;
-    print(response);
     if (response.statusCode == 200) {
-      print('65 no line');
-      // var responseBody = response.body;
-
-      // Check if responseBody is not null and contains the expected data
-      if (responseBody != null && responseBody['data'] != null) {
-        await PrefsHelper.setString(
-          AppConstants.bearerToken,
-          responseBody['data']?['accessToken'] ?? '',
-        );
-        await PrefsHelper.setString(
-          AppConstants.email,
-          requestBody['email'] ?? '',
-        );
-        await PrefsHelper.setString(
-          AppConstants.role,
-          responseBody['role'] ?? '',
-        );
-        Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
-        cleanFieldRegister();
-      } else {
-        // Handle unexpected response structure or missing data
-        showToast('Unexpected response structure');
-      }
+      await PrefsHelper.setString(
+        AppConstants.bearerToken,
+        responseBody['data']?['accessToken'] ?? '',
+      );
+      await PrefsHelper.setString(
+        AppConstants.email,
+        requestBody['email'] ?? '',
+      );
+      await PrefsHelper.setString(
+        AppConstants.role,
+        responseBody['role'] ?? '',
+      );
+      Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
+      cleanFieldRegister();
     } else {
       showToast(responseBody['message']);
     }
-
-    // if (response.statusCode == 200) {
-    //   await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['accessToken'] ?? '');
-    //   await PrefsHelper.setString(AppConstants.role, responseBody['role'] ?? '');
-    //   // Get.toNamed(AppRoutes.completeProfileFirstPage);
-    //   Get.toNamed(AppRoutes.otpScreen);
-    //   cleanFieldRegister();
-    // } else {
-    //   showToast(responseBody['message']);
-    // }
     isLoadingRegister = false;
     update();
   }
@@ -172,8 +147,12 @@ class AuthController extends GetxController {
 
   /// <======================= login ===========================>
   bool isLoadingLogin = false;
-  final TextEditingController loginEmailController = TextEditingController();
-  final TextEditingController loginPasswordController = TextEditingController();
+  final TextEditingController loginEmailController = TextEditingController(
+    text: kDebugMode ? 'cenocir522@etramay.com' : '',
+  );
+  final TextEditingController loginPasswordController = TextEditingController(
+    text: kDebugMode ? '1qazxsw2' : '',
+  );
 
   void cleanFieldLogin() {
     loginEmailController.clear();
@@ -191,41 +170,23 @@ class AuthController extends GetxController {
 
     final response = await ApiClient.postData(ApiUrls.login, requestBody);
 
-    print('Response body 187 no line $response');
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-      await PrefsHelper.setString(
-        AppConstants.bearerToken,
-        responseBody['data']?['accessToken'] ?? '',
-      );
-
-      String accessTocken = await PrefsHelper.getString(
-        AppConstants.bearerToken,
-      );
-      // await PrefsHelper.setString(
-      //     AppConstants.role, responseBody['data']?['role'] ?? '');
-      // Get.toNamed(AppRoutes.completeProfileFirstPage);
-
-      if (accessTocken.isNotEmpty) {
-        if (AppConstants.role == 'professional') {
-          Get.offAllNamed(AppRoutes.customBottomNavBar);
-        } else {
-          Get.offAllNamed(AppRoutes.customBottomNavBar);
-        }
+      await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']['accessToken']);
+      if (responseBody['data']['user']['isVerified'] == false) {
+        Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
+      } else if (responseBody['data']['user']['isActive'] == true) {
+        Get.offAllNamed(AppRoutes.customBottomNavBar);
       } else {
-        Get.offAllNamed(AppRoutes.splashScreen);
+        if (responseBody['data']['user']['role'] == 'professional') {
+          Get.toNamed(AppRoutes.completeProfileProfessional);
+        } else {
+          Get.toNamed(AppRoutes.completeProfileParent);
+        }
       }
-
       cleanFieldLogin();
     } else {
-      if ((response.statusCode == 403 || response.statusCode == 400) &&
-          ((responseBody['message']?.toString().toLowerCase() ==
-              "you are not verified".toLowerCase()) ||
-              (responseBody['message']?.toString().toLowerCase() ==
-                  "the same user already exists".toLowerCase()))) {
-        Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
-      }
       showToast(responseBody['message']);
     }
 
@@ -273,7 +234,7 @@ class AuthController extends GetxController {
   bool isLoadingReset = false;
   final TextEditingController resetPasswordController = TextEditingController();
   final TextEditingController newResetPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   void cleanFieldReset() {
     resetPasswordController.clear();
@@ -312,22 +273,10 @@ class AuthController extends GetxController {
   /// <======================= Log out related work are here  ===========================>
 
   void logOut() async {
-    await PrefsHelper.remove('accessToken');
+    await PrefsHelper.remove(AppConstants.bearerToken);
     await PrefsHelper.remove('role');
-    update();
     Get.offAllNamed(AppRoutes.loginScreen);
   }
-
-  /// <======================= Delete user credential ===========================>
-  // Future<void> userData() async {
-  //   String data = await PrefsHelper.getString(AppConstants.bearerToken);
-  //
-  //   final response = ApiClient.getData(ApiUrls.userData, headers: {
-  //     'Authorization': 'Bearer $data'
-  //   });
-  //   print(response);
-  // }
-
 
   /// <======================= dispose all controllers ===========================>
   @override

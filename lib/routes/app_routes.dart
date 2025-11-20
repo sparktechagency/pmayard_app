@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pmayard_app/feature/auth/complete_profile/complete_profile_first_page.dart';
+import 'package:pmayard_app/feature/auth/complete_profile/complete_profile_parent.dart';
+import 'package:pmayard_app/feature/auth/complete_profile/complete_profile_professional.dart';
 import 'package:pmayard_app/feature/auth/complete_profile/edit_schedule_screen.dart';
 import 'package:pmayard_app/feature/auth/complete_profile/schedule_screen.dart';
 import 'package:pmayard_app/feature/auth/forget/forget_screen.dart';
@@ -64,10 +65,11 @@ abstract class AppRoutes {
   static const String galleryScreen = '/galleryScreen';
   static const String personalInfoScreen = '/personalInfoScreen';
   static const String inboxScreen = '/inboxScreen';
-  static const String completeProfileFirstPage = '/completeProfileFirstPage';
+  static const String completeProfileParent = '/completeProfileParent';
   static const String profileViewScreen = '/profileViewScreen';
   static const String scheduleScreen = '/scheduleScreen';
   static const String editScheduleScreen = '/editScheduleScreen';
+  static const String completeProfileProfessional = '/completeProfileProfessional';
 
 
 
@@ -89,7 +91,8 @@ abstract class AppRoutes {
     otpScreen : (context) => OtpScreen(),
     resetPasswordScreen : (context) => ResetPasswordScreen(),
     signUpScreen : (context) => SignUpScreen(),
-    completeProfileFirstPage : (context) => CompleteProfileFirstPage(),
+    completeProfileParent : (context) => CompleteProfileParent(),
+    completeProfileProfessional : (context) => CompleteProfileProfessional(),
     profileViewScreen : (context) => ProfileViewScreen(),
     scheduleScreen : (context) => ScheduleScreen(),
     editScheduleScreen : (context) => EditScheduleScreen(),

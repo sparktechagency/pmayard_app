@@ -74,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
                   // onConfirm: () {
                   //   //Get.offAllNamed(AppRoutes.loginScreen);
                   // },
-                  onConfirm: () => AuthController()..logOut()
+                  onConfirm: () => Get.find<AuthController>().logOut()
                 ),
               );
             },

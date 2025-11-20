@@ -16,64 +16,49 @@ import 'package:pmayard_app/widgets/custom_text.dart';
 
 import '../../custom_assets/assets.gen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  final UserController _userController = Get.find<UserController>();
-
-  @override
-  void initState() {
-    _userController.userData();
-    // _authController.userData();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 0,
       appBar: CustomAppBar(
-        titleWidget: GetBuilder<UserController>(builder: (controller){
-          final userData = _userController.user;
-          return CustomListTile(
-            imageRadius: 24.r,
-            contentPaddingHorizontal: 16.w,
-            titleColor: Colors.white,
-            title: 'Welcome!',
-            titleFontSize: 12.sp,
-            subTitle: userData?.email,
-            subtitleFontSize: 14.sp,
-            statusColor: Colors.white,
-          );
-        }),
+        titleWidget: GetBuilder<UserController>(
+          builder: (controller) {
+            final userData = controller.user;
+            return CustomListTile(
+              imageRadius: 24.r,
+              contentPaddingHorizontal: 16.w,
+              titleColor: Colors.white,
+              title: 'Welcome!',
+              titleFontSize: 12.sp,
+              subTitle: userData?.email,
+              subtitleFontSize: 14.sp,
+              statusColor: Colors.white,
+            );
+          },
+        ),
         actions: [
-
-          IconButton(
-              onPressed: () {
-
-              }, icon: Assets.icons.notification.svg())
+          IconButton(onPressed: () {}, icon: Assets.icons.notification.svg()),
         ],
         toolbarHeight: 90.h,
         backgroundColor: AppColors.secondaryColor,
       ),
-
 
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomText(
-                top: 24.h,
-                bottom: 24.h,
-                left: 16.w,
-                right: 16.w,
-                text: 'Assigned Parent',fontWeight: FontWeight.w600,fontSize: 16.sp),
+              top: 24.h,
+              bottom: 24.h,
+              left: 16.w,
+              right: 16.w,
+              text: 'Assigned Parent',
+              fontWeight: FontWeight.w600,
+              fontSize: 16.sp,
+            ),
 
             SizedBox(
               height: 180.h,
@@ -96,38 +81,50 @@ class _HomeScreenState extends State<HomeScreen> {
                           offset: Offset(0, 4),
                           blurRadius: 4,
                         ),
-
                       ],
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CustomImageAvatar(radius: 26.r),
                           SizedBox(height: 8.h),
-                          CustomText(text: 'Eva',fontWeight: FontWeight.w500,fontSize: 16.sp,),
                           CustomText(
-                              bottom: 8.h,
-                              text: 'Parent',color: AppColors.appGreyColor),
+                            text: 'Eva',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16.sp,
+                          ),
+                          CustomText(
+                            bottom: 8.h,
+                            text: 'Parent',
+                            color: AppColors.appGreyColor,
+                          ),
 
                           Row(
                             children: [
                               Expanded(
-                                  child: CustomButton(
-                                    height: 28.h,
-                                    fontSize: 10.sp,
-                                    backgroundColor: AppColors.primaryColor,
-                                    onPressed: (){
-                                      Get.toNamed(AppRoutes.profileViewScreen);
-                                    },label: 'View Profile',)),
+                                child: CustomButton(
+                                  height: 28.h,
+                                  fontSize: 10.sp,
+                                  backgroundColor: AppColors.primaryColor,
+                                  onPressed: () {
+                                    Get.toNamed(AppRoutes.profileViewScreen);
+                                  },
+                                  label: 'View Profile',
+                                ),
+                              ),
                               SizedBox(width: 4.w),
-                              Expanded(child: CustomButton(
-                                height: 28.h,
-                                fontSize: 10.sp,
-                                backgroundColor: AppColors.primaryColor,
-                                onPressed: (){
-                                  Get.toNamed(AppRoutes.inboxScreen);
-                                },label: 'Message',)),
+                              Expanded(
+                                child: CustomButton(
+                                  height: 28.h,
+                                  fontSize: 10.sp,
+                                  backgroundColor: AppColors.primaryColor,
+                                  onPressed: () {
+                                    Get.toNamed(AppRoutes.inboxScreen);
+                                  },
+                                  label: 'Message',
+                                ),
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     );
@@ -137,13 +134,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             CustomText(
-                top: 24.h,
-                bottom: 10.h,
-                left: 16.w,
-                right: 16.w,
-                text: 'Upcoming Sessions',fontWeight: FontWeight.w600,fontSize: 16.sp),
-
-
+              top: 24.h,
+              bottom: 10.h,
+              left: 16.w,
+              right: 16.w,
+              text: 'Upcoming Sessions',
+              fontWeight: FontWeight.w600,
+              fontSize: 16.sp,
+            ),
 
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
@@ -151,7 +149,10 @@ class _HomeScreenState extends State<HomeScreen> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 6.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 6.h,
+                  ),
                   child: CustomListTile(
                     contentPaddingVertical: 6.h,
                     borderRadius: 8.r,
@@ -161,22 +162,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     subTitle: '08/08/25 at 4:30 PM',
                     titleFontSize: 16.sp,
                     trailing: CustomButton(
-                        radius: 8.r,
-                        height: 25.h,
-                        fontSize: 10.sp,
-                        onPressed: (){
-                          Get.find<CustomBottomNavBarController>().onChange(1);
-                        },label: 'View Detail'),
+                      radius: 8.r,
+                      height: 25.h,
+                      fontSize: 10.sp,
+                      onPressed: () {
+                        Get.find<CustomBottomNavBarController>().onChange(1);
+                      },
+                      label: 'View Detail',
+                    ),
                   ),
                 );
-              },),
+              },
+            ),
 
             SizedBox(height: 44.h),
-
           ],
         ),
       ),
     );
   }
 }
-

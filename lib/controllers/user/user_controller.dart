@@ -7,6 +7,14 @@ class UserController extends GetxController {
   UserDataModel? user;
 
   bool isUserDataComing = false;
+
+
+  @override
+  void onInit() {
+    userData();
+    super.onInit();
+  }
+
   Future<void> userData() async {
     isUserDataComing = true;
     update();

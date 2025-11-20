@@ -22,16 +22,18 @@ class _SplashScreenState extends State<SplashScreen> {
     String accessTocken = await PrefsHelper.getString(AppConstants.bearerToken);
     Future.delayed(const Duration(seconds: 2), () {
       if (accessTocken.isNotEmpty) {
-        if (AppConstants.role == 'professional') {
           Get.offAllNamed(AppRoutes.customBottomNavBar);
-        } else {
-          Get.offAllNamed(AppRoutes.customBottomNavBar);
-        }
       } else {
         Get.offAllNamed(AppRoutes.onboardingScreen);
       }
     });
   }
+
+  // void _goNextScreen() async {
+  //   Future.delayed(const Duration(seconds: 2), () {
+  //       Get.offAllNamed(AppRoutes.completeProfileParent);
+  //   });
+  // }
 
   @override
   void initState() {

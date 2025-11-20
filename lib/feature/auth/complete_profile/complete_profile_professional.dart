@@ -14,17 +14,16 @@ import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/multiple_selection.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
-class CompleteProfileFirstPage extends StatefulWidget {
-  const CompleteProfileFirstPage({super.key});
+class CompleteProfileProfessional extends StatefulWidget {
+  const CompleteProfileProfessional({super.key});
 
   @override
-  State<CompleteProfileFirstPage> createState() => _CompleteProfileFirstPageState();
+  State<CompleteProfileProfessional> createState() => _CompleteProfileProfessionalState();
 }
 
-class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
+class _CompleteProfileProfessionalState extends State<CompleteProfileProfessional> {
 
-  final ProfileConfirmController profileController = Get.find<
-      ProfileConfirmController>();
+  final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
 
 
   final TextEditingController _qualificationController = TextEditingController();
