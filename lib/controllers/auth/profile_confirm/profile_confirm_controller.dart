@@ -3,29 +3,38 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 import '../../../services/api_urls.dart';
 
 class ProfileConfirmController extends GetxController {
-
-
   /// ========================>>> profile confirm for Professional =======================>>>
 
   bool isLoading = false;
   File? profileProfessional;
 
+  void onTapImageProfessionalSelected(BuildContext context) {
+    PhotoPickerHelper.showPicker(
+      context: context,
+      onImagePicked: (image) {
+        profileProfessional = File(image.path);
+        update();
+      },
+    );
+  }
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController qualificationController = TextEditingController();
   final TextEditingController subjectsController = TextEditingController();
   final List<String> subjectList = [];
+
   DateTime? selectedDate;
   final String startTime = "";
   final String endTime = "";
-
 
   Future<void> profileConfirm() async {
     isLoading = true;
@@ -38,14 +47,11 @@ class ProfileConfirmController extends GetxController {
 
     final requestBody = {
       'data': jsonEncode({
-        "name": "Dr. John Doe",
-        "bio": "Experienced professional with expertise in various subjects.",
-        "phoneNumber": "+1234567890",
-        "qualification": "PhD in Mathematics",
-        "subjects": [
-          "Mathematics",
-          "Physics"
-        ],
+        "name": nameController.text.trim(),
+        "bio": bioController.text.trim(),
+        "phoneNumber": numberController.text.trim(),
+        "qualification": qualificationController.text.trim(),
+        "subjects": subjectList,
         "availability": [
           {
             "day": "Monday",
@@ -53,14 +59,14 @@ class ProfileConfirmController extends GetxController {
               {
                 "startTime": "09:00 AM",
                 "endTime": "10:00 AM",
-                "status": "available"
+                "status": "available",
               },
               {
                 "startTime": "11:00 AM",
                 "endTime": "12:00 PM",
-                "status": "booked"
-              }
-            ]
+                "status": "booked",
+              },
+            ],
           },
           {
             "day": "Tuesday",
@@ -68,21 +74,21 @@ class ProfileConfirmController extends GetxController {
               {
                 "startTime": "01:00 PM",
                 "endTime": "02:00 PM",
-                "status": "available"
+                "status": "available",
               },
               {
                 "startTime": "03:00 PM",
                 "endTime": "04:00 PM",
-                "status": "disabled"
-              }
-            ]
-          }
-        ]
+                "status": "disabled",
+              },
+            ],
+          },
+        ],
       }),
     };
 
     final response = await ApiClient.postMultipartData(
-      ApiUrls.register,
+      ApiUrls.professionalCreate,
       multipartBody: multipartBody,
       requestBody,
     );
@@ -90,6 +96,9 @@ class ProfileConfirmController extends GetxController {
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
+      UserController().userData();
+      CustomBottomNavBarController().selectedIndex.value = 0;
+      update();
       Get.offAllNamed(AppRoutes.customBottomNavBar);
     } else {
       showToast(responseBody['message']);
@@ -98,11 +107,9 @@ class ProfileConfirmController extends GetxController {
     update();
   }
 
-
-
   /// ========================>>> profile confirm for Parent =======================>>>
 
-bool isLoadingParent = false;
+  bool isLoadingParent = false;
 
   final TextEditingController nameParentController = TextEditingController();
   final TextEditingController numberParentController = TextEditingController();
@@ -110,20 +117,21 @@ bool isLoadingParent = false;
   final TextEditingController childGradeController = TextEditingController();
   final TextEditingController relationshipController = TextEditingController();
 
-
   File? profileParent;
 
- void onTapImageParentSelected (BuildContext context){
-  PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
-    profileParent = File(image.path);
-    update();
-  });
-}
+  void onTapImageParentSelected(BuildContext context) {
+    PhotoPickerHelper.showPicker(
+      context: context,
+      onImagePicked: (image) {
+        profileParent = File(image.path);
+        update();
+      },
+    );
+  }
 
   Future<void> profileConfirmParent() async {
     isLoadingParent = true;
     update();
-
 
     List<MultipartBody>? multipartBody;
     if (profileParent != null) {
@@ -140,11 +148,10 @@ bool isLoadingParent = false;
       }),
     };
 
-
     final response = await ApiClient.postMultipartData(
       ApiUrls.parentCreate,
       requestBody,
-      multipartBody: multipartBody
+      multipartBody: multipartBody,
     );
     final responseBody = response.body;
 
@@ -156,6 +163,4 @@ bool isLoadingParent = false;
     isLoadingParent = false;
     update();
   }
-
-
 }

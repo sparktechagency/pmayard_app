@@ -204,19 +204,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
 
 
-
-          CustomButton(
-            onPressed: () {
-              if(allSlotsSelected){
-                debugPrint("Weekly Schedule:");
-                selectedSlots.forEach((date, slot) {
-                  debugPrint("${DateFormat.E().format(date)}: $slot");
-                });
-                Get.offAllNamed(AppRoutes.customBottomNavBar);
-              }
+          GetBuilder<ProfileConfirmController>(
+            builder: (controller) {
+              return controller.isLoadingParent ? CustomLoader() :  CustomButton(
+                onPressed: controller.profileConfirm,
+                label: "Confirm",
+              );
             },
-            label: "Confirm",
           ),
+
+          // GetBuilder<ProfileConfirmController>(
+          //   builder: (controller) {
+          //     return controller.isLoadingParent ? CustomLoader() :  CustomButton(
+          //       onPressed: () {
+          //         if(allSlotsSelected){
+          //           debugPrint("Weekly Schedule:");
+          //           selectedSlots.forEach((date, slot) {
+          //             debugPrint("${DateFormat.E().format(date)}: $slot");
+          //           });
+          //           Get.offAllNamed(AppRoutes.customBottomNavBar);
+          //         }
+          //       },
+          //       label: "Confirm",
+          //     );
+          //   },
+          // ),
+
         ],
       ),
     );

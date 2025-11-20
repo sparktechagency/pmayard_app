@@ -24,9 +24,6 @@ class CompleteProfileProfessional extends StatefulWidget {
 class _CompleteProfileProfessionalState extends State<CompleteProfileProfessional> {
 
   final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
-
-
-  final TextEditingController _qualificationController = TextEditingController();
   final List<String> subjectList = [];
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -48,30 +45,27 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
         child: Column(
           children: [
             SizedBox(height: 10.h),
-            Stack(
-              children: [
-                CustomImageAvatar(
-                  fileImage: _image,
-                  radius: 60.r,
-                  image: '',
-                ),
+            GetBuilder<ProfileConfirmController>(
+                builder: (controller){
+                  return Stack(
+                    children: [
+                      CustomImageAvatar(
+                        fileImage: controller.profileProfessional,
+                        radius: 60.r,
+                        image: '',
+                      ),
 
-                Positioned(
-                  bottom: 12.h,
-                  right: 6.w,
-                  child: GestureDetector(
-                    onTap: (){
-                      PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
-                        _image = File(image.path);
-                        setState(() {
-                        });
+                      Positioned(
+                        bottom: 12.h,
+                        right: 6.w,
+                        child: GestureDetector(
+                            onTap: () => controller.onTapImageProfessionalSelected(context),
+                            child: Assets.icons.profileCamera.svg()),
+                      )
 
-                      });
-                    },
-                      child: Assets.icons.profileCamera.svg()),
-                )
-
-              ],
+                    ],
+                  );
+                },
             ),
             CustomText(text: 'Upload Photo',color: AppColors.secondaryColor,fontSize: 12.sp,top: 4.h,),
             Form(
