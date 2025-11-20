@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,9 +7,11 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/widgets/multiple_selection.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class CompleteProfileFirstPage extends StatefulWidget {
@@ -20,19 +23,19 @@ class CompleteProfileFirstPage extends StatefulWidget {
 
 class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
 
+  final ProfileConfirmController profileController = Get.find<
+      ProfileConfirmController>();
 
-  final TextEditingController _numberController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _bioController = TextEditingController();
+
   final TextEditingController _qualificationController = TextEditingController();
-  final TextEditingController _subjectsController = TextEditingController();
-
+  final List<String> subjectList = [];
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
   PhoneNumber number = PhoneNumber(isoCode: 'US');
 
 
   File? _image;
+  String selected = MenuShowHelper.subjects.first;
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +79,14 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
               key: _globalKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 32.h,
                   ),
                   CustomTextField(
                     labelText: 'Name',
-                    controller: _nameController,
+                    controller: profileController.nameController,
                     hintText: "Enter Name",
                   ),
                   Align(
@@ -111,7 +115,7 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
                       trailingSpace: false,
                     ),
                     cursorColor: Colors.black,
-                    textFieldController: _numberController,
+                    textFieldController: profileController.numberController,
                     initialValue: number,
                     formatInput: true,
                     inputDecoration: InputDecoration(
@@ -132,43 +136,100 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
                     spaceBetweenSelectorAndTextField: 0,
                   ),
 
-
-
                   CustomTextField(
                     labelText: 'Bio',
-                    controller: _bioController,
+                    controller: profileController.bioController,
                     hintText: "Enter Bio",
                   ),
                   CustomTextField(
                     labelText: 'Qualification',
-                    controller: _qualificationController,
+                    controller: profileController.qualificationController,
                     hintText: "Enter qualification",
                   ),
+                  Text(
+                    'Subjects You Teach',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14.sp,
+                    ),),
+                  SizedBox(height: 8.h,),
+                  // CustomTextField(
+                  //   hintText: 'Select Subjects',
+                  //   labelText: 'Subjects you Teach',
+                  //   controller: _qualificationController,
+                  //   readOnly: true,
+                  //
+                  // ),
                   GestureDetector(
-                    onTapDown: (TapDownDetails details) async {
-                      final selected = await MenuShowHelper.showCustomMenu(
-                        context: context,
-                        details: details,
-                        options: MenuShowHelper.subjects,
-                      );
-                      if (selected != null) {
-                        setState(() {
-                          _subjectsController.text = selected;
-                        });
-                      }
-                    },
-                    child: AbsorbPointer(
-                      child: CustomTextField(
-                        suffixIcon: Icon(Icons.keyboard_arrow_down),
-                        readOnly: true,
-                        labelText: 'Subjects You Teach',
-                        controller: _subjectsController,
-                        hintText: "Subjects You Teach",
+                    onTap: _showMultiSelectionSubject,
+                    child: Container(
+                      width: double.maxFinite,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20
                       ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.grey.withOpacity(0.3)
+                          ),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      child: Text('Select Subjects',style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey.withOpacity(0.9)
+                      ),),
                     ),
                   ),
+                  // Select Subjects
 
-                  SizedBox(height: 60.h,),
+                  // DropdownButton(
+                  //   onChanged: (value){
+                  //       selected == value;
+                  //       onTapSubjectAdded(value!);
+                  //   },
+                  //     value: selected,
+                  //     items: MenuShowHelper.subjects.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList()
+                  // ),
+
+
+                  // GestureDetector(
+                  //   onTapDown: (TapDownDetails details) async {
+                  //     final selected = await MenuShowHelper.showCustomMenu(
+                  //       context: context,
+                  //       details: details,
+                  //       options: MenuShowHelper.subjects,
+                  //     );
+                  //     if (selected != null) {
+                  //       setState(() {
+                  //         _subjectsController.text = selected;
+                  //       });
+                  //     }
+                  //   },
+                  //   child: AbsorbPointer(
+                  //     child: CustomTextField(
+                  //       suffixIcon: Icon(Icons.keyboard_arrow_down),
+                  //       readOnly: true,
+                  //       labelText: 'Subjects You Teach',
+                  //       controller: _subjectsController,
+                  //       hintText: "Subjects You Teach",
+                  //     ),
+                  //   ),
+                  // ),
+                  //
+
+                  // SizedBox(
+                  //   height: 100, // must add height
+                  //   child: ListView.builder(
+                  //       itemCount: AppSubjectList.allSubjects.length,
+                  //       itemBuilder: (context, index) {
+                  //         return GestureDetector(
+                  //           child: Text(AppSubjectList.allSubjects[index]),
+                  //           onTap: ( ) => onTapSubjectAdded(AppSubjectList.allSubjects[index]),
+                  //         );
+                  //       }
+                  //   ),
+                  // ),
+                  SizedBox(height: 20.h,),
                   CustomButton(
                     label: "Next",
                     onPressed: (){
@@ -186,5 +247,28 @@ class _CompleteProfileFirstPageState extends State<CompleteProfileFirstPage> {
         ),
       ),
     );
+  }
+
+  // subject added list
+  void onTapSubjectAdded(String subName) {
+    profileController.subjectList.add(subName);
+  }
+
+  void _showMultiSelectionSubject() async {
+    final List<String> subjectsList = MenuShowHelper.subjects;
+    List<String>selectedSubject = [];
+
+    final List<String>? results = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MultipleSelection(
+          items: subjectsList, selectedSubject: selectedSubject,);
+      },
+    );
+
+    if (results != null) {
+      selectedSubject = results;
+    }
+    print(selectedSubject);
   }
 }

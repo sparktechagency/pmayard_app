@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/internet/connectivity.dart';
-import 'package:pmayard_app/services/internet/no_internet_wrapper.dart';
 import 'app/dependancy_injaction.dart';
 import 'app/helpers/device_utils.dart';
 import 'app/theme/app_theme.dart';
@@ -36,7 +35,7 @@ class PmayardApp extends StatelessWidget {
         themeMode: ThemeMode.light,
         initialBinding: DependencyInjection(),
         routes: AppRoutes.routes,
-        builder: (context, child) => Scaffold(body: NoInternetWrapper(child: child!)),
+        // builder: (context, child) => Scaffold(body: NoInternetWrapper(child: child!)),
       ),
     );
   }

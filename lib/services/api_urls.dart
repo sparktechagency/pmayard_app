@@ -10,6 +10,7 @@ class ApiUrls {
   //static const String socketUrl = "http://217.15.170.117";
   static const String socketUrl = "https://mihad4000.merinasib.shop";
 
+  static const String userData = '/users/me';
   static const String register = '/users/register';
   static const String verifyOtp = '/auth/verify-otp';
   static const String uploadPhoto = '/gallery/upload';
@@ -20,6 +21,7 @@ class ApiUrls {
   static  const String  profiles = '/profiles';
   static  const String  interest = '/profiles/interest-values';
   static  const String  location = '/profiles/location';
+  static   String  resendVerifyOtp(String userEmail) => 'auth/resend-otp/$userEmail';
   static   String  swipeProfile(limit,page,goal,age,minimumDistance) => '/profiles/v2?limit=$limit&page=$page&goal=$goal&age=$age&minimumDistance=$minimumDistance';
   static   String  matchCreate(String userId) => '/match?userID=$userId';
   static   String  profileDetails(String userId) => '/profiles/$userId';
@@ -57,11 +59,5 @@ class ApiUrls {
   static   String  postDeleted(String id) => '/timeline/post/$id';
   static   String  postEdit(String id) => '/timeline/post/$id';
   static   String  postSearch(String term,int page,int limit) => '/users/find?page=$page&limit=$limit&term=$term';
-
-
-
-
-
-
 
 }

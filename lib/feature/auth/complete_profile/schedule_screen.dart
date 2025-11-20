@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
@@ -15,6 +16,9 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
+
+  final profileController = Get.find<ProfileConfirmController>();
+
   DateTime selectedDate = DateTime.now();
   Map<DateTime, String> selectedSlots = {};
   Map<DateTime, List<String>> weekTimeSlots = {};
@@ -96,6 +100,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 onTap: () {
                   setState(() {
                     selectedDate = date;
+                    profileController.selectedDate = date;
                   });
                 },
                 child: Column(
@@ -207,10 +212,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 selectedSlots.forEach((date, slot) {
                   debugPrint("${DateFormat.E().format(date)}: $slot");
                 });
-
                 Get.offAllNamed(AppRoutes.customBottomNavBar);
               }
-
             },
             label: "Confirm",
           ),

@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
   final AuthController _authController = Get.find<AuthController>();
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
