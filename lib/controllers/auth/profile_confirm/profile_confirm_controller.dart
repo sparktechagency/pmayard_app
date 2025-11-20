@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
-import 'package:pmayard_app/app/helpers/prefs_helper.dart';
-import 'package:pmayard_app/app/utils/app_constants.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
