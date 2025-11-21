@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
-import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
@@ -26,15 +24,9 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
   final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
 
 
-  final TextEditingController _qualificationController = TextEditingController();
-  final List<String> subjectList = [];
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
   PhoneNumber number = PhoneNumber(isoCode: 'US');
-
-
-  File? _image;
-  String selected = MenuShowHelper.subjects.first;
 
   @override
   Widget build(BuildContext context) {
@@ -48,30 +40,26 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
         child: Column(
           children: [
             SizedBox(height: 10.h),
-            Stack(
-              children: [
-                CustomImageAvatar(
-                  fileImage: _image,
-                  radius: 60.r,
-                  image: '',
-                ),
+            GetBuilder<ProfileConfirmController>(
+              builder: (controller) {
+                return Stack(
+                  children: [
+                    CustomImageAvatar(
+                      fileImage: controller.profileProfessional,
+                      radius: 60.r,
+                    ),
 
-                Positioned(
-                  bottom: 12.h,
-                  right: 6.w,
-                  child: GestureDetector(
-                    onTap: (){
-                      PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
-                        _image = File(image.path);
-                        setState(() {
-                        });
+                    Positioned(
+                      bottom: 12.h,
+                      right: 6.w,
+                      child: GestureDetector(
+                        onTap: () => controller.onTapProfileProfessionalSelected(context),
+                          child: Assets.icons.profileCamera.svg()),
+                    )
 
-                      });
-                    },
-                      child: Assets.icons.profileCamera.svg()),
-                )
-
-              ],
+                  ],
+                );
+              }
             ),
             CustomText(text: 'Upload Photo',color: AppColors.secondaryColor,fontSize: 12.sp,top: 4.h,),
             Form(
@@ -134,6 +122,7 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     selectorButtonOnErrorPadding: 0,
                     spaceBetweenSelectorAndTextField: 0,
                   ),
+                  SizedBox(height: 8.h),
 
                   CustomTextField(
                     labelText: 'Bio',
@@ -145,89 +134,38 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     controller: profileController.qualificationController,
                     hintText: "Enter qualification",
                   ),
-                  Text(
-                    'Subjects You Teach',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.sp,
-                    ),),
+
                   SizedBox(height: 8.h,),
-                  // CustomTextField(
-                  //   hintText: 'Select Subjects',
-                  //   labelText: 'Subjects you Teach',
-                  //   controller: _qualificationController,
-                  //   readOnly: true,
-                  //
-                  // ),
+
                   GestureDetector(
-                    onTap: _showMultiSelectionSubject,
-                    child: Container(
-                      width: double.maxFinite,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 20
+                    onTapDown: (TapDownDetails details) async {
+                      final currentSubjects = profileController.subjectsController.text
+                          .split(", ")
+                          .where((s) => s.isNotEmpty)
+                          .toList();
+
+                      final selectedList = await MenuShowHelper.showMultiSelectMenu(
+                        context: context,
+                        details: details,
+                        options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
+                      );
+
+                      if (selectedList != null && selectedList.isNotEmpty) {
+                        profileController.subjectsController.text = selectedList.join(", ");
+                      }
+                    },
+                    child: AbsorbPointer(
+                      child: CustomTextField(
+                        suffixIcon: Icon(Icons.keyboard_arrow_down),
+                        readOnly: true,
+                        labelText: 'Subjects You Teach',
+                        controller: profileController.subjectsController,
+                        hintText: "Subjects You Teach",
                       ),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Colors.grey.withOpacity(0.3)
-                          ),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: Text('Select Subjects',style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey.withOpacity(0.9)
-                      ),),
                     ),
                   ),
-                  // Select Subjects
 
-                  // DropdownButton(
-                  //   onChanged: (value){
-                  //       selected == value;
-                  //       onTapSubjectAdded(value!);
-                  //   },
-                  //     value: selected,
-                  //     items: MenuShowHelper.subjects.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList()
-                  // ),
-
-
-                  // GestureDetector(
-                  //   onTapDown: (TapDownDetails details) async {
-                  //     final selected = await MenuShowHelper.showCustomMenu(
-                  //       context: context,
-                  //       details: details,
-                  //       options: MenuShowHelper.subjects,
-                  //     );
-                  //     if (selected != null) {
-                  //       setState(() {
-                  //         _subjectsController.text = selected;
-                  //       });
-                  //     }
-                  //   },
-                  //   child: AbsorbPointer(
-                  //     child: CustomTextField(
-                  //       suffixIcon: Icon(Icons.keyboard_arrow_down),
-                  //       readOnly: true,
-                  //       labelText: 'Subjects You Teach',
-                  //       controller: _subjectsController,
-                  //       hintText: "Subjects You Teach",
-                  //     ),
-                  //   ),
-                  // ),
-                  //
-
-                  // SizedBox(
-                  //   height: 100, // must add height
-                  //   child: ListView.builder(
-                  //       itemCount: AppSubjectList.allSubjects.length,
-                  //       itemBuilder: (context, index) {
-                  //         return GestureDetector(
-                  //           child: Text(AppSubjectList.allSubjects[index]),
-                  //           onTap: ( ) => onTapSubjectAdded(AppSubjectList.allSubjects[index]),
-                  //         );
-                  //       }
-                  //   ),
-                  // ),
                   SizedBox(height: 20.h,),
                   CustomButton(
                     label: "Next",

@@ -27,6 +27,14 @@ class ProfileConfirmController extends GetxController {
   final String endTime = "";
 
 
+  void onTapProfileProfessionalSelected (BuildContext context){
+    PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
+      profileProfessional = File(image.path);
+      update();
+    });
+  }
+
+
   Future<void> profileConfirm() async {
     isLoading = true;
     update();
