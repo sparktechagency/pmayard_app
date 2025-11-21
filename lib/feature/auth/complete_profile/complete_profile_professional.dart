@@ -186,26 +186,4 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
     );
   }
 
-  // subject added list
-  void onTapSubjectAdded(String subName) {
-    profileController.subjectList.add(subName);
-  }
-
-  void _showMultiSelectionSubject() async {
-    final List<String> subjectsList = MenuShowHelper.subjects;
-    List<String>selectedSubject = [];
-
-    final List<String>? results = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MultipleSelection(
-          items: subjectsList, selectedSubject: selectedSubject,);
-      },
-    );
-
-    if (results != null) {
-      selectedSubject = results;
-    }
-    print(selectedSubject);
-  }
 }
