@@ -151,8 +151,12 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                         preSelectedItems: currentSubjects,
                       );
 
-                      if (selectedList != null && selectedList.isNotEmpty) {
+                      if (selectedList != null) {
                         profileController.subjectsController.text = selectedList.join(", ");
+
+                        profileController.subjectList
+                          ..clear()
+                          ..addAll(selectedList);
                       }
                     },
                     child: AbsorbPointer(

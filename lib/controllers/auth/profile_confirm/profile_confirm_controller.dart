@@ -22,10 +22,8 @@ class ProfileConfirmController extends GetxController {
   final TextEditingController qualificationController = TextEditingController();
   final TextEditingController subjectsController = TextEditingController();
   final List<String> subjectList = [];
+  List<Map<String, dynamic>> availability = [];
   DateTime? selectedDate;
-  final String startTime = "";
-  final String endTime = "";
-
 
   void onTapProfileProfessionalSelected (BuildContext context){
     PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
@@ -46,46 +44,12 @@ class ProfileConfirmController extends GetxController {
 
     final requestBody = {
       'data': jsonEncode({
-        "name": "Dr. John Doe",
-        "bio": "Experienced professional with expertise in various subjects.",
-        "phoneNumber": "+1234567890",
-        "qualification": "PhD in Mathematics",
-        "subjects": [
-          "Mathematics",
-          "Physics"
-        ],
-        "availability": [
-          {
-            "day": "Monday",
-            "timeSlots": [
-              {
-                "startTime": "09:00 AM",
-                "endTime": "10:00 AM",
-                "status": "available"
-              },
-              {
-                "startTime": "11:00 AM",
-                "endTime": "12:00 PM",
-                "status": "booked"
-              }
-            ]
-          },
-          {
-            "day": "Tuesday",
-            "timeSlots": [
-              {
-                "startTime": "01:00 PM",
-                "endTime": "02:00 PM",
-                "status": "available"
-              },
-              {
-                "startTime": "03:00 PM",
-                "endTime": "04:00 PM",
-                "status": "disabled"
-              }
-            ]
-          }
-        ]
+        "name": nameController.text.trim(),
+        "bio": bioController.text.trim(),
+        "phoneNumber": numberController.text.trim(),
+        "qualification": qualificationController.text.trim(),
+        "subjects": subjectList.toList(),
+        "availability": availability,
       }),
     };
 
@@ -102,10 +66,10 @@ class ProfileConfirmController extends GetxController {
     } else {
       showToast(responseBody['message']);
     }
+
     isLoading = false;
     update();
   }
-
 
 
   /// ========================>>> profile confirm for Parent =======================>>>

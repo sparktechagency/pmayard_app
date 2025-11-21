@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -16,13 +18,13 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-
   final profileController = Get.find<ProfileConfirmController>();
 
   DateTime selectedDate = DateTime.now();
-  Map<DateTime, String> selectedSlots = {};
-  Map<DateTime, List<String>> weekTimeSlots = {};
 
+  // Changed to store multiple slots per date
+  Map<DateTime, List<String>> selectedSlots = {};
+  Map<DateTime, List<String>> weekTimeSlots = {};
 
   List<DateTime> getWeekDates(DateTime date) {
     int currentWeekDay = date.weekday;
@@ -52,7 +54,65 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     return weekTimeSlots[selectedDate] ?? [];
   }
 
-  bool get allSlotsSelected => selectedSlots.length == 7;
+  // Check if at least one slot is selected for all 7 days
+  bool get allDaysHaveSlots {
+    final weekDays = getWeekDates(selectedDate);
+    for (var day in weekDays) {
+      if (!selectedSlots.containsKey(day) || selectedSlots[day]!.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Convert time format from "10:00 - 10:30" to "10:00 AM" and "10:30 AM"
+  Map<String, String> parseTimeSlot(String slot) {
+    final parts = slot.split(' - ');
+    final startTime = parts[0].trim();
+    final endTime = parts[1].trim();
+
+    return {
+      'startTime': convertTo12Hour(startTime),
+      'endTime': convertTo12Hour(endTime),
+    };
+  }
+
+  String convertTo12Hour(String time24) {
+    final parts = time24.split(':');
+    int hour = int.parse(parts[0]);
+    final minute = parts[1];
+
+    final period = hour >= 12 ? 'PM' : 'AM';
+    if (hour > 12) hour -= 12;
+    if (hour == 0) hour = 12;
+
+    return '$hour:$minute $period';
+  }
+
+  // Format data for backend
+  List<Map<String, dynamic>> formatAvailabilityForBackend() {
+    List<Map<String, dynamic>> availability = [];
+
+    selectedSlots.forEach((date, slots) {
+      List<Map<String, dynamic>> timeSlots = [];
+
+      for (var slot in slots) {
+        final parsedTime = parseTimeSlot(slot);
+        timeSlots.add({
+          "startTime": parsedTime['startTime'],
+          "endTime": parsedTime['endTime'],
+          "status": "available"
+        });
+      }
+
+      availability.add({
+        "day": DateFormat.EEEE().format(date), // Full day name (Monday, Tuesday, etc.)
+        "timeSlots": timeSlots
+      });
+    });
+
+    return availability;
+  }
 
   @override
   void initState() {
@@ -88,13 +148,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: weekDays.map((date) {
-              bool isSelected =
-                  date.day == selectedDate.day &&
-                      date.month == selectedDate.month &&
-                      date.year == selectedDate.year;
+              bool isSelected = date.day == selectedDate.day &&
+                  date.month == selectedDate.month &&
+                  date.year == selectedDate.year;
 
-              // show dot if slot already selected for that day
-              bool hasSlotSelected = selectedSlots.containsKey(date);
+              // Show dot if any slot selected for that day
+              bool hasSlotSelected = selectedSlots.containsKey(date) &&
+                  selectedSlots[date]!.isNotEmpty;
 
               return GestureDetector(
                 onTap: () {
@@ -120,7 +180,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         children: [
                           CustomText(
                             text: "${date.day}",
-                            color: isSelected ? Colors.white : AppColors.appGreyColor,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.appGreyColor,
                           ),
                           Positioned(
                             bottom: 2.h,
@@ -128,8 +190,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                 ? CustomContainer(
                               height: 5.h,
                               width: 5.w,
-                                color: AppColors.secondaryColor,
-                                shape: BoxShape.circle,
+                              color: AppColors.secondaryColor,
+                              shape: BoxShape.circle,
                             )
                                 : SizedBox.shrink(),
                           )
@@ -150,7 +212,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             bottom: 10.h,
           ),
 
-
+          // Show selected slots count for current day
+          if (selectedSlots.containsKey(selectedDate) &&
+              selectedSlots[selectedDate]!.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(bottom: 8.h),
+              child: CustomText(
+                text: "${selectedSlots[selectedDate]!.length} slot(s) selected",
+                fontSize: 12.sp,
+                color: AppColors.primaryColor,
+              ),
+            ),
 
           Expanded(
             child: GridView.builder(
@@ -163,12 +235,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
               itemBuilder: (context, index) {
                 final slot = getSelectedDaySlots()[index];
-                bool isSlotSelected = selectedSlots[selectedDate] == slot;
+
+                // Check if this slot is selected for current date
+                bool isSlotSelected = selectedSlots.containsKey(selectedDate) &&
+                    selectedSlots[selectedDate]!.contains(slot);
 
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedSlots[selectedDate] = slot;
+                      if (!selectedSlots.containsKey(selectedDate)) {
+                        selectedSlots[selectedDate] = [];
+                      }
+
+                      if (isSlotSelected) {
+                        // Remove slot if already selected
+                        selectedSlots[selectedDate]!.remove(slot);
+                        if (selectedSlots[selectedDate]!.isEmpty) {
+                          selectedSlots.remove(selectedDate);
+                        }
+                      } else {
+                        // Add slot to selected list
+                        selectedSlots[selectedDate]!.add(slot);
+                      }
                     });
                   },
                   child: AnimatedContainer(
@@ -203,19 +291,24 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
           ),
 
+          GetBuilder<ProfileConfirmController>(
+            builder: (controller) {
+              return controller.isLoading ? CustomLoader() : CustomButton(
+                onPressed: () {
+                  if (allDaysHaveSlots) {
+                    debugPrint("Weekly Schedule:");
+                    final availability = formatAvailabilityForBackend();
+                    debugPrint(jsonEncode(availability));
 
-
-          CustomButton(
-            onPressed: () {
-              if(allSlotsSelected){
-                debugPrint("Weekly Schedule:");
-                selectedSlots.forEach((date, slot) {
-                  debugPrint("${DateFormat.E().format(date)}: $slot");
-                });
-                Get.offAllNamed(AppRoutes.customBottomNavBar);
-              }
-            },
-            label: "Confirm",
+                    controller.availability = availability;
+                    controller.profileConfirm();
+                  } else {
+                    showToast("Please select at least one slot for all days");
+                  }
+                },
+                label: "Confirm",
+              );
+            }
           ),
         ],
       ),
