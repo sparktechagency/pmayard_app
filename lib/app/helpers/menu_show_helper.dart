@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/widgets/custom_button.dart';
+import 'package:pmayard_app/widgets/custom_text.dart';
 
 class MenuShowHelper {
   static final List<String> heightOptions = List.generate(100, (index) {
@@ -12,7 +16,7 @@ class MenuShowHelper {
 
   static final List<String> genderOptions = ["Male", "Female"];
   static final List<String> subjects = [
-    "Primary School Subjects",
+    // Primary School
     "Bangla",
     "English",
     "Mathematics",
@@ -22,37 +26,48 @@ class MenuShowHelper {
     "ICT",
     "Physical Education & Health",
     "Arts & Crafts",
-    "High School Subjects",
+
+    // Secondary/SSC
     "Bangla 1st Paper",
     "Bangla 2nd Paper",
     "English 1st Paper",
     "English 2nd Paper",
-    "Higher Math",
-    "Agriculture Studies",
-    "Home Science",
-    "Music",
-    "SSC Science",
-    "Religion",
+    "General Mathematics",
+    "Higher Mathematics",
     "Physics",
     "Chemistry",
     "Biology",
-    "SSC Commerce",
+    "General Science",
+    "ICT",
+    "Religion",
+    "Agriculture Studies",
+    "Home Science",
     "Accounting",
     "Finance & Banking",
     "Business Entrepreneurship",
-    "SSC Arts",
-    "General Science",
     "Geography & Environment",
     "History of Bangladesh & World Civilization",
     "Civics & Citizenship",
     "Economics",
     "Home Economics",
-    "HSC Science",
+
+    // HSC Science
+    "Physics (HSC)",
+    "Chemistry (HSC)",
+    "Biology (HSC)",
+    "Higher Mathematics (HSC)",
     "Statistics",
-    "HSC Commerce",
+    "ICT (HSC)",
+
+    // HSC Commerce
+    "Accounting (HSC)",
+    "Finance & Banking (HSC)",
     "Business Organization & Management",
     "Production Management & Marketing",
-    "HSC Arts",
+
+    // HSC Arts
+    "Bangla (HSC)",
+    "English (HSC)",
     "Civics & Good Governance",
     "Social Work",
     "Geography",
@@ -60,8 +75,8 @@ class MenuShowHelper {
     "History",
     "Islamic Studies",
     "Psychology",
-  ];
-  /// Shows a popup menu at the tap position from TapDownDetails.
+    "Economics (HSC)",
+  ];  /// Shows a popup menu at the tap position from TapDownDetails.
   /// Returns the selected value or null if none selected.
   static Future<String?> showCustomMenu({
     required BuildContext context,
@@ -102,4 +117,125 @@ class MenuShowHelper {
       }).toList(),
     );
   }
+
+  static Future<List<String>?> showMultiSelectMenu({
+    required BuildContext context,
+    required TapDownDetails details,
+    required List<String> options,
+    List<String>? preSelectedItems,
+  }) async {
+    List<String> selectedItems = preSelectedItems ?? [];
+
+    return await showModalBottomSheet<List<String>>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return SafeArea(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+                ),
+                child: Column(
+                  children: [
+                    /// Drag Handle
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.h),
+                      width: 36.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+              
+                    /// Header
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: CustomText(
+                        text: "Select Subjects",
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
+                      ),
+                    ),
+              
+                    SizedBox(height: 12.h),
+                    Divider(height: 1.h, color: Colors.grey[200]),
+              
+                    /// List
+                    Expanded(
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: options.length,
+                        itemBuilder: (_, index) {
+                          final item = options[index];
+                          final isSelected = selectedItems.contains(item);
+              
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  selectedItems.remove(item);
+                                } else {
+                                  selectedItems.add(item);
+                                }
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 12.h,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isSelected
+                                        ? Icons.check_circle
+                                        : Icons.radio_button_unchecked,
+                                    size: 20.sp,
+                                    color: isSelected
+                                        ? AppColors.primaryColor
+                                        : Colors.grey[400],
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: CustomText(
+                                      text: item,
+                                      textAlign: TextAlign.start,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+              
+                    /// Bottom Button
+                    Padding(
+                      padding:  EdgeInsets.all(16.r),
+                      child: CustomButton(
+                        onPressed: () {
+                          Navigator.pop(context, selectedItems);
+                        },
+                        label: selectedItems.isEmpty
+                            ? "Done"
+                            : "Done (${selectedItems.length})",
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
 }
