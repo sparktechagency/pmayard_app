@@ -6,7 +6,6 @@ import 'package:pmayard_app/routes/app_routes.dart';
 
 import '../../../custom_assets/assets.gen.dart';
 import '../../../widgets/widgets.dart';
-import '../widgets/profile_list_tile.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -16,12 +15,11 @@ class SettingScreen extends StatelessWidget {
     return CustomScaffold(
       appBar: CustomAppBar(
         title: 'Settings',
-          borderColor: AppColors.secondaryColor),
+        borderColor: AppColors.secondaryColor,
+      ),
       body: Column(
         children: [
           SizedBox(height: 32.h),
-
-
 
           _buildSettingTile(
             icon: Assets.icons.password.svg(),
@@ -31,8 +29,6 @@ class SettingScreen extends StatelessWidget {
             },
           ),
 
-
-
           _buildSettingTile(
             icon: Assets.icons.terms.svg(),
             label: 'Terms & Condition',
@@ -40,8 +36,6 @@ class SettingScreen extends StatelessWidget {
               Get.toNamed(AppRoutes.termsScreen);
             },
           ),
-
-
 
           _buildSettingTile(
             icon: Assets.icons.policy.svg(),
@@ -51,8 +45,6 @@ class SettingScreen extends StatelessWidget {
             },
           ),
 
-
-
           _buildSettingTile(
             icon: Assets.icons.about.svg(),
             label: 'About Us',
@@ -60,8 +52,6 @@ class SettingScreen extends StatelessWidget {
               Get.toNamed(AppRoutes.aboutScreen);
             },
           ),
-
-
 
           _buildSettingTile(
             icon: Assets.icons.delete.svg(),
@@ -77,7 +67,6 @@ class SettingScreen extends StatelessWidget {
                     Get.back();
                   },
                   onConfirm: () {
-
                     //Get.offAllNamed(AppRoutes.signUpScreen);
                   },
                 ),

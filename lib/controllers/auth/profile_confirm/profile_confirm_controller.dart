@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
-import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
@@ -96,10 +95,11 @@ class ProfileConfirmController extends GetxController {
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-      UserController().userData();
+      final response = await ApiClient.getData(ApiUrls.userData);
+      print('100 no line $response.body');
       CustomBottomNavBarController().selectedIndex.value = 0;
-      update();
       Get.offAllNamed(AppRoutes.customBottomNavBar);
+      update();
     } else {
       showToast(responseBody['message']);
     }

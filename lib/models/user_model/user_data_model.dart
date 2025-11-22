@@ -1,20 +1,20 @@
 class UserDataModel {
-  String? sId;
-  Null? roleId;
+  String? id;
+  RoleIdModel? roleId;
   String? email;
   String? role;
   bool? isActive;
-  Null? otp;
-  Null? expiresAt;
+  String? otp;
+  String? expiresAt;
   bool? isVerified;
   bool? isDeleted;
   String? passwordChangedAt;
   String? createdAt;
   String? updatedAt;
-  int? iV;
+  int? v;
 
   UserDataModel({
-    this.sId,
+    this.id,
     this.roleId,
     this.email,
     this.role,
@@ -26,12 +26,14 @@ class UserDataModel {
     this.passwordChangedAt,
     this.createdAt,
     this.updatedAt,
-    this.iV,
+    this.v,
   });
 
   UserDataModel.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    roleId = json['roleId'];
+    id = json['_id'];
+    roleId = json['roleId'] != null
+        ? RoleIdModel.fromJson(json['roleId'])
+        : null;
     email = json['email'];
     role = json['role'];
     isActive = json['isActive'];
@@ -42,24 +44,98 @@ class UserDataModel {
     passwordChangedAt = json['passwordChangedAt'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    iV = json['__v'];
+    v = json['__v'];
   }
+}
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
-    data['roleId'] = roleId;
-    data['email'] = email;
-    data['role'] = role;
-    data['isActive'] = isActive;
-    data['otp'] = otp;
-    data['expiresAt'] = expiresAt;
-    data['isVerified'] = isVerified;
-    data['isDeleted'] = isDeleted;
-    data['passwordChangedAt'] = passwordChangedAt;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['__v'] = iV;
-    return data;
+
+class RoleIdModel {
+  String? id;
+  String? user;
+  String? name;
+  String? bio;
+  String? phoneNumber;
+  String? profileImage;
+  String? qualification;
+  List<dynamic>? subjects;
+  List<AvailabilityModel>? availability;
+  bool? isDeleted;
+  String? createdAt;
+  String? updatedAt;
+  int? v;
+
+  RoleIdModel({
+    this.id,
+    this.user,
+    this.name,
+    this.bio,
+    this.phoneNumber,
+    this.profileImage,
+    this.qualification,
+    this.subjects,
+    this.availability,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
+  });
+
+  RoleIdModel.fromJson(Map<String, dynamic> json) {
+    id = json['_id'];
+    user = json['user'];
+    name = json['name'];
+    bio = json['bio'];
+    phoneNumber = json['phoneNumber'];
+    profileImage = json['profileImage'];
+    qualification = json['qualification'];
+    subjects = json['subjects'];
+
+    if (json['availability'] != null) {
+      availability = [];
+      json['availability'].forEach((v) {
+        availability!.add(AvailabilityModel.fromJson(v));
+      });
+    }
+
+    isDeleted = json['isDeleted'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    v = json['__v'];
+  }
+}
+
+class AvailabilityModel {
+  String? day;
+  List<TimeSlotModel>? timeSlots;
+  String? id;
+
+  AvailabilityModel({this.day, this.timeSlots, this.id});
+
+  AvailabilityModel.fromJson(Map<String, dynamic> json) {
+    day = json['day'];
+
+    if (json['timeSlots'] != null) {
+      timeSlots = [];
+      json['timeSlots'].forEach((v) {
+        timeSlots!.add(TimeSlotModel.fromJson(v));
+      });
+    }
+
+    id = json['_id'];
+  }
+}
+class TimeSlotModel {
+  String? startTime;
+  String? endTime;
+  String? status;
+  String? id;
+
+  TimeSlotModel({this.startTime, this.endTime, this.status, this.id});
+
+  TimeSlotModel.fromJson(Map<String, dynamic> json) {
+    startTime = json['startTime'];
+    endTime = json['endTime'];
+    status = json['status'];
+    id = json['_id'];
   }
 }

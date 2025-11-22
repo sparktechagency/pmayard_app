@@ -18,9 +18,11 @@ class ApiUrls {
   static  const String  resendOtp = '/auth/resend-otp';
   static  const String  resetPassword = '/auth/reset-password';
   static   String  resendVerifyOtp(String userEmail) => 'auth/resend-otp/$userEmail';
-  static  const String  terms = '/settings/terms-and-conditions';
-  static  const String  about = '/settings/about-us';
-  static  const String  privacy = '/settings/privacy-policy';
+
+  static  const String  terms = '/rules/terms';
+  static  const String  about = '/rules/aboutus';
+  static  const String  privacy = '/rules/privacy';
+
   static  const String  changePassword = '/auth/reset-password';
   static  const String  updateProfile = '/users/update-profile';
   static  const String  parentCreate = '/parents/parent';

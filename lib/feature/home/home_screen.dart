@@ -27,12 +27,13 @@ class HomeScreen extends StatelessWidget {
           builder: (controller) {
             final userData = controller.user;
             return CustomListTile(
+              image: userData?.roleId?.profileImage,
               imageRadius: 24.r,
               contentPaddingHorizontal: 16.w,
               titleColor: Colors.white,
               title: 'Welcome!',
               titleFontSize: 12.sp,
-              subTitle: userData?.email,
+              subTitle: userData?.roleId!.name ?? 'Enter Your Name',
               subtitleFontSize: 14.sp,
               statusColor: Colors.white,
             );

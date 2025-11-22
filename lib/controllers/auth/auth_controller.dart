@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/models/user_model/user_data_model.dart';
 
 import '../../app/helpers/prefs_helper.dart';
 import '../../app/utils/app_constants.dart';
@@ -96,7 +98,7 @@ class AuthController extends GetxController {
 
     if (response.statusCode == 200) {
       success = true;
-      //await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['token'] ?? '');
+      await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['accessToken'] ?? '');
       showToast(responseBody['message']);
       otpController.clear();
       Get.toNamed(AppRoutes.loginScreen);
@@ -177,6 +179,7 @@ class AuthController extends GetxController {
       if (responseBody['data']['user']['isVerified'] == false) {
         Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       } else if (responseBody['data']['user']['isActive'] == true) {
+        UserController().userData();
         Get.offAllNamed(AppRoutes.customBottomNavBar);
       } else {
         if (responseBody['data']['user']['role'] == 'professional') {
