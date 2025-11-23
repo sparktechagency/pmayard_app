@@ -27,6 +27,7 @@ class ApiUrls {
   static  const String  updateProfile = '/users/update-profile';
   static  const String  parentCreate = '/parents/parent';
   static  const String  professionalCreate = '/professionals/professional';
-  static  const String  assignedProfessional = '/professionals/assigned-parents';
+  static  const String  assigned = '/sessions/assigned-roles';
+  static  const String  upcomingSessions = '/sessions/upcoming-sessions';
 
 }

@@ -1,24 +1,25 @@
 import 'package:get/get.dart';
-import 'package:pmayard_app/models/assigned/assigned_professional_model_data.dart';
+import 'package:pmayard_app/models/assigned/assigned_response_data.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 
 class AssignedController extends GetxController {
-  List<AssignedProfessionalModelData> assignedProfessionalData = [];
-  bool isLoadingProfessionals = false;
+  List<AssignedResponseData> assignedData = [];
+  bool isLoadingAssigned = false;
 
-  Future<void> getAssignedProfessional() async {
-    isLoadingProfessionals = true;
+  Future<void> getAssigned() async {
+    assignedData.clear();
+    isLoadingAssigned = true;
     update();
 
-    final response = await ApiClient.getData(ApiUrls.assignedProfessional);
+    final response = await ApiClient.getData(ApiUrls.assigned);
     if (response.statusCode == 200) {
       final List data = response.body['data'] ?? [];
 
-      final  dataList = data.map((item) => AssignedProfessionalModelData.fromJson(item)).toList();
-      assignedProfessionalData.addAll(dataList);
+      final dataList = data.map((item) => AssignedResponseData.fromJson(item)).toList();
+      assignedData.addAll(dataList);
     }
-    isLoadingProfessionals = false;
+    isLoadingAssigned = false;
     update();
   }
 }
