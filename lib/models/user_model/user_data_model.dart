@@ -1,6 +1,6 @@
-class UserDataModel {
-  String? id;
-  RoleIdModel? roleId;
+class UserModelData {
+  String? sId;
+  RoleId? roleId;
   String? email;
   String? role;
   bool? isActive;
@@ -11,10 +11,11 @@ class UserDataModel {
   String? passwordChangedAt;
   String? createdAt;
   String? updatedAt;
-  int? v;
+  int? iV;
+  String? roleRef;
 
-  UserDataModel({
-    this.id,
+  UserModelData({
+    this.sId,
     this.roleId,
     this.email,
     this.role,
@@ -26,14 +27,13 @@ class UserDataModel {
     this.passwordChangedAt,
     this.createdAt,
     this.updatedAt,
-    this.v,
+    this.iV,
+    this.roleRef,
   });
 
-  UserDataModel.fromJson(Map<String, dynamic> json) {
-    id = json['_id'];
-    roleId = json['roleId'] != null
-        ? RoleIdModel.fromJson(json['roleId'])
-        : null;
+  UserModelData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    roleId = json['roleId'] != null ? RoleId.fromJson(json['roleId']) : null;
     email = json['email'];
     role = json['role'];
     isActive = json['isActive'];
@@ -44,28 +44,28 @@ class UserDataModel {
     passwordChangedAt = json['passwordChangedAt'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    v = json['__v'];
+    iV = json['__v'];
+    roleRef = json['roleRef'];
   }
 }
 
-
-class RoleIdModel {
-  String? id;
+class RoleId {
+  String? sId;
   String? user;
   String? name;
   String? bio;
   String? phoneNumber;
   String? profileImage;
   String? qualification;
-  List<dynamic>? subjects;
-  List<AvailabilityModel>? availability;
+  List<String>? subjects;
+  List<Availability>? availability;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
-  int? v;
+  int? iV;
 
-  RoleIdModel({
-    this.id,
+  RoleId({
+    this.sId,
     this.user,
     this.name,
     this.bio,
@@ -77,65 +77,65 @@ class RoleIdModel {
     this.isDeleted,
     this.createdAt,
     this.updatedAt,
-    this.v,
+    this.iV,
   });
 
-  RoleIdModel.fromJson(Map<String, dynamic> json) {
-    id = json['_id'];
+  RoleId.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
     user = json['user'];
     name = json['name'];
     bio = json['bio'];
     phoneNumber = json['phoneNumber'];
     profileImage = json['profileImage'];
     qualification = json['qualification'];
-    subjects = json['subjects'];
-
+    // Fix: Handle null safely
+    subjects = json['subjects'] != null
+        ? List<String>.from(json['subjects'])
+        : null;
     if (json['availability'] != null) {
-      availability = [];
+      availability = <Availability>[];
       json['availability'].forEach((v) {
-        availability!.add(AvailabilityModel.fromJson(v));
+        availability!.add(Availability.fromJson(v));
       });
     }
-
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    v = json['__v'];
+    iV = json['__v'];
   }
 }
 
-class AvailabilityModel {
+class Availability {
   String? day;
-  List<TimeSlotModel>? timeSlots;
-  String? id;
+  List<TimeSlots>? timeSlots;
+  String? sId;
 
-  AvailabilityModel({this.day, this.timeSlots, this.id});
+  Availability({this.day, this.timeSlots, this.sId});
 
-  AvailabilityModel.fromJson(Map<String, dynamic> json) {
+  Availability.fromJson(Map<String, dynamic> json) {
     day = json['day'];
-
     if (json['timeSlots'] != null) {
-      timeSlots = [];
+      timeSlots = <TimeSlots>[];
       json['timeSlots'].forEach((v) {
-        timeSlots!.add(TimeSlotModel.fromJson(v));
+        timeSlots!.add(TimeSlots.fromJson(v));
       });
     }
-
-    id = json['_id'];
+    sId = json['_id'];
   }
 }
-class TimeSlotModel {
+
+class TimeSlots {
   String? startTime;
   String? endTime;
   String? status;
-  String? id;
+  String? sId;
 
-  TimeSlotModel({this.startTime, this.endTime, this.status, this.id});
+  TimeSlots({this.startTime, this.endTime, this.status, this.sId});
 
-  TimeSlotModel.fromJson(Map<String, dynamic> json) {
+  TimeSlots.fromJson(Map<String, dynamic> json) {
     startTime = json['startTime'];
     endTime = json['endTime'];
     status = json['status'];
-    id = json['_id'];
+    sId = json['_id'];
   }
 }

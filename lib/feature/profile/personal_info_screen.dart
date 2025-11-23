@@ -34,55 +34,36 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     return CustomScaffold(
       appBar: CustomAppBar(
         borderColor: AppColors.secondaryColor,
-        title: 'General Information Maruf',
+        title: 'General Information',
       ),
 
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 10.h),
-            Stack(
-              children: [
-                _userController.selectedImage != null
-                    ? Image.file(
-                        _userController.selectedImage! as File, // <-- correct
-                        height: 80.h,
-                        width: 80.w,
-                        fit: BoxFit.cover,
-                      )
-                    : _userController.user?.roleId?.profileImage != null
-                    ? CustomNetworkImage(
-                        imageUrl:
-                            _userController.user?.roleId?.profileImage ?? '',
-                        height: 80.h,
-                        width: 80.w,
-                        borderRadius: 44.r,
-                      )
-                    : CustomImageAvatar(radius: 44.r, image: ''),
-
-                // CustomImageAvatar(
-                //   radius: 44.r,
-                //   image:  _userController.user?.roleId?.profileImage,
-                // ),
-                Positioned.fill(
-                  child: CustomContainer(
-                    onTap: () {
-                      PhotoPickerHelper.showPicker(
-                        context: context,
-                        onImagePicked: (image) {
-                          _userController.selectedImage = image;
-                        },
-                      );
-                    },
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.5),
-                    child: Padding(
-                      padding: EdgeInsets.all(32.r),
-                      child: Assets.icons.cameraAdd.svg(),
+            GetBuilder<UserController>(
+              builder: (controller) {
+                return Stack(
+                  children: [
+                    CustomImageAvatar(
+                      radius: 44.r,
+                      image:  controller.user?.roleId?.profileImage,
+                      fileImage: controller.selectedImage,
                     ),
-                  ),
-                ),
-              ],
+                    Positioned.fill(
+                      child: CustomContainer(
+                        onTap: () => controller.onTapImageShow(context),
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.5),
+                        child: Padding(
+                          padding: EdgeInsets.all(32.r),
+                          child: Assets.icons.cameraAdd.svg(),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
             ),
             Form(
               key: _globalKey,
@@ -93,13 +74,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   CustomTextField(
                     labelText: 'Email',
                     controller: _userController.emailController,
-                    hintText: _userController.user?.email,
+                    hintText: '',
                     isEmail: true,
                   ),
                   CustomTextField(
                     labelText: 'Name',
                     controller: _userController.nameController,
-                    hintText: _userController.user?.roleId?.name,
+                    hintText: '',
                   ),
                   CustomTextField(
                     labelText: 'Bio',
