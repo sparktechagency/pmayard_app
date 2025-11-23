@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
-import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
@@ -24,14 +22,11 @@ class CompleteProfileProfessional extends StatefulWidget {
 class _CompleteProfileProfessionalState extends State<CompleteProfileProfessional> {
 
   final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
-  final List<String> subjectList = [];
+
+
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
   PhoneNumber number = PhoneNumber(isoCode: 'US');
-
-
-  File? _image;
-  String selected = MenuShowHelper.subjects.first;
 
   @override
   Widget build(BuildContext context) {
@@ -46,26 +41,25 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
           children: [
             SizedBox(height: 10.h),
             GetBuilder<ProfileConfirmController>(
-                builder: (controller){
-                  return Stack(
-                    children: [
-                      CustomImageAvatar(
-                        fileImage: controller.profileProfessional,
-                        radius: 60.r,
-                        image: '',
-                      ),
+              builder: (controller) {
+                return Stack(
+                  children: [
+                    CustomImageAvatar(
+                      fileImage: controller.profileProfessional,
+                      radius: 60.r,
+                    ),
 
-                      Positioned(
-                        bottom: 12.h,
-                        right: 6.w,
-                        child: GestureDetector(
-                            onTap: () => controller.onTapImageProfessionalSelected(context),
-                            child: Assets.icons.profileCamera.svg()),
-                      )
+                    Positioned(
+                      bottom: 12.h,
+                      right: 6.w,
+                      child: GestureDetector(
+                        onTap: () => controller.onTapProfileProfessionalSelected(context),
+                          child: Assets.icons.profileCamera.svg()),
+                    )
 
-                    ],
-                  );
-                },
+                  ],
+                );
+              }
             ),
             CustomText(text: 'Upload Photo',color: AppColors.secondaryColor,fontSize: 12.sp,top: 4.h,),
             Form(
@@ -128,6 +122,7 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     selectorButtonOnErrorPadding: 0,
                     spaceBetweenSelectorAndTextField: 0,
                   ),
+                  SizedBox(height: 8.h),
 
                   CustomTextField(
                     labelText: 'Bio',
@@ -139,89 +134,42 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     controller: profileController.qualificationController,
                     hintText: "Enter qualification",
                   ),
-                  Text(
-                    'Subjects You Teach',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14.sp,
-                    ),),
+
                   SizedBox(height: 8.h,),
-                  // CustomTextField(
-                  //   hintText: 'Select Subjects',
-                  //   labelText: 'Subjects you Teach',
-                  //   controller: _qualificationController,
-                  //   readOnly: true,
-                  //
-                  // ),
+
                   GestureDetector(
-                    onTap: _showMultiSelectionSubject,
-                    child: Container(
-                      width: double.maxFinite,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 20
+                    onTapDown: (TapDownDetails details) async {
+                      final currentSubjects = profileController.subjectsController.text
+                          .split(", ")
+                          .where((s) => s.isNotEmpty)
+                          .toList();
+
+                      final selectedList = await MenuShowHelper.showMultiSelectMenu(
+                        context: context,
+                        details: details,
+                        options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
+                      );
+
+                      if (selectedList != null) {
+                        profileController.subjectsController.text = selectedList.join(", ");
+
+                        profileController.subjectList
+                          ..clear()
+                          ..addAll(selectedList);
+                      }
+                    },
+                    child: AbsorbPointer(
+                      child: CustomTextField(
+                        suffixIcon: Icon(Icons.keyboard_arrow_down),
+                        readOnly: true,
+                        labelText: 'Subjects You Teach',
+                        controller: profileController.subjectsController,
+                        hintText: "Subjects You Teach",
                       ),
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Colors.grey.withOpacity(0.3)
-                          ),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      child: Text('Select Subjects',style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.grey.withOpacity(0.9)
-                      ),),
                     ),
                   ),
-                  // Select Subjects
 
-                  // DropdownButton(
-                  //   onChanged: (value){
-                  //       selected == value;
-                  //       onTapSubjectAdded(value!);
-                  //   },
-                  //     value: selected,
-                  //     items: MenuShowHelper.subjects.map((e) => DropdownMenuItem(value: e,child: Text(e),)).toList()
-                  // ),
-
-
-                  // GestureDetector(
-                  //   onTapDown: (TapDownDetails details) async {
-                  //     final selected = await MenuShowHelper.showCustomMenu(
-                  //       context: context,
-                  //       details: details,
-                  //       options: MenuShowHelper.subjects,
-                  //     );
-                  //     if (selected != null) {
-                  //       setState(() {
-                  //         _subjectsController.text = selected;
-                  //       });
-                  //     }
-                  //   },
-                  //   child: AbsorbPointer(
-                  //     child: CustomTextField(
-                  //       suffixIcon: Icon(Icons.keyboard_arrow_down),
-                  //       readOnly: true,
-                  //       labelText: 'Subjects You Teach',
-                  //       controller: _subjectsController,
-                  //       hintText: "Subjects You Teach",
-                  //     ),
-                  //   ),
-                  // ),
-                  //
-
-                  // SizedBox(
-                  //   height: 100, // must add height
-                  //   child: ListView.builder(
-                  //       itemCount: AppSubjectList.allSubjects.length,
-                  //       itemBuilder: (context, index) {
-                  //         return GestureDetector(
-                  //           child: Text(AppSubjectList.allSubjects[index]),
-                  //           onTap: ( ) => onTapSubjectAdded(AppSubjectList.allSubjects[index]),
-                  //         );
-                  //       }
-                  //   ),
-                  // ),
                   SizedBox(height: 20.h,),
                   CustomButton(
                     label: "Next",
@@ -242,26 +190,4 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
     );
   }
 
-  // subject added list
-  void onTapSubjectAdded(String subName) {
-    profileController.subjectList.add(subName);
-  }
-
-  void _showMultiSelectionSubject() async {
-    final List<String> subjectsList = MenuShowHelper.subjects;
-    List<String>selectedSubject = [];
-
-    final List<String>? results = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MultipleSelection(
-          items: subjectsList, selectedSubject: selectedSubject,);
-      },
-    );
-
-    if (results != null) {
-      selectedSubject = results;
-    }
-    print(selectedSubject);
-  }
 }

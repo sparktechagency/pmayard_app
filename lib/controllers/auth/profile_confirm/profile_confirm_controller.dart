@@ -3,37 +3,35 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
-import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 import '../../../services/api_urls.dart';
 
 class ProfileConfirmController extends GetxController {
+
+
   /// ========================>>> profile confirm for Professional =======================>>>
 
   bool isLoading = false;
   File? profileProfessional;
 
-  void onTapImageProfessionalSelected(BuildContext context) {
-    PhotoPickerHelper.showPicker(
-      context: context,
-      onImagePicked: (image) {
-        profileProfessional = File(image.path);
-        update();
-      },
-    );
-  }
   final TextEditingController nameController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController qualificationController = TextEditingController();
   final TextEditingController subjectsController = TextEditingController();
   final List<String> subjectList = [];
-
+  List<Map<String, dynamic>> availability = [];
   DateTime? selectedDate;
-  final String startTime = "";
-  final String endTime = "";
+
+  void onTapProfileProfessionalSelected (BuildContext context){
+    PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
+      profileProfessional = File(image.path);
+      update();
+    });
+  }
+
 
   Future<void> profileConfirm() async {
     isLoading = true;
@@ -50,44 +48,13 @@ class ProfileConfirmController extends GetxController {
         "bio": bioController.text.trim(),
         "phoneNumber": numberController.text.trim(),
         "qualification": qualificationController.text.trim(),
-        "subjects": subjectList,
-        "availability": [
-          {
-            "day": "Monday",
-            "timeSlots": [
-              {
-                "startTime": "09:00 AM",
-                "endTime": "10:00 AM",
-                "status": "available",
-              },
-              {
-                "startTime": "11:00 AM",
-                "endTime": "12:00 PM",
-                "status": "booked",
-              },
-            ],
-          },
-          {
-            "day": "Tuesday",
-            "timeSlots": [
-              {
-                "startTime": "01:00 PM",
-                "endTime": "02:00 PM",
-                "status": "available",
-              },
-              {
-                "startTime": "03:00 PM",
-                "endTime": "04:00 PM",
-                "status": "disabled",
-              },
-            ],
-          },
-        ],
+        "subjects": subjectList.toList(),
+        "availability": availability,
       }),
     };
 
     final response = await ApiClient.postMultipartData(
-      ApiUrls.professionalCreate,
+      ApiUrls.register,
       multipartBody: multipartBody,
       requestBody,
     );
@@ -95,21 +62,19 @@ class ProfileConfirmController extends GetxController {
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-      final response = await ApiClient.getData(ApiUrls.userData);
-      print('100 no line $response.body');
-      CustomBottomNavBarController().selectedIndex.value = 0;
       Get.offAllNamed(AppRoutes.customBottomNavBar);
-      update();
     } else {
       showToast(responseBody['message']);
     }
+
     isLoading = false;
     update();
   }
 
+
   /// ========================>>> profile confirm for Parent =======================>>>
 
-  bool isLoadingParent = false;
+bool isLoadingParent = false;
 
   final TextEditingController nameParentController = TextEditingController();
   final TextEditingController numberParentController = TextEditingController();
@@ -117,21 +82,20 @@ class ProfileConfirmController extends GetxController {
   final TextEditingController childGradeController = TextEditingController();
   final TextEditingController relationshipController = TextEditingController();
 
+
   File? profileParent;
 
-  void onTapImageParentSelected(BuildContext context) {
-    PhotoPickerHelper.showPicker(
-      context: context,
-      onImagePicked: (image) {
-        profileParent = File(image.path);
-        update();
-      },
-    );
-  }
+ void onTapImageParentSelected (BuildContext context){
+  PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
+    profileParent = File(image.path);
+    update();
+  });
+}
 
   Future<void> profileConfirmParent() async {
     isLoadingParent = true;
     update();
+
 
     List<MultipartBody>? multipartBody;
     if (profileParent != null) {
@@ -148,10 +112,11 @@ class ProfileConfirmController extends GetxController {
       }),
     };
 
+
     final response = await ApiClient.postMultipartData(
       ApiUrls.parentCreate,
       requestBody,
-      multipartBody: multipartBody,
+      multipartBody: multipartBody
     );
     final responseBody = response.body;
 
@@ -163,4 +128,6 @@ class ProfileConfirmController extends GetxController {
     isLoadingParent = false;
     update();
   }
+
+
 }
