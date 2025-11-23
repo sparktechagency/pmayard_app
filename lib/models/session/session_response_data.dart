@@ -1,7 +1,9 @@
-class SessionsResponseData {
-  String? id;
-  ParentData? parent;
-  ProfessionalData? professional;
+
+class SessionParentModelData {
+  String? sId;
+  String? parent;
+  Professional? professional;
+  String? conversationId;
   String? day;
   String? date;
   String? subject;
@@ -11,128 +13,47 @@ class SessionsResponseData {
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
+  int? iV;
 
-  SessionsResponseData({
-    this.id,
-    this.parent,
-    this.professional,
-    this.day,
-    this.date,
-    this.subject,
-    this.status,
-    this.code,
-    this.isSessionVerified,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-  });
+  SessionParentModelData(
+      {this.sId,
+        this.parent,
+        this.professional,
+        this.conversationId,
+        this.day,
+        this.date,
+        this.subject,
+        this.status,
+        this.code,
+        this.isSessionVerified,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
 
-  factory SessionsResponseData.fromJson(Map<String, dynamic> json) {
-    return SessionsResponseData(
-      id: json['_id'],
-      parent: json['parent'] != null
-          ? (json['parent'] is String
-          ? null
-          : ParentData.fromJson(json['parent']))
-          : null,
-      professional: json['professional'] != null
-          ? (json['professional'] is String
-          ? null
-          : ProfessionalData.fromJson(json['professional']))
-          : null,
-      day: json['day'],
-      date: json['date'],
-      subject: json['subject'],
-      status: json['status'],
-      code: json['code'],
-      isSessionVerified: json['isSessionVerified'],
-      isDeleted: json['isDeleted'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'parent': parent?.toJson(),
-      'professional': professional?.toJson(),
-      'day': day,
-      'date': date,
-      'subject': subject,
-      'status': status,
-      'code': code,
-      'isSessionVerified': isSessionVerified,
-      'isDeleted': isDeleted,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
+  SessionParentModelData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    parent = json['parent'];
+    professional = json['professional'] != null
+        ? new Professional.fromJson(json['professional'])
+        : null;
+    conversationId = json['conversation_id'];
+    day = json['day'];
+    date = json['date'];
+    subject = json['subject'];
+    status = json['status'];
+    code = json['code'];
+    isSessionVerified = json['isSessionVerified'];
+    isDeleted = json['isDeleted'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
   }
 }
 
-class ParentData {
-  String? id;
-  UserData? user;
-  String? name;
-  String? phoneNumber;
-  String? childsName;
-  String? childsGrade;
-  String? relationshipWithChild;
-  String? profileImage;
-  bool? isDeleted;
-  String? createdAt;
-  String? updatedAt;
-
-  ParentData({
-    this.id,
-    this.user,
-    this.name,
-    this.phoneNumber,
-    this.childsName,
-    this.childsGrade,
-    this.relationshipWithChild,
-    this.profileImage,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-  });
-
-  factory ParentData.fromJson(Map<String, dynamic> json) {
-    return ParentData(
-      id: json['_id'],
-      user: json['user'] != null ? UserData.fromJson(json['user']) : null,
-      name: json['name'],
-      phoneNumber: json['phoneNumber'],
-      childsName: json['childs_name'],
-      childsGrade: json['childs_grade'],
-      relationshipWithChild: json['relationship_with_child'],
-      profileImage: json['profileImage'],
-      isDeleted: json['isDeleted'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'user': user?.toJson(),
-      'name': name,
-      'phoneNumber': phoneNumber,
-      'childs_name': childsName,
-      'childs_grade': childsGrade,
-      'relationship_with_child': relationshipWithChild,
-      'profileImage': profileImage,
-      'isDeleted': isDeleted,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
-  }
-}
-
-class ProfessionalData {
-  String? id;
-  UserData? user;
+class Professional {
+  String? sId;
+  User? user;
   String? name;
   String? bio;
   String? phoneNumber;
@@ -142,76 +63,46 @@ class ProfessionalData {
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
+  int? iV;
 
-  ProfessionalData({
-    this.id,
-    this.user,
-    this.name,
-    this.bio,
-    this.phoneNumber,
-    this.profileImage,
-    this.qualification,
-    this.subjects,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-  });
+  Professional(
+      {this.sId,
+        this.user,
+        this.name,
+        this.bio,
+        this.phoneNumber,
+        this.profileImage,
+        this.qualification,
+        this.subjects,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
 
-  factory ProfessionalData.fromJson(Map<String, dynamic> json) {
-    return ProfessionalData(
-      id: json['_id'],
-      user: json['user'] != null ? UserData.fromJson(json['user']) : null,
-      name: json['name'],
-      bio: json['bio'],
-      phoneNumber: json['phoneNumber'],
-      profileImage: json['profileImage'],
-      qualification: json['qualification'],
-      subjects: json['subjects'] != null
-          ? List<String>.from(json['subjects'])
-          : null,
-      isDeleted: json['isDeleted'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'user': user?.toJson(),
-      'name': name,
-      'bio': bio,
-      'phoneNumber': phoneNumber,
-      'profileImage': profileImage,
-      'qualification': qualification,
-      'subjects': subjects,
-      'isDeleted': isDeleted,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
+  Professional.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    name = json['name'];
+    bio = json['bio'];
+    phoneNumber = json['phoneNumber'];
+    profileImage = json['profileImage'];
+    qualification = json['qualification'];
+    subjects = json['subjects'].cast<String>();
+    isDeleted = json['isDeleted'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
   }
 }
 
-class UserData {
-  String? id;
+class User {
+  String? sId;
   String? email;
 
-  UserData({
-    this.id,
-    this.email,
-  });
+  User({this.sId, this.email});
 
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['_id'],
-      email: json['email'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'email': email,
-    };
+  User.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    email = json['email'];
   }
 }

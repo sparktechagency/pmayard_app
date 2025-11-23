@@ -1,30 +1,30 @@
-
-class AssignedParentModelData {
+class AssignedProfessionalModelData {
   String? sId;
-  String? parent;
-  Professional? professional;
+  Parent? parent;
+  String? professional;
   String? conversationId;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   int? iV;
 
-  AssignedParentModelData(
-      {this.sId,
-        this.parent,
-        this.professional,
-        this.conversationId,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+  AssignedProfessionalModelData({
+    this.sId,
+    this.parent,
+    this.professional,
+    this.conversationId,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
+    this.iV,
+  });
 
-  AssignedParentModelData.fromJson(Map<String, dynamic> json) {
+  AssignedProfessionalModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    parent = json['parent'];
-    professional = json['professional'] != null
-        ? new Professional.fromJson(json['professional'])
+    parent = json['parent'] != null
+        ? new Parent.fromJson(json['parent'])
         : null;
+    professional = json['professional'];
     conversationId = json['conversation_id'];
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
@@ -33,43 +33,44 @@ class AssignedParentModelData {
   }
 }
 
-class Professional {
+class Parent {
   String? sId;
   User? user;
   String? name;
-  String? bio;
   String? phoneNumber;
+  String? childsName;
+  String? childsGrade;
+  String? relationshipWithChild;
   String? profileImage;
-  String? qualification;
-  List<String>? subjects;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   int? iV;
 
-  Professional(
-      {this.sId,
-        this.user,
-        this.name,
-        this.bio,
-        this.phoneNumber,
-        this.profileImage,
-        this.qualification,
-        this.subjects,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
+  Parent({
+    this.sId,
+    this.user,
+    this.name,
+    this.phoneNumber,
+    this.childsName,
+    this.childsGrade,
+    this.relationshipWithChild,
+    this.profileImage,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
+    this.iV,
+  });
 
-  Professional.fromJson(Map<String, dynamic> json) {
+  Parent.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
     name = json['name'];
-    bio = json['bio'];
     phoneNumber = json['phoneNumber'];
+    childsName = json['childs_name'];
+    childsGrade = json['childs_grade'];
+    relationshipWithChild = json['relationship_with_child'];
     profileImage = json['profileImage'];
-    qualification = json['qualification'];
-    subjects = json['subjects'].cast<String>();
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
