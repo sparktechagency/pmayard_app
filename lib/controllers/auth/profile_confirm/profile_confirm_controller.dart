@@ -54,7 +54,7 @@ class ProfileConfirmController extends GetxController {
     };
 
     final response = await ApiClient.postMultipartData(
-      ApiUrls.register,
+      ApiUrls.professionalCreate,
       multipartBody: multipartBody,
       requestBody,
     );
