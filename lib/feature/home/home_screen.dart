@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     _assignedController.getAssigned();
     _sessionsController.getSessions();
   }
@@ -196,7 +197,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           date = session.date;
                         }
 
-                        // Check if both day and date exist
                         final hasDateTime = (day != null && day.isNotEmpty) &&
                             (date != null && date.isNotEmpty);
 
