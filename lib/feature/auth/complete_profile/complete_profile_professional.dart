@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_con
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/widgets/multiple_selection.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class CompleteProfileProfessional extends StatefulWidget {

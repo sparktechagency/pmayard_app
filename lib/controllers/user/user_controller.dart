@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pmayard_app/models/user_model/user_data_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 
 class UserController extends GetxController {
+
+
   UserDataModel? user;
 
   bool isUserDataComing = false;
@@ -12,6 +16,7 @@ class UserController extends GetxController {
   @override
   void onInit() {
     userData();
+    update();
     super.onInit();
   }
 
@@ -26,4 +31,10 @@ class UserController extends GetxController {
     isUserDataComing = false;
     update();
   }
+
+  late TextEditingController emailController = TextEditingController( text:  user?.email ?? '');
+  late TextEditingController nameController = TextEditingController( text: user!.roleId?.name ?? '');
+  late TextEditingController bioController = TextEditingController( text: user!.roleId?.bio ?? '');
+  late TextEditingController subjectsController = TextEditingController( text: user!.roleId?.name ?? '');
+  XFile? selectedImage;
 }

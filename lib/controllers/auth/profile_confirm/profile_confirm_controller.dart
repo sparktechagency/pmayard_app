@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
-import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
@@ -55,7 +54,7 @@ class ProfileConfirmController extends GetxController {
     };
 
     final response = await ApiClient.postMultipartData(
-      ApiUrls.professionalCreate,
+      ApiUrls.register,
       multipartBody: multipartBody,
       requestBody,
     );
@@ -63,7 +62,6 @@ class ProfileConfirmController extends GetxController {
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-      await Get.find<UserController>().userData();
       Get.offAllNamed(AppRoutes.customBottomNavBar);
     } else {
       showToast(responseBody['message']);

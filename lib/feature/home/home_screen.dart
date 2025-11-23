@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
-import 'package:pmayard_app/controllers/auth/auth_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
@@ -28,12 +27,13 @@ class HomeScreen extends StatelessWidget {
           builder: (controller) {
             final userData = controller.user;
             return CustomListTile(
+              image: userData?.roleId?.profileImage,
               imageRadius: 24.r,
               contentPaddingHorizontal: 16.w,
               titleColor: Colors.white,
               title: 'Welcome!',
               titleFontSize: 12.sp,
-              subTitle: userData?.email,
+              subTitle: userData?.roleId!.name ?? 'Enter Your Name',
               subtitleFontSize: 14.sp,
               statusColor: Colors.white,
             );

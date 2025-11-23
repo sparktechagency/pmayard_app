@@ -12,18 +12,20 @@ class ApiUrls {
 
   static const String userData = '/users/me';
   static const String register = '/users/register';
-  static const String professionalCreate = '/professionals/professional';
   static const String verifyOtp = '/auth/verify-otp';
   static const String login = '/auth/login';
   static const String forgetPassword = '/auth/forget-password';
   static  const String  resendOtp = '/auth/resend-otp';
   static  const String  resetPassword = '/auth/reset-password';
   static   String  resendVerifyOtp(String userEmail) => 'auth/resend-otp/$userEmail';
-  static  const String  terms = '/settings/terms-and-conditions';
-  static  const String  about = '/settings/about-us';
-  static  const String  privacy = '/settings/privacy-policy';
+
+  static  const String  terms = '/rules/terms';
+  static  const String  about = '/rules/aboutus';
+  static  const String  privacy = '/rules/privacy';
+
   static  const String  changePassword = '/auth/reset-password';
   static  const String  updateProfile = '/users/update-profile';
   static  const String  parentCreate = '/parents/parent';
+  static  const String  professionalCreate = '/professionals/professional';
 
 }
