@@ -12,7 +12,6 @@ class ApiUrls {
 
   static const String userData = '/users/me';
   static const String register = '/users/register';
-  static const String professionalCreate = '/professionals/professional';
   static const String verifyOtp = '/auth/verify-otp';
   static const String login = '/auth/login';
   static const String forgetPassword = '/auth/forget-password';
