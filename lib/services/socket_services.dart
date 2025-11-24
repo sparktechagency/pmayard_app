@@ -1,105 +1,77 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import '../services/api_urls.dart';
+import 'package:pmayard_app/app/helpers/prefs_helper.dart';
+import 'package:pmayard_app/app/utils/app_constants.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../app/helpers/prefs_helper.dart';
-import '../app/utils/app_constants.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+
+
+
+
+
 
 class SocketServices {
-  // Singleton instance
-  static final SocketServices _socketApi = SocketServices._internal();
-  static String? token;
+  static String token = '';
+  static IO.Socket? socket;
 
-  IO.Socket? socket;
-  bool _isManualDisconnect = false; // <-- added flag
 
-  factory SocketServices() {
-    return _socketApi;
-  }
+  static Future<void> init() async {
+    // Fetch the token from preferences
+    token = await PrefsHelper.getString(AppConstants.bearerToken);
 
-  SocketServices._internal();
-
-  /// Initialize socket connection
-  Future<void> init() async {
-    if (socket != null) {
-      if (socket!.connected) {
-        debugPrint("⚠️ Socket already connected, skipping init");
-        return;
-      } /*else {
-        print("⚠️ Socket instance exists but not connected, reconnecting...");
-        socket!.connect();
-        return;
-      }*/
+    // Check if the token is available
+    if (token.isEmpty) {
+      print("Token is missing! Cannot initialize the socket connection.");
+      return;  // Return early if token is missing
     }
 
-    _isManualDisconnect = false;
-    token = await PrefsHelper.getString(AppConstants.bearerToken) ?? "";
+    print("Initializing socket with token: $token  \n time${DateTime.now()}");
 
-    debugPrint("-------------------------------------------------------------\n🔌 Socket init called \n🪪 token = $token");
+    // Disconnect the existing socket if connected
+    if (socket?.connected ?? false) {
+      socket?.disconnect();
+      socket = null;
+    }
 
+    // Setup the socket connection with the token in the headers
     socket = IO.io(
       ApiUrls.socketUrl,
       IO.OptionBuilder()
           .setTransports(['websocket'])
-          .setExtraHeaders({"authorization": "Bearer $token"})
+          .setExtraHeaders({"token": token})
           .enableReconnection()
+          .enableForceNew()
           .build(),
     );
+    print("Socket initialized with token: $token  \n time${DateTime.now()}");
 
-    _setupSocketListeners(token.toString());
-    //socket!.connect();
+    // Setup event listeners
+    socket?.onConnect((_) => print('✅ Socket connected successfully'));
+    socket?.onConnectError((err) => print('❌ Socket connection error: $err'));
+    socket?.onError((err) => print('❌ Socket error: $err'));
+    socket?.onDisconnect((reason) => print('⚠️ Socket disconnected. Reason: $reason'));
+
+    // Connect the socket after the token is set
+    socket?.connect();
   }
 
-  /// Setup listeners for socket events
-  void _setupSocketListeners(String token) {
-    socket?.clearListeners(); // <-- important: clear old listeners
+  void on(String event, Function(dynamic) handler) {
+    socket?.on(event, handler);
+  }
 
-    socket?.onConnect((_) {
-      debugPrint('✅ Socket connected: ${socket?.connected}');
-    });
+  void off(String event, Function(dynamic) handler) {
+    socket?.off(event, handler);
+  }
 
-    socket?.onConnectError((err) {
-      debugPrint('❌ Socket connect error: $err');
-    });
-
-    socket?.onDisconnect((_) {
-      debugPrint('⚠️ Socket disconnected');
-      if (!_isManualDisconnect) {
-        debugPrint('🔄 Attempting to reconnect...');
-        Future.delayed(const Duration(seconds: 2), () {
-          if (socket != null && !socket!.connected) {
-            socket!.connect();
-          }
-        });
+  static Future<dynamic> emitWithAck(String event, dynamic body) async {
+    Completer<dynamic> completer = Completer<dynamic>();
+    socket?.emitWithAck(event, body, ack: (data) {
+      if (data != null) {
+        completer.complete(data);
       } else {
-        debugPrint('🛑 Manual disconnect: no auto-reconnect');
+        completer.complete(1);
       }
     });
-
-    socket?.onReconnect((_) {
-      debugPrint('🔄 Socket reconnected! token: $token');
-    });
-
-    socket?.onError((error) {
-      debugPrint('🚫 Socket error: $error');
-    });
-  }
-
-  /// Emit with acknowledgment
-  Future<dynamic> emitWithAck(String event, dynamic body) async {
-    final completer = Completer<dynamic>();
-
-    if (socket == null || !socket!.connected) {
-      debugPrint("⚠️ emitWithAck failed: socket not connected or initialized");
-      completer.completeError("Socket not initialized or connected");
-      return completer.future;
-    }
-
-    socket!.emitWithAck(event, body, ack: (data) {
-      debugPrint("📨 Ack received for $event: $data");
-      completer.complete(data ?? 1);
-    });
-
     return completer.future;
   }
 
@@ -107,16 +79,18 @@ class SocketServices {
   void emit(String event, dynamic body) {
     if (socket != null && socket!.connected) {
       socket!.emit(event, body);
-      debugPrint('📤 Emit: $event\n➡️ Data: $body');
+      print('📤 Emit: $event\n➡️ Data: $body');
     } else {
-      debugPrint("⚠️ Emit failed: socket not connected");
+      print("⚠️ Emit failed: socket not connected");
     }
   }
 
   /// Disconnect socket
   void disconnect() {
-    _isManualDisconnect = true; // <-- mark as manual
+
     socket?.disconnect();
-    debugPrint('🔌 Socket manually disconnected');
+    print('🔌 Socket manually disconnected');
   }
 }
+
+

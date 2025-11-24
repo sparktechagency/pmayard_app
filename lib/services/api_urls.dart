@@ -31,5 +31,6 @@ class ApiUrls {
   static  const String  upcomingSessions = '/sessions/upcoming-sessions';
   static   String  conversations(String type) => '/conversations/?type=$type';
   static   String  inbox(String chatID) => '/messages/$chatID';
+  static   String  sendMessage(String conversationID) => '/messages/$conversationID/send-message';
 
 }
