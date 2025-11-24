@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/controllers/chat/chat_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/chat_card.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_list_tile.dart';
@@ -18,7 +21,11 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
+
+  final String chatID = Get.arguments as String;
   final TextEditingController _messageController = TextEditingController();
+
+  final ChatController _chatController = Get.find<ChatController>();
 
   // Dummy Chat List
   final List<Map<String, dynamic>> _dummyMessages = [
@@ -31,31 +38,57 @@ class _InboxScreenState extends State<InboxScreen> {
     {"text": "Perfect, see you then!", "time": "10:35 AM", "isMe": true},
   ];
 
+
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _chatController.getInbox(chatID);
+    });
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 6.w,
       appBar: CustomAppBar(
-        titleWidget: CustomListTile(
-          statusColor: Colors.grey,
-          title: 'Tanvir Hridoy',
-          subTitle: 'offline',
+        backAction: (){
+          Get.back();
+        },
+        titleWidget: GetBuilder<ChatController>(
+          builder: (controller) {
+            return CustomListTile(
+              image: controller.inboxData?.oppositeUser?.userImage ?? '',
+              statusColor: Colors.grey,
+              title: controller.inboxData?.oppositeUser?.userName ?? 'N/A',
+            );
+          }
         ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
-              itemCount: _dummyMessages.length,
-              itemBuilder: (context, index) {
-                final message = _dummyMessages[index];
-                return ChatBubbleMessage(
-                  text: message["text"],
-                  time: message["time"],
-                  isMe: message["isMe"],
+            child: GetBuilder<ChatController>(
+              builder: (controller) {
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
+                  itemCount: controller.inboxData?.messages?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final message = controller.inboxData?.messages?.reversed.toList()[index];
+                    List<String>? fileUrls = message?.attachmentId?.map((attachment) => attachment.fileUrl as String).toList();
+
+                    return ChatBubbleMessage(
+                      profileImage: controller.inboxData?.oppositeUser?.userImage ?? '',
+                      images: fileUrls,
+                      text: message?.messageText ?? '',
+                      time: message?.createdAt ?? '',
+                      isMe: message?.senderId?.sId == Get.find<UserController>().user?.sId ,
+                    );
+                  },
                 );
-              },
+              }
             ),
           ),
           _buildMessageSender(),

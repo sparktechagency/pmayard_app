@@ -1,6 +1,7 @@
 import 'package:chat_bubbles/bubbles/bubble_normal_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
@@ -13,6 +14,7 @@ class ChatBubbleMessage extends StatelessWidget {
   final bool isSeen;
   final bool isMe;
   final String status;
+  final String? profileImage;
 
   const ChatBubbleMessage({
     super.key,
@@ -21,7 +23,7 @@ class ChatBubbleMessage extends StatelessWidget {
     this.images,
     required this.isMe,
     this.isSeen = false,
-    this.status = 'offline',
+    this.status = 'offline', this.profileImage,
   });
 
   @override
@@ -38,6 +40,7 @@ class ChatBubbleMessage extends StatelessWidget {
             children: [
               if(!isMe)
                 CustomImageAvatar(
+                  image: profileImage,
                   right: 8.w,
                   radius: 15.r,
                 ),
@@ -63,7 +66,7 @@ class ChatBubbleMessage extends StatelessWidget {
                 top: 3.h,
                 fontSize: 10.sp,
                 fontWeight: FontWeight.w400,
-                text: time,
+                text: TimeFormatHelper.timeFormat(time),
                 left: isMe ? 0 : 44.w,
                 right: isMe ? 10.w : 0,
                 color: AppColors.appGreyColor,
@@ -96,17 +99,17 @@ class ChatBubbleMessage extends StatelessWidget {
             return Padding(
               padding: EdgeInsets.only(right: 5.h),
               child: SizedBox(
-                width: 180.w,
+                width: 188.w,
                 child: BubbleNormalImage(
                   id: url ?? '',
-                  image: Image.network(
-                    '${ApiUrls.imageBaseUrl}$url',
+                  image: CustomNetworkImage(imageUrl:
+                    url,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image),
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(child: CircularProgressIndicator());
-                    },
+                   // errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image),
+                   //  loadingBuilder: (context, child, loadingProgress) {
+                   //    if (loadingProgress == null) return child;
+                   //    return Center(child: CircularProgressIndicator());
+                   //  },
                   ),
                   color: Colors.transparent,
                   tail: true,
