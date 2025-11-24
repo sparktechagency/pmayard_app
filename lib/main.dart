@@ -3,17 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/internet/connectivity.dart';
+import 'package:pmayard_app/services/socket_services.dart';
 import 'app/dependancy_injaction.dart';
 import 'app/helpers/device_utils.dart';
 import 'app/theme/app_theme.dart';
 
-void main() {
+void main()async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  
   Get.put(ConnectivityController());
-
   DeviceUtils.lockDevicePortrait();
+
+   await SocketServices.init();
   runApp(const PmayardApp());
 }
 

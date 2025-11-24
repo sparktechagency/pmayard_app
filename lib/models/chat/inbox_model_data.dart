@@ -87,11 +87,12 @@ class Messages {
     updatedAt = json['updatedAt'];
     iV = json['__v'];
   }
+
 }
 
 class SenderId {
   String? sId;
-  String? roleId;
+  RoleId? roleId;
   String? email;
   String? role;
 
@@ -99,7 +100,9 @@ class SenderId {
 
   SenderId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    roleId = json['roleId'];
+    roleId = json['roleId'] != null
+        ? new RoleId.fromJson(json['roleId'])
+        : null;
     email = json['email'];
     role = json['role'];
   }
@@ -118,3 +121,85 @@ class AttachmentId {
     mimeType = json['mimeType'];
   }
 }
+
+class RoleId {
+  final String id;
+  final String name;
+  final String profileImage;
+
+  RoleId({
+    required this.id,
+    required this.name,
+    required this.profileImage,
+  });
+
+  factory RoleId.fromJson(Map<String, dynamic> json) {
+    return RoleId(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+      profileImage: json['profileImage'] as String,
+    );
+  }
+
+}
+
+
+
+class SocketModelData {
+  String? conversationId;
+  Message? message;
+
+  SocketModelData({this.conversationId, this.message});
+
+  SocketModelData.fromJson(Map<String, dynamic> json) {
+    conversationId = json['conversationId'];
+    message =
+    json['message'] != null ? new Message.fromJson(json['message']) : null;
+  }
+}
+
+class Message {
+  String? senderId;
+  String? lastMessage;
+  List<Attachment>? attachment;
+  String? messageType;
+  String? timestamp;
+
+  Message(
+      {this.senderId,
+        this.lastMessage,
+        this.attachment,
+        this.messageType,
+        this.timestamp});
+
+  Message.fromJson(Map<String, dynamic> json) {
+    senderId = json['sender_id'];
+    lastMessage = json['lastMessage'];
+    if (json['attachment'] != null) {
+      attachment = <Attachment>[];
+      json['attachment'].forEach((v) {
+        attachment!.add(new Attachment.fromJson(v));
+      });
+    }
+    messageType = json['message_type'];
+    timestamp = json['timestamp'];
+  }
+}
+
+class Attachment {
+  String? id;
+  String? fileUrl;
+  String? mimeType;
+  String? fileName;
+
+  Attachment({this.id, this.fileUrl, this.mimeType, this.fileName});
+
+  Attachment.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    fileUrl = json['fileUrl'];
+    mimeType = json['mimeType'];
+    fileName = json['fileName'];
+  }
+
+}
+

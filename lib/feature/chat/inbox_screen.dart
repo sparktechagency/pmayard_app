@@ -3,11 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
+import 'package:pmayard_app/controllers/chat/chat_listen_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/chat_card.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_list_tile.dart';
+import 'package:pmayard_app/widgets/custom_loader.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
+import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:pmayard_app/widgets/custom_text_field.dart';
 
 import '../../custom_assets/assets.gen.dart';
@@ -23,27 +26,15 @@ class InboxScreen extends StatefulWidget {
 class _InboxScreenState extends State<InboxScreen> {
 
   final String chatID = Get.arguments as String;
-  final TextEditingController _messageController = TextEditingController();
 
   final ChatController _chatController = Get.find<ChatController>();
-
-  // Dummy Chat List
-  final List<Map<String, dynamic>> _dummyMessages = [
-    {"text": "Hey! How are you?", "time": "10:20 AM", "isMe": false},
-    {"text": "I'm good, what about you?", "time": "10:22 AM", "isMe": true},
-    {"text": "Doing well, thanks for asking!", "time": "10:25 AM", "isMe": false},
-    {"text": "Are you free this evening?", "time": "10:28 AM", "isMe": false},
-    {"text": "Yes, I am. Any plans?", "time": "10:30 AM", "isMe": true},
-    {"text": "Let’s catch up at the café.", "time": "10:32 AM", "isMe": false},
-    {"text": "Perfect, see you then!", "time": "10:35 AM", "isMe": true},
-  ];
-
-
+  final SocketChatController _socketChatController = Get.find<SocketChatController>();
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _chatController.getInbox(chatID);
+      _socketChatController.listenMessage(chatID);
     });
     super.initState();
   }
@@ -56,6 +47,7 @@ class _InboxScreenState extends State<InboxScreen> {
       appBar: CustomAppBar(
         backAction: (){
           Get.back();
+          _socketChatController.removeListeners(chatID);
         },
         titleWidget: GetBuilder<ChatController>(
           builder: (controller) {
@@ -72,6 +64,19 @@ class _InboxScreenState extends State<InboxScreen> {
           Expanded(
             child: GetBuilder<ChatController>(
               builder: (controller) {
+                if(controller.isLoadingInbox){
+                  return Center(
+                    child: CustomLoader(),
+                  );
+                }if(controller.inboxData == null || controller.inboxData?.messages == null || controller.inboxData!.messages!.isEmpty){
+                  return Center(
+                    child: CustomText(
+                      text: 'No messages yet. Start the conversation!',
+                      fontSize: 16.sp,
+                      color: AppColors.appGreyColor,
+                    ),
+                  );
+                }
                 return ListView.builder(
                   padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
                   itemCount: controller.inboxData?.messages?.length ?? 0,
@@ -106,7 +111,7 @@ class _InboxScreenState extends State<InboxScreen> {
           Expanded(
             child: CustomTextField(
               validator: (_) => null,
-              controller: _messageController,
+              controller: _chatController.messageController,
               hintText: 'Type message...',
               suffixIcon: IconButton(
                 onPressed: () {},
@@ -116,27 +121,31 @@ class _InboxScreenState extends State<InboxScreen> {
             ),
           ),
           SizedBox(width: 10.w),
-          CustomContainer(
-            onTap: () {
-              if (_messageController.text.isNotEmpty) {
-                setState(() {
-                  _dummyMessages.add({
-                    "text": _messageController.text,
-                    "time": "Now",
-                    "isMe": true,
-                  });
-                });
-                _messageController.clear();
-              }
-            },
-            paddingVertical: 12.r,
-            paddingHorizontal: 12.r,
-            shape: BoxShape.circle,
-            color: AppColors.secondaryColor,
-            child: Assets.icons.massegeSend.svg(),
+          GetBuilder<ChatController>(
+            builder: (controller) {
+              return CustomContainer(
+                onTap: () {
+                  if (controller.messageController.text.isNotEmpty) {
+                    controller.sendMessage(chatID);
+                    controller.messageController.clear();
+                  }
+                },
+                paddingVertical: 12.r,
+                paddingHorizontal: 12.r,
+                shape: BoxShape.circle,
+                color: AppColors.secondaryColor,
+                child: Assets.icons.massegeSend.svg(),
+              );
+            }
           ),
         ],
       ),
     );
+  }
+
+  @override
+  dispose() {
+    _socketChatController.removeListeners(chatID);
+    super.dispose();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/models/chat/chat_model_data.dart';
 import 'package:pmayard_app/models/chat/inbox_model_data.dart';
@@ -6,6 +7,7 @@ import 'package:pmayard_app/services/api_urls.dart';
 
 class ChatController extends GetxController {
   bool isLoadingChat = false;
+
 
   List<ChatModelData> chatData = [];
 
@@ -55,6 +57,29 @@ class ChatController extends GetxController {
       }
     }
     isLoadingInbox = false;
+    update();
+  }
+
+
+
+
+  final TextEditingController messageController = TextEditingController();
+
+  bool isSendingMessage = false;
+
+  Future<void> sendMessage(String conversationID) async {
+    isSendingMessage = true;
+    update();
+
+    final response = await ApiClient.postData(ApiUrls.sendMessage(conversationID),
+
+        {
+      "message_text": messageController.text.trim()
+    },
+    );
+    if (response.statusCode == 200) {
+    }
+    isSendingMessage = false;
     update();
   }
 }
