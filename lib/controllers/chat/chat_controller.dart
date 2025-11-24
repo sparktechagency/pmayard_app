@@ -11,7 +11,7 @@ class ChatController extends GetxController {
 
   final chatType = [
     {'label': 'Chat', 'value': 'individual'},
-    {'label': 'Group', 'value': 'group'},
+    {'label': 'Announcement', 'value': 'group'},
   ];
 
   String selectedValueType = 'individual';
