@@ -4,12 +4,11 @@ import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/feature/profile/resources/resources_widgets/ResourceGradeWidget.dart';
 import 'package:pmayard_app/feature/profile/resources/subject_screen.dart';
-import 'package:pmayard_app/feature/profile/resources/title_screen.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 
-class SubjectScreen extends StatelessWidget {
-  const SubjectScreen({super.key});
+class TitleScreen extends StatelessWidget {
+  const TitleScreen({super.key});
 
   @override
   @override
@@ -17,17 +16,14 @@ class SubjectScreen extends StatelessWidget {
     return CustomScaffold(
         appBar: CustomAppBar(
           borderColor: AppColors.secondaryColor,
-          title: 'Resources',
+          title: 'Grade 1',
         ),
 
         body: ListView.separated(
           shrinkWrap: true,
           padding: EdgeInsets.only(top: 10.h),
           itemCount: 15,
-          itemBuilder:  (context, index) => GestureDetector(
-            onTap: ()=> Get.to(TitleScreen()),
-            child: ResourceGradeWidget(title: 'Subject Name',icon: Icons.keyboard_arrow_right_rounded),
-          ),
+          itemBuilder:  (context, index) => ResourceGradeWidget(title: 'Title',icon: Icons.download),
           separatorBuilder: (context, index) => SizedBox(height:  15.h,),
         )
     );

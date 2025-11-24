@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ResourceGradeWidget extends StatelessWidget {
-  const ResourceGradeWidget({
-    super.key,
-    required this.title,
-    required this.icon,
-  });
-  final String title;
-  final IconData icon;
+class NotificationCardWidget extends StatelessWidget {
+  const NotificationCardWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +15,17 @@ class ResourceGradeWidget extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(title),
-          Icon(icon),
+          Icon(Icons.notifications, color: Color(0XFF305CDE)),
+          Text(
+            'New tutor just got assigned to you',
+            style: TextStyle(color: Color(0XFF333333), fontSize: 12.sp),
+          ),
+          Text(
+            '4:30 PM ',
+            style: TextStyle(color: Color(0XFF767676), fontSize: 12.sp),
+          ),
         ],
       ),
     );

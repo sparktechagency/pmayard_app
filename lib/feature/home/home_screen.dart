@@ -10,6 +10,7 @@ import 'package:pmayard_app/models/assigned/assigned_professional_model_data.dar
 import 'package:pmayard_app/models/assigned/assigned_response_data.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
 import 'package:pmayard_app/models/session/session_response_data.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 import '../../custom_assets/assets.gen.dart';
 
@@ -54,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Assets.icons.notification.svg()),
+          IconButton(onPressed: ()=> Get.toNamed(AppRoutes.notificationScreen), icon: Assets.icons.notification.svg()),
         ],
         toolbarHeight: 90.h,
         backgroundColor: AppColors.secondaryColor,

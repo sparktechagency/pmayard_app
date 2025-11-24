@@ -21,7 +21,7 @@ class ApiUrls {
 
   static  const String  terms = '/rules/terms';
   static  const String  about = '/rules/aboutus';
-  static  const String  privacy = '/rules/privacy';
+  static  const String  privacy = '/rules/privacy'; 
 
   static  const String  changePassword = '/auth/change-password';
 
@@ -32,5 +32,6 @@ class ApiUrls {
   static  const String  upcomingSessions = '/sessions/upcoming-sessions';
   static   String  conversations(String type) => '/conversations/?type=$type';
   static   String  inbox(String chatID) => '/messages/$chatID';
+  static const String notification = '';
 
 }

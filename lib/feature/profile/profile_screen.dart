@@ -79,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                   },
                 ),
                 ProfileListTile(
-                  icon: Assets.icons.date.svg(),
+                  icon: Assets.icons.terms.svg(),
                   title: "Resources",
                   onTap: () {
                     Get.toNamed(AppRoutes.resourcesScreen);
