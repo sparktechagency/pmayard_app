@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
-import 'package:pmayard_app/models/user_model/user_data_model.dart';
 
 import '../../app/helpers/prefs_helper.dart';
 import '../../app/utils/app_constants.dart';
@@ -273,6 +272,41 @@ class AuthController extends GetxController {
     update();
   }
 
+  /// <=============== Change passport related work are here ========================
+  bool isChangePassword = false;
+  final TextEditingController currentPasswordTEController = TextEditingController();
+  final TextEditingController newPasswordTEController = TextEditingController();
+  final TextEditingController confirmPasswordTEController = TextEditingController();
+
+  void changePassword() async {
+    isChangePassword = true;
+    update();
+
+    final request = {
+      'currentPassword': currentPasswordTEController.text,
+      'newPassword': newPasswordTEController.text,
+    };
+
+    final response = await ApiClient.postData(ApiUrls.changePassword, request);
+    if (response.statusCode == 200) {
+      await PrefsHelper.setString(
+          AppConstants.bearerToken, response.body['accessToken']);
+      UserController().userData();
+      showToast(response.body['message']);
+      clearChangePasswordField();
+    } else {
+      showToast(response.body['message']);
+    }
+
+    isChangePassword = false;
+    update();
+  }
+  void clearChangePasswordField() {
+    confirmPasswordTEController.clear();
+    newPasswordTEController.clear();
+    currentPasswordTEController.clear();
+  }
+  
   /// <======================= Log out related work are here  ===========================>
 
   void logOut() async {
@@ -293,6 +327,8 @@ class AuthController extends GetxController {
     forgotEmailController.dispose();
     resetPasswordController.dispose();
     newResetPasswordController.dispose();
+    currentPasswordTEController.dispose();
+    newPasswordTEController.dispose();
     super.onClose();
   }
 }

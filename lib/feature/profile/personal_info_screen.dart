@@ -1,14 +1,11 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
-import 'package:pmayard_app/widgets/custom_network_image.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 
 import '../../app/helpers/menu_show_helper.dart';
@@ -47,7 +44,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   children: [
                     CustomImageAvatar(
                       radius: 44.r,
-                      image:  controller.user?.roleId?.profileImage,
+                      image:  controller.user?.roleId?.profileImage ?? '',
                       fileImage: controller.selectedImage,
                     ),
                     Positioned.fill(

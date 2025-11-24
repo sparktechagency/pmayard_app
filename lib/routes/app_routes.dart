@@ -13,6 +13,8 @@ import 'package:pmayard_app/feature/chat/inbox_screen.dart';
 import 'package:pmayard_app/feature/onboarding_screen.dart';
 import 'package:pmayard_app/feature/profile/personal_info_screen.dart';
 import 'package:pmayard_app/feature/profile/profile_view_screen.dart';
+import 'package:pmayard_app/feature/profile/resources/resources_screen.dart';
+import 'package:pmayard_app/feature/profile/resources/subject_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/about_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/change%20password/setting_change_password.dart';
 import 'package:pmayard_app/feature/profile/setting/privacy_policy_screen.dart';
@@ -70,7 +72,8 @@ abstract class AppRoutes {
   static const String scheduleScreen = '/scheduleScreen';
   static const String editScheduleScreen = '/editScheduleScreen';
   static const String completeProfileProfessional = '/completeProfileProfessional';
-
+  static const String resourcesScreen = '/ResourcesScreen';
+  static const String subjectScreen = '/SubjectScreen';
 
 
 
@@ -96,6 +99,7 @@ abstract class AppRoutes {
     profileViewScreen : (context) => ProfileViewScreen(),
     scheduleScreen : (context) => ScheduleScreen(),
     editScheduleScreen : (context) => EditScheduleScreen(),
-
+    resourcesScreen : (context) => ResourcesScreen(),
+    subjectScreen : (context) => SubjectScreen()
   };
 }
