@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/auth/auth_controller.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
+import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 class DependencyInjection implements Bindings {
@@ -12,4 +13,5 @@ class DependencyInjection implements Bindings {
     Get.put(UserController());
     Get.put(AssignedController());
     Get.put(SessionsController());
+    Get.put(ChatController());
   }}

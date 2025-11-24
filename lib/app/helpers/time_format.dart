@@ -20,9 +20,15 @@ class TimeFormatHelper {
     return DateFormat('dd\n MMM ').format(date);
   }
 
-  static String timeFormat(DateTime date) {
-    return DateFormat('hh:mm a').format(date);
+  static String timeFormat(String dateString) {
+    try {
+      DateTime dateTime = DateTime.parse(dateString).toLocal();
+      return DateFormat('hh:mm a').format(dateTime);
+    } catch (e) {
+      return '';
+    }
   }
+
 
 
   static timeWithAMPM( DateTime time){

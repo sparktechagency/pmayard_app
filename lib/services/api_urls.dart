@@ -29,5 +29,7 @@ class ApiUrls {
   static  const String  professionalCreate = '/professionals/professional';
   static  const String  assigned = '/sessions/assigned-roles';
   static  const String  upcomingSessions = '/sessions/upcoming-sessions';
+  static   String  conversations(String type) => '/conversations/?type=$type';
+  static   String  inbox(String chatID) => '/messages/$chatID';
 
 }
