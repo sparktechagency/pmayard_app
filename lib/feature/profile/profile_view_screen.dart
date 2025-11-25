@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
-import 'package:pmayard_app/feature/profile/widgets/profile_list_tile.dart';
-import '../../custom_assets/assets.gen.dart';
-import '../../routes/app_routes.dart';
 import '../../widgets/widgets.dart';
 class ProfileViewScreen extends StatelessWidget {
   const ProfileViewScreen({super.key});
@@ -36,9 +32,6 @@ class ProfileViewScreen extends StatelessWidget {
               ),
             ),
             Center(child: CustomText(text: "Parent", fontSize: 12.h,fontWeight: FontWeight.w500,top: 4.h,color: AppColors.appGreyColor)),
-        
-        
-        
             SizedBox(height: 44.h),
             _buildListTile(title: 'Child’s Name', subtitle: 'Max'),
             _buildListTile(title: 'Child’s Grade', subtitle: '5th'),

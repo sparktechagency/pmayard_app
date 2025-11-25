@@ -33,5 +33,6 @@ class ApiUrls {
   static   String  conversations(String type) => '/conversations/?type=$type';
   static   String  inbox(String chatID) => '/messages/$chatID';
   static   String  sendMessage(String conversationID) => '/messages/$conversationID/send-message';
+  static String sessionSearch( String date ) => '/sessions/my-sessions';
 
 }

@@ -18,4 +18,5 @@ class DependencyInjection implements Bindings {
     Get.put(ChatController());
     Get.put(SocketChatController());
     Get.put(LegalController());
+
   }}
