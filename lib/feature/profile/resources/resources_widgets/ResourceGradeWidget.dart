@@ -6,9 +6,11 @@ class ResourceGradeWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.icon,
+    this.downloader,
   });
   final String title;
   final IconData icon;
+  final VoidCallback? downloader;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,11 @@ class ResourceGradeWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title),
-          Icon(icon),
+          GestureDetector(
+            onTap: downloader,
+            child: Icon(icon),
+          )
+          ,
         ],
       ),
     );

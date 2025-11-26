@@ -5,6 +5,7 @@ import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_con
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/controllers/chat/chat_listen_controller.dart';
 import 'package:pmayard_app/controllers/legal/legal_controller.dart';
+import 'package:pmayard_app/controllers/resources/resource_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 class DependencyInjection implements Bindings {
@@ -18,5 +19,5 @@ class DependencyInjection implements Bindings {
     Get.put(ChatController());
     Get.put(SocketChatController());
     Get.put(LegalController());
-
+    Get.put(ResourceController());
   }}

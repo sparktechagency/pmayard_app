@@ -41,7 +41,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     return CustomScaffold(
       paddingSide: 0,
-      appBar: CustomAppBar(title: 'Session Maruf'),
+      appBar: CustomAppBar(title: 'Session'),
       body: GetBuilder<SessionsController>(
         builder: (controller) {
           return Column(

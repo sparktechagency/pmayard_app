@@ -22,13 +22,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final controller = Get.find<UserController>();
   final AssignedController _assignedController = Get.find<AssignedController>();
   final SessionsController _sessionsController = Get.find<SessionsController>();
 
   @override
   void initState() {
     super.initState();
-
     _assignedController.getAssigned();
     _sessionsController.getSessions();
   }
@@ -113,18 +113,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           String name = '';
                           String imageUrl = '';
+                          String id;
+                          String chatId;
 
                           if (role == 'professional') {
                             final item = assignedData[index] as AssignedProfessionalModelData;
                             name = item.parent?.name ?? '';
                             imageUrl = item.parent?.profileImage ?? '';
+                            id = item.parent?.sId ?? '';
+                            chatId = item.conversationId ?? '';
                           } else {
                             final item = assignedData[index] as AssignedParentModelData;
                             name = item.professional?.name ?? '';
                             imageUrl = item.professional?.profileImage ?? '';
+                            id = item.professional?.sId ?? '';
+                            chatId = item.conversationId ?? '';
                           }
 
                           return AssignedCardWidget(
+                            chatId: chatId,
+                            id: id,
                             index: index,
                             name: name,
                             role: role,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/models/session/assign_view_profile_model.dart';
 import 'package:pmayard_app/models/session/my_session_parent_model.dart';
 import 'package:pmayard_app/models/session/my_session_professional_model.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
@@ -118,5 +119,24 @@ class SessionsController extends GetxController {
       isLoadingSelectedSession = false;
       update();
     }
+  }
+
+  bool isLoadingAssignViewProfile = false;
+  AssignViewProfileModel? assignViewProfileModel;
+
+  Future<void> fetchAssignViewProfile(String userId) async{
+    isLoadingAssignViewProfile = true;
+    update();
+
+    final response = await ApiClient.getData(ApiUrls.sessionViewProfile(userId));
+    if( response.statusCode == 200 ){
+        final data = response.body['data'];
+        assignViewProfileModel = AssignViewProfileModel.fromJson(data);
+    }else{
+      showToast('Something Went Wrong');
+    }
+
+    isLoadingAssignViewProfile = false;
+    update();
   }
 }

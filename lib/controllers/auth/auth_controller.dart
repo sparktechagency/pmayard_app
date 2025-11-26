@@ -182,6 +182,7 @@ class AuthController extends GetxController {
         Get.offAllNamed(AppRoutes.customBottomNavBar);
       } else {
         if (responseBody['data']['user']['role'] == 'professional') {
+          UserController().userData();
           Get.toNamed(AppRoutes.completeProfileProfessional);
         } else {
           Get.toNamed(AppRoutes.completeProfileParent);
