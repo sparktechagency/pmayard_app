@@ -19,7 +19,6 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   Map<DateTime, String> selectedSlots = {};
   Map<DateTime, List<String>> weekTimeSlots = {};
 
-
   List<DateTime> getWeekDates(DateTime date) {
     int currentWeekDay = date.weekday;
     DateTime sunday = date.subtract(Duration(days: currentWeekDay % 7));
@@ -31,15 +30,13 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
 
     for (var day in weekDays) {
       weekTimeSlots[day] = [
-        "10:00 - 10:30",
-        "11:00 - 11:30",
-        "12:00 - 12:30",
-        "01:00 - 01:30",
-        "02:00 - 02:30",
-        "03:00 - 03:30",
-        "04:00 - 04:30",
-        "05:00 - 05:30",
-        "06:00 - 06:30",
+        "9:00",
+        "11:00",
+        "1:00",
+        "3:00",
+        "5:00",
+        "7:00",
+        "9:00",
       ];
     }
   }
@@ -86,8 +83,8 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
             children: weekDays.map((date) {
               bool isSelected =
                   date.day == selectedDate.day &&
-                      date.month == selectedDate.month &&
-                      date.year == selectedDate.year;
+                  date.month == selectedDate.month &&
+                  date.year == selectedDate.year;
 
               // show dot if slot already selected for that day
               bool hasSlotSelected = selectedSlots.containsKey(date);
@@ -115,19 +112,21 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                         children: [
                           CustomText(
                             text: "${date.day}",
-                            color: isSelected ? Colors.white : AppColors.appGreyColor,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.appGreyColor,
                           ),
                           Positioned(
                             bottom: 2.h,
                             child: hasSlotSelected
                                 ? CustomContainer(
-                              height: 5.h,
-                              width: 5.w,
-                                color: AppColors.secondaryColor,
-                                shape: BoxShape.circle,
-                            )
+                                    height: 5.h,
+                                    width: 5.w,
+                                    color: AppColors.secondaryColor,
+                                    shape: BoxShape.circle,
+                                  )
                                 : SizedBox.shrink(),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -145,13 +144,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
             bottom: 10.h,
           ),
 
-
-
           Expanded(
             child: GridView.builder(
               itemCount: getSelectedDaySlots().length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: 2,
                 childAspectRatio: 109.w / 38.h,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
@@ -197,19 +194,15 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
               },
             ),
           ),
-
-
-
           CustomButton(
             onPressed: () {
-              if(allSlotsSelected){
+              if (allSlotsSelected) {
                 debugPrint("Weekly Schedule:");
                 selectedSlots.forEach((date, slot) {
                   debugPrint("${DateFormat.E().format(date)}: $slot");
                 });
               }
               Get.back();
-
             },
             label: "Confirm",
           ),

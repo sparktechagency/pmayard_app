@@ -139,4 +139,22 @@ class SessionsController extends GetxController {
     isLoadingAssignViewProfile = false;
     update();
   }
+
+  bool isChangeStatus = false;
+  Future<void> completeSessionDBHandler( String userID, String status ) async {
+    isChangeStatus = true;
+    update();
+
+    final responseBody = {
+      'status' : status
+    };
+
+    final response = await ApiClient.postData(ApiUrls.completeSession(userID), responseBody);
+    if( response.statusCode == 200 ){
+      isChangeStatus = false;
+      update();
+    }else{
+      showToast('Something Went Wrong');
+    }
+  }
 }

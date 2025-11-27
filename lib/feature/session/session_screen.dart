@@ -122,30 +122,45 @@ class _SessionScreenState extends State<SessionScreen> {
                         String imageUrl = '';
                         String? day;
                         String? date;
+                        String? status;
 
                         if (userRole == 'professional') {
                           final session =
                               sessionData[index]
                                   as MySessionProfessionalModelData;
+
+                          print(
+                            '=================> Maruf Profession Data $session',
+                          );
+
                           name = session.parent?.name ?? 'Unknown';
                           imageUrl = session.parent?.profileImage ?? 'Unknown';
                           day = session.day;
                           date = session.date;
+                          status = session.status;
                         } else {
                           final session =
                               sessionData[index] as MySessionParentModelData;
+
+                          print(
+                            '=================> Maruf Parent Data $session',
+                          );
+
                           name = session.professional?.name ?? 'Unknown';
                           imageUrl =
                               session.professional?.profileImage ?? 'Unknown';
                           day = session.day;
                           date = session.date;
+                          status = session.status;
                         }
 
                         final hasDateTime =
                             (day != null && day.isNotEmpty) &&
                             (date != null && date.isNotEmpty);
 
-                        final subTitle = hasDateTime ? '$date at $day' : 'Waiting';
+                        final subTitle = hasDateTime
+                            ? '$date at $day'
+                            : 'Waiting';
 
                         return Padding(
                           padding: EdgeInsets.symmetric(
@@ -161,58 +176,62 @@ class _SessionScreenState extends State<SessionScreen> {
                             title: name,
                             subTitle: subTitle,
                             titleFontSize: 16.sp,
-                            trailing: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Flexible(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => CustomDialog(
-                                          title:
-                                              "You sure you want to cancel the session?",
-                                          confirmButtonColor: Color(0xffF40000),
-                                          confirmButtonText: 'Yes',
-                                          onCancel: () {
-                                            Get.back();
+                            trailing: status == 'Confirmed'
+                                ? _buildSessionStatus(status!)
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Flexible(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(
+                                                title:
+                                                    "You sure you want to cancel the session?",
+                                                confirmButtonColor: Color(
+                                                  0xffF40000,
+                                                ),
+                                                confirmButtonText: 'Yes',
+                                                onCancel: () {
+                                                  Get.back();
+                                                },
+                                                onConfirm: () {
+                                                  Get.back();
+                                                  //Get.offAllNamed(AppRoutes.loginScreen);
+                                                },
+                                              ),
+                                            );
                                           },
-                                          onConfirm: () {
-                                            Get.back();
-                                            //Get.offAllNamed(AppRoutes.loginScreen);
-                                          },
-                                        ),
-                                      );
-                                    },
 
-                                    child: Assets.icons.cleanIcon.svg(),
-                                  ),
-                                ),
-                                SizedBox(width: 12.w),
-                                Flexible(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => CustomDialog(
-                                          title:
-                                              "Do you want to mark this session as completed?",
-                                          confirmButtonText: 'Yes',
-                                          onCancel: () {
-                                            Get.back();
-                                          },
-                                          onConfirm: () {
-                                            Get.back();
-                                            //Get.offAllNamed(AppRoutes.loginScreen);
-                                          },
+                                          child: Assets.icons.cleanIcon.svg(),
                                         ),
-                                      );
-                                    },
-                                    child: Assets.icons.success.svg(),
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Flexible(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(
+                                                title:
+                                                    "Do you want to mark this session as completed?",
+                                                confirmButtonText: 'Yes',
+                                                onCancel: () {
+                                                  Get.back();
+                                                },
+                                                onConfirm: () {
+                                                  Get.back();
+                                                  //Get.offAllNamed(AppRoutes.loginScreen);
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          child: Assets.icons.success.svg(),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
                           ),
                         );
                       },
@@ -226,4 +245,43 @@ class _SessionScreenState extends State<SessionScreen> {
       ),
     );
   }
+
+  Widget _buildSessionStatus(String status) {
+    String value = 'Complete';
+    Color bgColor = Color(0xFF0ABAB5);
+
+    switch (status) {
+      case 'Complete':
+        value = 'Complete';
+        bgColor = const Color(0xFFC2B067);
+        break;
+
+      case 'Canceled': // Check spelling!
+        value = 'Canceled';
+        bgColor = const Color(0xFFF40000);
+        break;
+
+      case 'Confirm':
+        value = 'Confirmed';
+        bgColor = const Color(0xFF0ABAB5);
+        break;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+      decoration: BoxDecoration(
+        color: bgColor.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(30.r),
+      ),
+      child: Text(
+        value,
+        style: TextStyle(
+          color: bgColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    );
+  }
+
 }

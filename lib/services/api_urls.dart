@@ -45,5 +45,6 @@ class ApiUrls {
   static String gradeSearch( String searchTerm ) => '/grades/?searchTerm=$searchTerm';
   static String subjectsSearch( String userId ) => '/subjects/$userId';
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
+  static String completeSession(String userID) => '/sessions/$userID/status';
 
 }
