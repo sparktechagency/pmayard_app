@@ -12,6 +12,7 @@ import 'package:pmayard_app/feature/bottom_nav_bar/customtom_bottom_nav.dart';
 import 'package:pmayard_app/feature/chat/inbox_screen.dart';
 import 'package:pmayard_app/feature/home/notification/notification_screen.dart';
 import 'package:pmayard_app/feature/onboarding_screen.dart';
+import 'package:pmayard_app/feature/profile/calender_screen/calender_screen.dart';
 import 'package:pmayard_app/feature/profile/personal_info_screen.dart';
 import 'package:pmayard_app/feature/profile/profile_view_screen.dart';
 import 'package:pmayard_app/feature/profile/resources/resources_screen.dart';
@@ -75,7 +76,7 @@ abstract class AppRoutes {
   static const String completeProfileProfessional = '/completeProfileProfessional';
   static const String resourcesScreen = '/ResourcesScreen';
   static const String subjectScreen = '/SubjectScreen';
-
+  static const String calenderScreen = '/CalenderScreen';
 
 
   ///  ============= > routes < ==============
@@ -103,5 +104,6 @@ abstract class AppRoutes {
     resourcesScreen : (context) => ResourcesScreen(),
     subjectScreen : (context) => SubjectScreen(),
     notificationScreen: (context) => NotificationScreen(),
+    calenderScreen : (context) => CalenderScreen(),
   };
 }

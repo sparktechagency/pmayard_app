@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
-import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class EditScheduleScreen extends StatefulWidget {

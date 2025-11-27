@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/feature/auth/widgets/app_logo.dart';
-import 'package:pmayard_app/routes/app_routes.dart';
-
 import '../../../controllers/auth/auth_controller.dart';
 import '../../../widgets/widgets.dart';
 

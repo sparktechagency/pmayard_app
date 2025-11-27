@@ -123,6 +123,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         String? day;
                         String? date;
                         String? status;
+                        String? userID;
 
                         if (userRole == 'professional') {
                           final session =
@@ -138,6 +139,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           day = session.day;
                           date = session.date;
                           status = session.status;
+                          userID = session.sId;
                         } else {
                           final session =
                               sessionData[index] as MySessionParentModelData;
@@ -152,6 +154,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           day = session.day;
                           date = session.date;
                           status = session.status;
+                          userID = session.sId;
                         }
 
                         final hasDateTime =
@@ -167,71 +170,83 @@ class _SessionScreenState extends State<SessionScreen> {
                             horizontal: 16.w,
                             vertical: 6.h,
                           ),
-                          child: CustomListTile(
-                            contentPaddingVertical: 6.h,
-                            borderRadius: 8.r,
-                            borderColor: AppColors.borderColor,
-                            image: imageUrl,
-                            imageRadius: 24.r,
-                            title: name,
-                            subTitle: subTitle,
-                            titleFontSize: 16.sp,
-                            trailing: status == 'Confirmed'
-                                ? _buildSessionStatus(status!)
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Flexible(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => CustomDialog(
-                                                title:
-                                                    "You sure you want to cancel the session?",
-                                                confirmButtonColor: Color(
-                                                  0xffF40000,
-                                                ),
-                                                confirmButtonText: 'Yes',
-                                                onCancel: () {
-                                                  Get.back();
-                                                },
-                                                onConfirm: () {
-                                                  Get.back();
-                                                  //Get.offAllNamed(AppRoutes.loginScreen);
-                                                },
-                                              ),
-                                            );
-                                          },
+                          child: GetBuilder<SessionsController>(
+                            builder: (controller) {
+                              return CustomListTile(
+                                contentPaddingVertical: 6.h,
+                                borderRadius: 8.r,
+                                borderColor: AppColors.borderColor,
+                                image: imageUrl,
+                                imageRadius: 24.r,
+                                title: name,
+                                subTitle: subTitle,
+                                titleFontSize: 16.sp,
+                                trailing: status == 'Confirmed'
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Flexible(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => CustomDialog(
+                                                    title:
+                                                        "You sure you want to cancel the session?",
+                                                    confirmButtonColor: Color(
+                                                      0xffF40000,
+                                                    ),
+                                                    confirmButtonText: 'Yes',
+                                                    onCancel: (){
+                                                      Get.back();
+                                                      //Get.offAllNamed(AppRoutes.loginScreen);
+                                                    },
+                                                    onConfirm: () => controller
+                                                        .completeSessionDBHandler(
+                                                      userID!,
+                                                      status!,
+                                                    )
+                                                  ),
+                                                );
+                                              },
 
-                                          child: Assets.icons.cleanIcon.svg(),
-                                        ),
+                                              child: Assets.icons.cleanIcon
+                                            .svg(),
                                       ),
-                                      SizedBox(width: 12.w),
-                                      Flexible(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => CustomDialog(
-                                                title:
-                                                    "Do you want to mark this session as completed?",
-                                                confirmButtonText: 'Yes',
-                                                onCancel: () {
-                                                  Get.back();
-                                                },
-                                                onConfirm: () {
-                                                  Get.back();
-                                                  //Get.offAllNamed(AppRoutes.loginScreen);
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          child: Assets.icons.success.svg(),
-                                        ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Flexible(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                CustomDialog(
+                                                  title:
+                                                  "Do you want to mark this session as completed?",
+                                                  confirmButtonText: 'Yes',
+                                                  onCancel: () {
+                                                    Get.back();
+                                                    //Get.offAllNamed(AppRoutes.loginScreen);
+                                                  },
+                                                  onConfirm: () =>
+                                                      controller
+                                                          .completeSessionDBHandler(
+                                                        userID!,
+                                                        status!,
+                                                      ),
+                                                ),
+                                          );
+                                        },
+                                        child: Assets.icons.success.svg(),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                )
+                                    : _buildSessionStatus(status!),
+                              );
+                            },
                           ),
                         );
                       },
@@ -243,27 +258,23 @@ class _SessionScreenState extends State<SessionScreen> {
           );
         },
       ),
+
     );
   }
 
   Widget _buildSessionStatus(String status) {
-    String value = 'Complete';
+    String value = status;
     Color bgColor = Color(0xFF0ABAB5);
 
     switch (status) {
-      case 'Complete':
-        value = 'Complete';
+      case 'Completed':
+        value = status;
         bgColor = const Color(0xFFC2B067);
         break;
 
-      case 'Canceled': // Check spelling!
-        value = 'Canceled';
+      default: // Check spelling!
+        value = status;
         bgColor = const Color(0xFFF40000);
-        break;
-
-      case 'Confirm':
-        value = 'Confirmed';
-        bgColor = const Color(0xFF0ABAB5);
         break;
     }
 
@@ -283,5 +294,4 @@ class _SessionScreenState extends State<SessionScreen> {
       ),
     );
   }
-
 }

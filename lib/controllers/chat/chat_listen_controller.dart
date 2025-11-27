@@ -8,9 +8,6 @@ class SocketChatController extends GetxController {
   SocketServices socketService = SocketServices();
   final ChatController _chatController = Get.find<ChatController>();
 
-
-
-
    /// ===============> Listen for new messages via socket.
   void listenMessage(String conversationID) {
     SocketServices.socket?.on("new_message-$conversationID", (data) {
@@ -26,8 +23,6 @@ class SocketChatController extends GetxController {
       }
     });
   }
-
-
 
   Messages convertSocketToMessage(SocketModelData socketData) {
     final msg = socketData.message;
@@ -56,13 +51,8 @@ class SocketChatController extends GetxController {
       iV: 0,
     );
   }
-
-
-
   void removeListeners(String conversationId) {
     SocketServices.socket?.off("new_message-$conversationId");
   }
-
-
 }
 

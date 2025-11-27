@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/models/resources/grade_model.dart';
 import 'package:pmayard_app/models/resources/metarials_model.dart';
@@ -91,5 +90,4 @@ class ResourceController extends GetxController {
       showToast('Someting went wrong');
     }
   }
-
 }

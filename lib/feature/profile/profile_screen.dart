@@ -89,7 +89,7 @@ class ProfileScreen extends StatelessWidget {
                   icon: Assets.icons.date.svg(),
                   title: "Calender",
                   onTap: () {
-                    Get.toNamed(AppRoutes.editScheduleScreen);
+                    Get.toNamed(AppRoutes.calenderScreen);
                   },
                 ),
                 ProfileListTile(

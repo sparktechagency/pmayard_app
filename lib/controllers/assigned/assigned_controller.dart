@@ -18,10 +18,9 @@ class AssignedController extends GetxController {
     update();
 
     final response = await ApiClient.getData(ApiUrls.assigned);
+
     if (response.statusCode == 200) {
       final List data = response.body['data'] ?? [];
-
-
       if(role == 'professional'){
         final professional = data.map((item) => AssignedProfessionalModelData.fromJson(item)).toList();
         assignedProfessionalData.addAll(professional);

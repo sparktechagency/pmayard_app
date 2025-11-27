@@ -1,17 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
-import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
-import 'package:pmayard_app/routes/app_routes.dart';
-import 'package:pmayard_app/widgets/multiple_selection.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class CompleteProfileParent extends StatefulWidget {
@@ -22,9 +17,8 @@ class CompleteProfileParent extends StatefulWidget {
 }
 
 class _CompleteProfileParentState extends State<CompleteProfileParent> {
-
-  final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
-
+  final ProfileConfirmController profileController =
+      Get.find<ProfileConfirmController>();
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -33,10 +27,7 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: CustomAppBar(
-        title: 'Complete Your Profile',
-      ),
-
+      appBar: CustomAppBar(title: 'Complete Your Profile'),
 
       body: SingleChildScrollView(
         child: Column(
@@ -55,24 +46,28 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                       bottom: 12.h,
                       right: 6.w,
                       child: GestureDetector(
-                        onTap: () => controller.onTapImageParentSelected(context),
-                          child: Assets.icons.profileCamera.svg()),
-                    )
-
+                        onTap: () =>
+                            controller.onTapImageParentSelected(context),
+                        child: Assets.icons.profileCamera.svg(),
+                      ),
+                    ),
                   ],
                 );
-              }
+              },
             ),
-            CustomText(text: 'Upload Photo',color: AppColors.secondaryColor,fontSize: 12.sp,top: 4.h,),
+            CustomText(
+              text: 'Upload Photo',
+              color: AppColors.secondaryColor,
+              fontSize: 12.sp,
+              top: 4.h,
+            ),
             Form(
               key: _globalKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 32.h,
-                  ),
+                  SizedBox(height: 32.h),
                   CustomTextField(
                     labelText: 'Name',
                     controller: profileController.nameParentController,
@@ -89,22 +84,18 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                     ),
                   ),
 
-
                   InternationalPhoneNumberInput(
-                    selectorTextStyle: TextStyle(
-                      fontSize: 12.sp,
-                    ),
-                    onInputChanged: (PhoneNumber num) {
-                      print("Changed: ${num.phoneNumber}");
-                    },
+                    selectorTextStyle: TextStyle(fontSize: 12.sp),
                     selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.DROPDOWN,
                       setSelectorButtonAsPrefixIcon: true,
                       leadingPadding: 0,
                       trailingSpace: false,
                     ),
+                    onInputChanged: (PhoneNumber num) {},
                     cursorColor: Colors.black,
-                    textFieldController: profileController.numberParentController,
+                    textFieldController:
+                        profileController.numberParentController,
                     initialValue: number,
                     formatInput: true,
                     inputDecoration: InputDecoration(
@@ -115,9 +106,11 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                       ),
                       hintText: "enter your phone no.",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular( 8.r),
-                        borderSide:
-                        BorderSide(color: AppColors.grayShade100.withOpacity(0.2), width: 1),
+                        borderRadius: BorderRadius.circular(8.r),
+                        borderSide: BorderSide(
+                          color: AppColors.grayShade100.withOpacity(0.2),
+                          width: 1,
+                        ),
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
@@ -145,7 +138,7 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                         'Seventh',
                         'Eighth',
                         'Ninth',
-                        'Tenth'
+                        'Tenth',
                       ];
                       final selected = await MenuShowHelper.showCustomMenu(
                         context: context,
@@ -175,22 +168,22 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                     hintText: "enter relationship with child",
                   ),
 
-
-                  SizedBox(height: 20.h,),
+                  SizedBox(height: 20.h),
                   GetBuilder<ProfileConfirmController>(
                     builder: (controller) {
-                      return controller.isLoadingParent ? CustomLoader() : CustomButton(
-                        label: "Next",
-                        onPressed: (){
-                          if (!_globalKey.currentState!.validate()) return;
-                          controller.profileConfirmParent();
-                        },
-                      );
-                    }
+                      return controller.isLoadingParent
+                          ? CustomLoader()
+                          : CustomButton(
+                              label: "Next",
+                              onPressed: () {
+                                if (!_globalKey.currentState!.validate())
+                                  return;
+                                controller.profileConfirmParent();
+                              },
+                            );
+                    },
                   ),
-                  SizedBox(
-                    height:24.h,
-                  ),
+                  SizedBox(height: 24.h),
                 ],
               ),
             ),
@@ -199,5 +192,4 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
       ),
     );
   }
-
 }

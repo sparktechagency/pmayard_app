@@ -140,21 +140,30 @@ class SessionsController extends GetxController {
     update();
   }
 
+
   bool isChangeStatus = false;
-  Future<void> completeSessionDBHandler( String userID, String status ) async {
+
+  Future<void> completeSessionDBHandler(String userID, String status) async {
     isChangeStatus = true;
     update();
 
     final responseBody = {
-      'status' : status
+      'status': status,
     };
 
-    final response = await ApiClient.postData(ApiUrls.completeSession(userID), responseBody);
-    if( response.statusCode == 200 ){
-      isChangeStatus = false;
-      update();
-    }else{
+    final response = await ApiClient.patch(
+      ApiUrls.completeSession(userID),
+      responseBody,
+    );
+
+    if (response.statusCode == 200) {
+      print( response.status);
+
+    } else {
       showToast('Something Went Wrong');
     }
+    isChangeStatus = false;
+    update();
   }
+
 }
