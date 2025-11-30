@@ -141,8 +141,8 @@ class _CompleteProfileProfessionalState
                           .text
                           .split(", ")
                           .where((s) => s.isNotEmpty)
-                          .toList();
 
+                          .toList();
                       final selectedList =
                           await MenuShowHelper.showMultiSelectMenu(
                             context: context,

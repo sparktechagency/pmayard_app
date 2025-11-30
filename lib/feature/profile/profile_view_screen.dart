@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 
 import '../../widgets/widgets.dart';
 
@@ -14,12 +15,19 @@ class ProfileViewScreen extends StatefulWidget {
 }
 
 class _ProfileViewScreenState extends State<ProfileViewScreen> {
-  final String userId = Get.arguments['id'];
+  // final String userId = Get.arguments['id'];
+  final String scheduleID = Get.arguments['scheduleUserID'];
+
   final controller = Get.find<SessionsController>();
 
   @override
   void initState() {
+
     super.initState();
+    var argument=Get.arguments;
+    final String userId=argument["id"];
+    // final String scheduleID=argument["scheduleUserID"];
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchAssignViewProfile(userId);
     });
@@ -91,7 +99,10 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
             SizedBox(height: 44.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: CustomButton(onPressed: () {}, label: 'Set Schedule'),
+              child: CustomButton(
+                  onPressed: () => Get.toNamed(AppRoutes.setScheduleScreen,arguments: { 'scheduleID' : scheduleID}),
+                  label: 'Set Schedule'
+              ),
             ),
 
             SizedBox(height: 44.h),

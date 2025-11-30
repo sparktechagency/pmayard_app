@@ -121,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           String imageUrl = '';
                           String id;
                           String chatId;
+                          String scheduleUserID;
 
                           if (role == 'professional') {
                             final item =
@@ -130,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             imageUrl = item.parent?.profileImage ?? '';
                             id = item.parent?.sId ?? '';
                             chatId = item.conversationId ?? '';
+                            scheduleUserID = item.professional ?? '';
                           } else {
                             final item =
                                 assignedData[index] as AssignedParentModelData;
@@ -137,8 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             imageUrl = item.professional?.profileImage ?? '';
                             id = item.professional?.sId ?? '';
                             chatId = item.conversationId ?? '';
+                            scheduleUserID = '';
                           }
-
                           return AssignedCardWidget(
                             chatId: chatId,
                             id: id,
@@ -146,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             name: name,
                             role: role,
                             imageUrl: imageUrl,
+                            scheduleUserID: scheduleUserID,
                           );
                         },
                       ),

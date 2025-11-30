@@ -35,10 +35,12 @@ class ApiUrls {
   static String inbox(String chatID) => '/messages/$chatID';
   static String sendMessage(String conversationID) =>
       '/messages/$conversationID/send-message';
+
   // Resource
   static String sessionSearch(String date) => '/sessions/my-sessions';
   static String gradeSearch( String searchTerm ) => '/grades/?searchTerm=$searchTerm';
   static String subjectsSearch( String userId ) => '/subjects/$userId';
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
   static String completeSession(String userID) => '/sessions/$userID/status';
+  static String professionalAvailability( String scheduleID ) => '/professionals/$scheduleID';
 }

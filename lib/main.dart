@@ -13,6 +13,7 @@ void main()async {
   Get.put(ConnectivityController());
   DeviceUtils.lockDevicePortrait();
 
+
    await SocketServices.init();
   runApp(const PmayardApp());
 }

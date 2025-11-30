@@ -66,7 +66,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                       width: double.maxFinite,
                       decoration: BoxDecoration(
                         border: Border.all(
-                          width: 2.w,
+                          width: 1.w,
                           color: Colors.black.withOpacity(0.1)
                         ),
                         borderRadius: BorderRadius.circular(12.r),

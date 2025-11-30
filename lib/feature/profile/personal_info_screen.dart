@@ -31,7 +31,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     return CustomScaffold(
       appBar: CustomAppBar(
         borderColor: AppColors.secondaryColor,
-        title: 'General Information',
+        title: 'Personal Info',
       ),
 
       body: SingleChildScrollView(
@@ -84,17 +84,32 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     controller: _userController.bioController,
                     hintText: '',
                   ),
+
+                  // Multiple Subject Related work are here
                   GestureDetector(
                     onTapDown: (TapDownDetails details) async {
-                      final selected = await MenuShowHelper.showCustomMenu(
+                      final currentSubjects = _userController.subjectsController
+                          .text
+                          .split(", ")
+                          .where((s) => s.isNotEmpty)
+                          .toList();
+
+                      final selectedList =
+                      await MenuShowHelper.showMultiSelectMenu(
                         context: context,
                         details: details,
                         options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
                       );
-                      if (selected != null) {
-                        setState(() {
-                          _userController.subjectsController.text = selected;
-                        });
+
+                      if (selectedList != null) {
+                        _userController.subjectsController
+                            .text = selectedList
+                            .join(", ");
+
+                        _userController.subjectList
+                          ..clear()
+                          ..addAll(selectedList);
                       }
                     },
                     child: AbsorbPointer(
@@ -103,7 +118,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         readOnly: true,
                         labelText: 'Subjects You Teach',
                         controller: _userController.subjectsController,
-                        // hintText: "Subjects You Teach",
+                        hintText: "Subjects You Teach",
                       ),
                     ),
                   ),

@@ -302,7 +302,7 @@ class ApiClient extends GetxService {
       String uri, Map<String, String> body,
       {List<MultipartBody>? multipartBody,
         List<MultipartListBody>? multipartListBody,
-        Map<String, String>? headers}) async {
+        Map<String, String>? headers, required Map<String, Map<String, Object>> responseBody}) async {
     try {
       bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
 
