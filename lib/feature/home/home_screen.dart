@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,7 @@ import 'package:pmayard_app/models/assigned/assigned_professional_model_data.dar
 import 'package:pmayard_app/models/assigned/assigned_response_data.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
 import 'package:pmayard_app/models/session/session_response_data.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 import '../../custom_assets/assets.gen.dart';
 
@@ -21,13 +23,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final controller = Get.find<UserController>();
   final AssignedController _assignedController = Get.find<AssignedController>();
   final SessionsController _sessionsController = Get.find<SessionsController>();
 
   @override
   void initState() {
     super.initState();
-
     _assignedController.getAssigned();
     _sessionsController.getSessions();
   }
@@ -54,7 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Assets.icons.notification.svg()),
+          IconButton(
+            onPressed: () => Get.toNamed(AppRoutes.notificationScreen),
+            icon: Assets.icons.notification.svg(),
+          ),
         ],
         toolbarHeight: 90.h,
         backgroundColor: AppColors.secondaryColor,
@@ -73,7 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   bottom: 24.h,
                   left: 16.w,
                   right: 16.w,
-                  text: 'Assigned ${userController.user?.roleId?.name == 'parent' ? 'Professionals' : 'Parents'}',
+                  text:
+                      'Assigned ${userController.user?.roleId?.name == 'parent' ? 'Professionals' : 'Parents'}',
                   fontWeight: FontWeight.w600,
                   fontSize: 16.sp,
                 ),
@@ -96,7 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 180.h,
                         child: Center(
                           child: CustomText(
-                            text: 'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
+                            text:
+                                'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
                             fontSize: 14.sp,
                           ),
                         ),
@@ -112,22 +119,36 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           String name = '';
                           String imageUrl = '';
+                          String id;
+                          String chatId;
+                          String scheduleUserID;
 
                           if (role == 'professional') {
-                            final item = assignedData[index] as AssignedProfessionalModelData;
+                            final item =
+                                assignedData[index]
+                                    as AssignedProfessionalModelData;
                             name = item.parent?.name ?? '';
                             imageUrl = item.parent?.profileImage ?? '';
+                            id = item.parent?.sId ?? '';
+                            chatId = item.conversationId ?? '';
+                            scheduleUserID = item.professional ?? '';
                           } else {
-                            final item = assignedData[index] as AssignedParentModelData;
+                            final item =
+                                assignedData[index] as AssignedParentModelData;
                             name = item.professional?.name ?? '';
                             imageUrl = item.professional?.profileImage ?? '';
+                            id = item.professional?.sId ?? '';
+                            chatId = item.conversationId ?? '';
+                            scheduleUserID = '';
                           }
-
                           return AssignedCardWidget(
+                            chatId: chatId,
+                            id: id,
                             index: index,
                             name: name,
                             role: role,
                             imageUrl: imageUrl,
+                            scheduleUserID: scheduleUserID,
                           );
                         },
                       ),
@@ -178,30 +199,38 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: sessionData.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
+                        final session = sessionData[index];
+
                         String name = '';
                         String imageUrl = '';
                         String? day;
                         String? date;
-
                         if (role == 'professional') {
-                          final session = sessionData[index] as SessionProfessionalModelData;
+                          final session =
+                              sessionData[index]
+                                  as SessionProfessionalModelData;
+
                           name = session.parent?.name ?? 'Unknown';
                           imageUrl = session.parent?.profileImage ?? '';
                           day = session.day;
                           date = session.date;
                         } else {
-                          final session = sessionData[index] as SessionParentModelData;
+                          final session =
+                              sessionData[index] as SessionParentModelData;
                           name = session.professional?.name ?? 'Unknown';
                           imageUrl = session.professional?.profileImage ?? '';
                           day = session.day;
                           date = session.date;
                         }
 
-                        final hasDateTime = (day != null && day.isNotEmpty) &&
+                        final hasDateTime =
+                            (day != null && day.isNotEmpty) &&
                             (date != null && date.isNotEmpty);
 
                         // Format the subtitle
-                        final subtitle = hasDateTime ? '$date at $day' : 'Waiting';
+                        final subtitle = hasDateTime
+                            ? '$date at $day'
+                            : 'Waiting';
 
                         return Padding(
                           padding: EdgeInsets.symmetric(
@@ -218,14 +247,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             titleFontSize: 16.sp,
                             trailing: hasDateTime
                                 ? CustomButton(
-                              radius: 8.r,
-                              height: 25.h,
-                              fontSize: 10.sp,
-                              onPressed: () {
-                                // Navigate to session detail
-                              },
-                              label: 'View Detail',
-                            )
+                                    radius: 8.r,
+                                    height: 25.h,
+                                    fontSize: 10.sp,
+                                    onPressed: () => showUserData(session),
+                                    label: 'View Detail',
+                                  )
                                 : null,
                           ),
                         );
@@ -238,6 +265,99 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  // Show User Data via Model
+  void showUserData(dynamic sessionData) {
+    String name = '';
+    String imageUrl = '';
+    String? day;
+    String? date;
+    String? role = '';
+    String? subject;
+    if (sessionData is SessionProfessionalModelData) {
+      name = sessionData.parent?.name ?? 'Unknown';
+      imageUrl = sessionData.parent?.profileImage ?? '';
+      day = sessionData.day;
+      date = sessionData.date;
+      role = 'Professional';
+      subject = sessionData.subject;
+    } else if (sessionData is SessionParentModelData) {
+      name = sessionData.professional?.name ?? 'Unknown';
+      imageUrl = sessionData.professional?.profileImage ?? '';
+      day = sessionData.day;
+      date = sessionData.date;
+      role = 'Parent';
+      subject = sessionData.subject;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  'View Details',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              if (imageUrl.isNotEmpty)
+                Center(
+                  child: CircleAvatar(
+                    radius: 30.r,
+                    backgroundImage: NetworkImage(imageUrl),
+                  ),
+                ),
+
+              SizedBox(height: 16.h),
+              Text(
+                '$role Name',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8.h),
+              // Name
+              Text(name, style: TextStyle(fontSize: 14)),
+
+              SizedBox(height: 16.h),
+              Text(
+                'Subjects',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8.h),
+              Text('$subject'),
+
+              SizedBox(height: 16.h),
+              Text(
+                'Session Time',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8.h),
+              if (day != null && date != null) Text('$date at $day'),
+
+              SizedBox(height: 16.h),
+
+              // Close button
+              CustomButton(
+                onPressed: () => Navigator.pop(context),
+                title: Text(
+                  'Close',
+                  style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

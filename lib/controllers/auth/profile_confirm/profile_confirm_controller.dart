@@ -123,6 +123,7 @@ bool isLoadingParent = false;
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
+      UserController().userData();
       Get.offAllNamed(AppRoutes.customBottomNavBar);
     } else {
       showToast(responseBody['message']);

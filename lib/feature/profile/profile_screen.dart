@@ -52,7 +52,16 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: 12.h,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(userData?.role ?? '', style: TextStyle(
+                      fontSize: 12.sp,
 
+                    ),)
+                  ],
+                ),
                 SizedBox(height: 20.h),
                 // List of Options
                 ProfileListTile(
@@ -67,6 +76,20 @@ class ProfileScreen extends StatelessWidget {
                   title: "Edit Schedule",
                   onTap: () {
                     Get.toNamed(AppRoutes.editScheduleScreen);
+                  },
+                ),
+                ProfileListTile(
+                  icon: Assets.icons.terms.svg(),
+                  title: "Resources",
+                  onTap: () {
+                    Get.toNamed(AppRoutes.resourcesScreen);
+                  },
+                ),
+                ProfileListTile(
+                  icon: Assets.icons.date.svg(),
+                  title: "Calender",
+                  onTap: () {
+                    Get.toNamed(AppRoutes.calenderScreen);
                   },
                 ),
                 ProfileListTile(

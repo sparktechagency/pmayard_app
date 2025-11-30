@@ -8,7 +8,6 @@ import 'package:pmayard_app/services/api_urls.dart';
 class ChatController extends GetxController {
   bool isLoadingChat = false;
 
-
   List<ChatModelData> chatData = [];
 
   final chatType = [
@@ -60,9 +59,6 @@ class ChatController extends GetxController {
     update();
   }
 
-
-
-
   final TextEditingController messageController = TextEditingController();
 
   bool isSendingMessage = false;
@@ -71,14 +67,11 @@ class ChatController extends GetxController {
     isSendingMessage = true;
     update();
 
-    final response = await ApiClient.postData(ApiUrls.sendMessage(conversationID),
-
-        {
-      "message_text": messageController.text.trim()
-    },
+    final response = await ApiClient.postData(
+      ApiUrls.sendMessage(conversationID),
+      {"message_text": messageController.text.trim()},
     );
-    if (response.statusCode == 200) {
-    }
+    if (response.statusCode == 200) {}
     isSendingMessage = false;
     update();
   }

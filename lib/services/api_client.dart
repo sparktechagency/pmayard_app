@@ -78,30 +78,34 @@ class ApiClient extends GetxService {
   }
 
   //==========================================> Patch Data <======================================
-  static Future<Response> patch(String uri, var body, {Map<String, String>? headers}) async {
+  static Future<Response> patch(String uri, dynamic body,
+      {Map<String, String>? headers}) async {
     bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
 
     var mainHeaders = {
-      //'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer $bearerToken'
     };
+
+    if (headers != null) {
+      mainHeaders.addAll(headers);
+    }
+
     try {
-      log.i(
-          '|📍📍📍|-----------------[[ PATCH ]] method details start -----------------|📍📍📍|');
+      log.i('|📍📍📍|-----------------[[ PATCH ]] method details start -----------------|📍📍📍|');
       log.i('URL: $uri');
-      log.i('Headers: ${headers ?? mainHeaders}');
+      log.i('Headers: $mainHeaders');
       log.i('API Body: $body');
 
       http.Response response = await client
           .patch(
         Uri.parse(ApiUrls.baseUrl + uri),
-        body: body,
-        headers: headers ?? mainHeaders,
+        body: body is String ? body : jsonEncode(body),
+        headers: mainHeaders,
       )
           .timeout(const Duration(seconds: timeoutInSeconds));
 
-      log.i(
-          "==========> Response Patch Method: ${response.statusCode}");
+      log.i("==========> Response Patch Method: ${response.statusCode}");
       return handleResponse(response, uri);
     } catch (e) {
       log.e("🐞🐞🐞 Error in patch: ${e.toString()}");
@@ -298,7 +302,7 @@ class ApiClient extends GetxService {
       String uri, Map<String, String> body,
       {List<MultipartBody>? multipartBody,
         List<MultipartListBody>? multipartListBody,
-        Map<String, String>? headers}) async {
+        Map<String, String>? headers, required Map<String, Map<String, Object>> responseBody}) async {
     try {
       bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
 

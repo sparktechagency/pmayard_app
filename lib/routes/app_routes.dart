@@ -10,9 +10,14 @@ import 'package:pmayard_app/feature/auth/reset_pass/reset_password_screen.dart';
 import 'package:pmayard_app/feature/auth/sign_up/sign_up_screen.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/customtom_bottom_nav.dart';
 import 'package:pmayard_app/feature/chat/inbox_screen.dart';
+import 'package:pmayard_app/feature/home/notification/notification_screen.dart';
 import 'package:pmayard_app/feature/onboarding_screen.dart';
+import 'package:pmayard_app/feature/profile/calender_screen/calender_screen.dart';
 import 'package:pmayard_app/feature/profile/personal_info_screen.dart';
 import 'package:pmayard_app/feature/profile/profile_view_screen.dart';
+import 'package:pmayard_app/feature/profile/resources/resources_screen.dart';
+import 'package:pmayard_app/feature/profile/resources/subject_screen.dart';
+import 'package:pmayard_app/feature/profile/set_schedule.dart';
 import 'package:pmayard_app/feature/profile/setting/about_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/change%20password/setting_change_password.dart';
 import 'package:pmayard_app/feature/profile/setting/privacy_policy_screen.dart';
@@ -70,8 +75,10 @@ abstract class AppRoutes {
   static const String scheduleScreen = '/scheduleScreen';
   static const String editScheduleScreen = '/editScheduleScreen';
   static const String completeProfileProfessional = '/completeProfileProfessional';
-
-
+  static const String resourcesScreen = '/ResourcesScreen';
+  static const String subjectScreen = '/SubjectScreen';
+  static const String calenderScreen = '/CalenderScreen';
+  static const String setScheduleScreen = '/SetScheduleScreen';
 
 
   ///  ============= > routes < ==============
@@ -96,6 +103,10 @@ abstract class AppRoutes {
     profileViewScreen : (context) => ProfileViewScreen(),
     scheduleScreen : (context) => ScheduleScreen(),
     editScheduleScreen : (context) => EditScheduleScreen(),
-
+    resourcesScreen : (context) => ResourcesScreen(),
+    subjectScreen : (context) => SubjectScreen(),
+    notificationScreen: (context) => NotificationScreen(),
+    calenderScreen : (context) => CalenderScreen(),
+    setScheduleScreen: (context) => SetScheduleScreen(),
   };
 }

@@ -25,7 +25,7 @@ class InboxScreen extends StatefulWidget {
 
 class _InboxScreenState extends State<InboxScreen> {
 
-  final String chatID = Get.arguments as String;
+  final String chatID = Get.arguments['chatId'] as String;
 
   final ChatController _chatController = Get.find<ChatController>();
   final SocketChatController _socketChatController = Get.find<SocketChatController>();

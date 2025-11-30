@@ -1,14 +1,11 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
-import 'package:pmayard_app/widgets/custom_network_image.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 
 import '../../app/helpers/menu_show_helper.dart';
@@ -34,7 +31,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     return CustomScaffold(
       appBar: CustomAppBar(
         borderColor: AppColors.secondaryColor,
-        title: 'General Information',
+        title: 'Personal Info',
       ),
 
       body: SingleChildScrollView(
@@ -47,7 +44,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   children: [
                     CustomImageAvatar(
                       radius: 44.r,
-                      image:  controller.user?.roleId?.profileImage,
+                      image:  controller.user?.roleId?.profileImage ?? '',
                       fileImage: controller.selectedImage,
                     ),
                     Positioned.fill(
@@ -87,17 +84,32 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     controller: _userController.bioController,
                     hintText: '',
                   ),
+
+                  // Multiple Subject Related work are here
                   GestureDetector(
                     onTapDown: (TapDownDetails details) async {
-                      final selected = await MenuShowHelper.showCustomMenu(
+                      final currentSubjects = _userController.subjectsController
+                          .text
+                          .split(", ")
+                          .where((s) => s.isNotEmpty)
+                          .toList();
+
+                      final selectedList =
+                      await MenuShowHelper.showMultiSelectMenu(
                         context: context,
                         details: details,
                         options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
                       );
-                      if (selected != null) {
-                        setState(() {
-                          _userController.subjectsController.text = selected;
-                        });
+
+                      if (selectedList != null) {
+                        _userController.subjectsController
+                            .text = selectedList
+                            .join(", ");
+
+                        _userController.subjectList
+                          ..clear()
+                          ..addAll(selectedList);
                       }
                     },
                     child: AbsorbPointer(
@@ -106,7 +118,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         readOnly: true,
                         labelText: 'Subjects You Teach',
                         controller: _userController.subjectsController,
-                        // hintText: "Subjects You Teach",
+                        hintText: "Subjects You Teach",
                       ),
                     ),
                   ),

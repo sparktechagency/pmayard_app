@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,20 +8,20 @@ import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_con
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
-import 'package:pmayard_app/widgets/multiple_selection.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class CompleteProfileProfessional extends StatefulWidget {
   const CompleteProfileProfessional({super.key});
 
   @override
-  State<CompleteProfileProfessional> createState() => _CompleteProfileProfessionalState();
+  State<CompleteProfileProfessional> createState() =>
+      _CompleteProfileProfessionalState();
 }
 
-class _CompleteProfileProfessionalState extends State<CompleteProfileProfessional> {
-
-  final ProfileConfirmController profileController = Get.find<ProfileConfirmController>();
-
+class _CompleteProfileProfessionalState
+    extends State<CompleteProfileProfessional> {
+  final ProfileConfirmController profileController =
+      Get.find<ProfileConfirmController>();
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -31,10 +30,7 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: CustomAppBar(
-        title: 'Complete Your Profile',
-      ),
-
+      appBar: CustomAppBar(title: 'Complete Your Profile'),
 
       body: SingleChildScrollView(
         child: Column(
@@ -53,24 +49,28 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                       bottom: 12.h,
                       right: 6.w,
                       child: GestureDetector(
-                        onTap: () => controller.onTapProfileProfessionalSelected(context),
-                          child: Assets.icons.profileCamera.svg()),
-                    )
-
+                        onTap: () => controller
+                            .onTapProfileProfessionalSelected(context),
+                        child: Assets.icons.profileCamera.svg(),
+                      ),
+                    ),
                   ],
                 );
-              }
+              },
             ),
-            CustomText(text: 'Upload Photo',color: AppColors.secondaryColor,fontSize: 12.sp,top: 4.h,),
+            CustomText(
+              text: 'Upload Photo',
+              color: AppColors.secondaryColor,
+              fontSize: 12.sp,
+              top: 4.h,
+            ),
             Form(
               key: _globalKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 32.h,
-                  ),
+                  SizedBox(height: 32.h),
                   CustomTextField(
                     labelText: 'Name',
                     controller: profileController.nameController,
@@ -87,14 +87,9 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     ),
                   ),
 
-
                   InternationalPhoneNumberInput(
-                    selectorTextStyle: TextStyle(
-                      fontSize: 12.sp,
-                    ),
-                    onInputChanged: (PhoneNumber num) {
-                      print("Changed: ${num.phoneNumber}");
-                    },
+                    selectorTextStyle: TextStyle(fontSize: 12.sp),
+                    onInputChanged: (PhoneNumber num) {},
                     selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.DROPDOWN,
                       setSelectorButtonAsPrefixIcon: true,
@@ -113,9 +108,11 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                       ),
                       hintText: "enter your phone no.",
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular( 8.r),
-                        borderSide:
-                        BorderSide(color: AppColors.grayShade100.withOpacity(0.2), width: 1),
+                        borderRadius: BorderRadius.circular(8.r),
+                        borderSide: BorderSide(
+                          color: AppColors.grayShade100.withOpacity(0.2),
+                          width: 1,
+                        ),
                       ),
                       contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
@@ -135,24 +132,28 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     hintText: "Enter qualification",
                   ),
 
-                  SizedBox(height: 8.h,),
+                  SizedBox(height: 8.h),
 
                   GestureDetector(
                     onTapDown: (TapDownDetails details) async {
-                      final currentSubjects = profileController.subjectsController.text
+                      final currentSubjects = profileController
+                          .subjectsController
+                          .text
                           .split(", ")
                           .where((s) => s.isNotEmpty)
-                          .toList();
 
-                      final selectedList = await MenuShowHelper.showMultiSelectMenu(
-                        context: context,
-                        details: details,
-                        options: MenuShowHelper.subjects,
-                        preSelectedItems: currentSubjects,
-                      );
+                          .toList();
+                      final selectedList =
+                          await MenuShowHelper.showMultiSelectMenu(
+                            context: context,
+                            details: details,
+                            options: MenuShowHelper.subjects,
+                            preSelectedItems: currentSubjects,
+                          );
 
                       if (selectedList != null) {
-                        profileController.subjectsController.text = selectedList.join(", ");
+                        profileController.subjectsController.text = selectedList
+                            .join(", ");
 
                         profileController.subjectList
                           ..clear()
@@ -170,17 +171,15 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
                     ),
                   ),
 
-                  SizedBox(height: 20.h,),
+                  SizedBox(height: 20.h),
                   CustomButton(
                     label: "Next",
-                    onPressed: (){
+                    onPressed: () {
                       if (!_globalKey.currentState!.validate()) return;
                       Get.toNamed(AppRoutes.scheduleScreen);
                     },
                   ),
-                  SizedBox(
-                    height:24.h,
-                  ),
+                  SizedBox(height: 24.h),
                 ],
               ),
             ),
@@ -189,5 +188,4 @@ class _CompleteProfileProfessionalState extends State<CompleteProfileProfessiona
       ),
     );
   }
-
 }

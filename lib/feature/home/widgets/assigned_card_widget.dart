@@ -7,10 +7,17 @@ import 'package:pmayard_app/widgets/widgets.dart';
 
 class AssignedCardWidget extends StatelessWidget {
   const AssignedCardWidget({
-    super.key, required this.index, required this.name, required this.role, required this.imageUrl,
+    super.key,
+    required this.index,
+    required this.name,
+    required this.role,
+    required this.imageUrl,
+    required this.id,
+    required this.chatId,
+    required this.scheduleUserID,
   });
 
-
+  final String id, chatId, scheduleUserID;
   final int index;
   final String name, role, imageUrl;
 
@@ -35,20 +42,10 @@ class AssignedCardWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CustomImageAvatar(
-            image: imageUrl,
-              radius: 26.r),
+          CustomImageAvatar(image: imageUrl, radius: 26.r),
           SizedBox(height: 8.h),
-          CustomText(
-            text: name,
-            fontWeight: FontWeight.w500,
-            fontSize: 16.sp,
-          ),
-          CustomText(
-            bottom: 8.h,
-            text: role,
-            color: AppColors.appGreyColor,
-          ),
+          CustomText(text: name, fontWeight: FontWeight.w500, fontSize: 16.sp),
+          CustomText(bottom: 8.h, text: role, color: AppColors.appGreyColor),
 
           Row(
             children: [
@@ -58,7 +55,10 @@ class AssignedCardWidget extends StatelessWidget {
                   fontSize: 10.sp,
                   backgroundColor: AppColors.primaryColor,
                   onPressed: () {
-                    Get.toNamed(AppRoutes.profileViewScreen);
+                    Get.toNamed(
+                      AppRoutes.profileViewScreen,
+                      arguments: {'id': id, 'scheduleUserID' : scheduleUserID},
+                    );
                   },
                   label: 'View Profile',
                 ),
@@ -70,7 +70,10 @@ class AssignedCardWidget extends StatelessWidget {
                   fontSize: 10.sp,
                   backgroundColor: AppColors.primaryColor,
                   onPressed: () {
-                    Get.toNamed(AppRoutes.inboxScreen);
+                    Get.toNamed(
+                      AppRoutes.inboxScreen,
+                      arguments: {'chatId': chatId},
+                    );
                   },
                   label: 'Message',
                 ),

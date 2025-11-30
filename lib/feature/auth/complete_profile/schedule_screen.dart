@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
-import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -16,13 +15,11 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
-
   final profileController = Get.find<ProfileConfirmController>();
 
   DateTime selectedDate = DateTime.now();
   Map<DateTime, String> selectedSlots = {};
   Map<DateTime, List<String>> weekTimeSlots = {};
-
 
   List<DateTime> getWeekDates(DateTime date) {
     int currentWeekDay = date.weekday;
@@ -90,8 +87,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             children: weekDays.map((date) {
               bool isSelected =
                   date.day == selectedDate.day &&
-                      date.month == selectedDate.month &&
-                      date.year == selectedDate.year;
+                  date.month == selectedDate.month &&
+                  date.year == selectedDate.year;
 
               // show dot if slot already selected for that day
               bool hasSlotSelected = selectedSlots.containsKey(date);
@@ -120,19 +117,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         children: [
                           CustomText(
                             text: "${date.day}",
-                            color: isSelected ? Colors.white : AppColors.appGreyColor,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.appGreyColor,
                           ),
                           Positioned(
                             bottom: 2.h,
                             child: hasSlotSelected
                                 ? CustomContainer(
-                              height: 5.h,
-                              width: 5.w,
-                                color: AppColors.secondaryColor,
-                                shape: BoxShape.circle,
-                            )
+                                    height: 5.h,
+                                    width: 5.w,
+                                    color: AppColors.secondaryColor,
+                                    shape: BoxShape.circle,
+                                  )
                                 : SizedBox.shrink(),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -149,8 +148,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             top: 20.h,
             bottom: 10.h,
           ),
-
-
 
           Expanded(
             child: GridView.builder(
@@ -177,9 +174,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ? AppColors.secondaryColor
                           : Colors.white,
                       borderRadius: BorderRadius.circular(8.r),
-                      border: Border.all(
-                        color: Colors.black.withOpacity(0.06),
-                      ),
+                      border: Border.all(color: Colors.black.withOpacity(0.06)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.02),
@@ -203,13 +198,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
           ),
 
-
           GetBuilder<ProfileConfirmController>(
             builder: (controller) {
-              return controller.isLoadingParent ? CustomLoader() :  CustomButton(
-                onPressed: controller.profileConfirm,
-                label: "Confirm",
-              );
+              return controller.isLoadingParent
+                  ? CustomLoader()
+                  : CustomButton(
+                      onPressed: controller.profileConfirm,
+                      label: "Confirm",
+                    );
             },
           ),
 
@@ -229,7 +225,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           //     );
           //   },
           // ),
-
         ],
       ),
     );
