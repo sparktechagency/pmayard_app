@@ -9,6 +9,7 @@ import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class AssignedController extends GetxController {
+
   List<AssignedParentModelData> assignedParentData = [];
   List<AssignedProfessionalModelData> assignedProfessionalData = [];
   bool isLoadingAssigned = false;

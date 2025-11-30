@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
+import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
 
 import '../../app/helpers/prefs_helper.dart';
 import '../../app/utils/app_constants.dart';
@@ -149,10 +152,10 @@ class AuthController extends GetxController {
   /// <======================= login ===========================>
   bool isLoadingLogin = false;
   final TextEditingController loginEmailController = TextEditingController(
-    text: kDebugMode ? 'cenocir522@etramay.com' : '',
+    text: kDebugMode ? 'ahmedmihad962@gmail.com' : '',
   );
   final TextEditingController loginPasswordController = TextEditingController(
-    text: kDebugMode ? '1qazxsw2' : '',
+    text: kDebugMode ? '123456' : '',
   );
 
   void cleanFieldLogin() {
@@ -178,17 +181,11 @@ class AuthController extends GetxController {
       if (responseBody['data']['user']['isVerified'] == false) {
         Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       } else if (responseBody['data']['user']['isActive'] == true) {
-        UserController().userData();
         Get.offAllNamed(AppRoutes.customBottomNavBar);
-      } else {
-        if (responseBody['data']['user']['role'] == 'professional') {
-          UserController().userData();
-          Get.toNamed(AppRoutes.completeProfileProfessional);
-        } else {
-          Get.toNamed(AppRoutes.completeProfileParent);
-        }
+        Get.find<CustomBottomNavBarController>().onChange(0);
       }
-      cleanFieldLogin();
+      Get.find<UserController>().userData();
+      //cleanFieldLogin();
     } else {
       showToast(responseBody['message']);
     }
@@ -312,7 +309,12 @@ class AuthController extends GetxController {
 
   void logOut() async {
     await PrefsHelper.remove(AppConstants.bearerToken);
-    await PrefsHelper.remove('role');
+    await PrefsHelper.remove(AppConstants.role);
+    Get.find<UserController>().user = null;
+    Get.find<AssignedController>().assignedProfessionalData.clear();
+    Get.find<AssignedController>().assignedParentData.clear();
+    Get.find<SessionsController>().sessionProfessionalData.clear();
+    Get.find<SessionsController>().sessionParentData.clear();
     Get.offAllNamed(AppRoutes.loginScreen);
   }
 

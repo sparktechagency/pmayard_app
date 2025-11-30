@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 
 import '../../widgets/widgets.dart';
@@ -19,18 +20,20 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   final String scheduleID = Get.arguments['scheduleUserID'];
 
   final controller = Get.find<SessionsController>();
+  final userController = Get.find<UserController>();
 
   @override
   void initState() {
-
     super.initState();
     var argument=Get.arguments;
     final String userId=argument["id"];
     // final String scheduleID=argument["scheduleUserID"];
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchAssignViewProfile(userId);
     });
+    if(userController.user == null){
+      userController.userData();
+    }
   }
 
   @override
