@@ -14,21 +14,30 @@ class SessionsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getSessions();
+    // Removed automatic API call from onInit to prevent duplicate calls
+    // The UI will handle calling getSessions() explicitly
   }
 
   // =================  Upcoming Sessions Related work are here ===============
-  List<SessionParentModelData> sessionParentData = [];
-  List<SessionProfessionalModelData> sessionProfessionalData = [];
-  bool isLoadingSession = false;
+  final sessionParentData = <SessionParentModelData>[].obs;
+  final sessionProfessionalData = <SessionProfessionalModelData>[].obs;
+  final isLoadingSession = false.obs;
 
   Future<void> getSessions() async {
     sessionParentData.clear();
     sessionProfessionalData.clear();
 
-    final role = Get.find<UserController>().user?.role ?? '';
-    isLoadingSession = true;
-    update();
+    final userController = Get.find<UserController>();
+    String role = userController.user?.role ?? '';
+
+    // Wait if role is not loaded yet
+    if (role.isEmpty) {
+      // Wait a bit for the user data to load
+      await Future.delayed(Duration(milliseconds: 100));
+      role = userController.user?.role ?? '';
+    }
+
+    isLoadingSession.value = true;
 
     try {
       final response = await ApiClient.getData(ApiUrls.upcomingSessions);
@@ -36,33 +45,35 @@ class SessionsController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
         if (role == 'professional') {
-          sessionProfessionalData = data
+          final professionalData = data
               .map((e) => SessionProfessionalModelData.fromJson(e))
               .toList();
+          sessionProfessionalData.assignAll(professionalData);
         } else {
-          sessionParentData = data
+          final parentData = data
               .map((e) => SessionParentModelData.fromJson(e))
               .toList();
+          sessionParentData.assignAll(parentData);
         }
       }
+    } catch (e) {
+      print('Error fetching sessions: $e');
     } finally {
-      isLoadingSession = false;
-      update();
+      isLoadingSession.value = false;
     }
   }
 
   // =================  MY Sessions Related work are here =====================
-  bool isLoadingMySection = false;
-  List<MySessionParentModelData> mySessionParentData = [];
-  List<MySessionProfessionalModelData> mySessionProfessionalData = [];
+  final isLoadingMySection = false.obs;
+  final mySessionParentData = <MySessionParentModelData>[].obs;
+  final mySessionProfessionalData = <MySessionProfessionalModelData>[].obs;
 
   Future<void> fetchMySection( String date ) async {
     mySessionProfessionalData.clear();
     mySessionParentData.clear();
     final role = Get.find<UserController>().user?.role ?? '';
 
-    isLoadingMySection = true;
-    update();
+    isLoadingMySection.value = true;
 
     final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
 
@@ -73,7 +84,7 @@ class SessionsController extends GetxController {
         final session = data
             .map((e) => MySessionParentModelData.fromJson(e))
             .toList();
-        mySessionParentData.addAll(session);
+        mySessionParentData.assignAll(session);
         debugPrint(
           '=====================>>> parent ${mySessionParentData.length}',
         );
@@ -81,52 +92,50 @@ class SessionsController extends GetxController {
         final session = data
             .map((e) => MySessionProfessionalModelData.fromJson(e))
             .toList();
-        mySessionProfessionalData.addAll(session);
+        mySessionProfessionalData.assignAll(session);
         debugPrint(
           '=====================>> >Professional ${mySessionProfessionalData.length}',
         );
       }
     }
-    isLoadingMySection = false;
-    update();
+    isLoadingMySection.value = false;
   }
 
   // =================  Selected Session Related work are here are here =====================
-  bool isLoadingSelectedSession = false;
+  final isLoadingSelectedSession = false.obs;
 
   Future<void> fetchSelectedSession(String date) async {
     try {
-      isLoadingSelectedSession = true;
+      isLoadingSelectedSession.value = true;
       final role = Get.find<UserController>().user?.role ?? '';
-      update();
       final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
 
         if (role == 'professional') {
-          sessionProfessionalData = data
+          final professionalData = data
               .map((e) => SessionProfessionalModelData.fromJson(e))
               .toList();
+          sessionProfessionalData.assignAll(professionalData);
         } else {
-          sessionParentData = data
+          final parentData = data
               .map((e) => SessionParentModelData.fromJson(e))
               .toList();
+          sessionParentData.assignAll(parentData);
         }
       }
     } catch (err) {
       showToast('Something Went Wrong $err');
     } finally {
-      isLoadingSelectedSession = false;
-      update();
+      isLoadingSelectedSession.value = false;
     }
   }
 
-  bool isLoadingAssignViewProfile = false;
+  final isLoadingAssignViewProfile = false.obs;
   AssignViewProfileModel? assignViewProfileModel;
 
   Future<void> fetchAssignViewProfile(String userId) async{
-    isLoadingAssignViewProfile = true;
-    update();
+    isLoadingAssignViewProfile.value = true;
 
     final response = await ApiClient.getData(ApiUrls.sessionViewProfile(userId));
     if( response.statusCode == 200 ){
@@ -136,17 +145,15 @@ class SessionsController extends GetxController {
       showToast('Something Went Wrong');
     }
 
-    isLoadingAssignViewProfile = false;
-    update();
+    isLoadingAssignViewProfile.value = false;
   }
 
 
 
-  bool isChangeStatus = false;
+  final isChangeStatus = false.obs;
 
   Future<void> completeSessionDBHandler(String userID, String status) async {
-    isChangeStatus = true;
-    update();
+    isChangeStatus.value = true;
 
     final responseBody = {
       'status': status,
@@ -163,8 +170,7 @@ class SessionsController extends GetxController {
     } else {
       showToast('Something Went Wrong');
     }
-    isChangeStatus = false;
-    update();
+    isChangeStatus.value = false;
   }
 
 }

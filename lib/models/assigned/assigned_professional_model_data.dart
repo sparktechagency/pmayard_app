@@ -1,6 +1,6 @@
 class AssignedProfessionalModelData {
   String? sId;
-  Parent? parent;
+  ParentData? parent;
   String? professional;
   String? conversationId;
   bool? isDeleted;
@@ -21,21 +21,58 @@ class AssignedProfessionalModelData {
 
   AssignedProfessionalModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    parent = json['parent'] != null
-        ? new Parent.fromJson(json['parent'])
-        : null;
-    professional = json['professional'];
+
+    // Handle the case where parent might be an ID string or a full object
+    if (json['parent'] != null) {
+      if (json['parent'] is String) {
+        // If it's a string ID, just store as string (unexpected for this model but handle gracefully)
+        // For this model, parent should typically be an object, but if it's a string, we can't parse it
+      } else if (json['parent'] is Map<String, dynamic>) {
+        // If it's a Map, create the ParentData object
+        parent = ParentData.fromJson(json['parent'] as Map<String, dynamic>);
+      }
+    }
+
+    // Handle the case where professional might be an ID string or a full object
+    if (json['professional'] != null) {
+      if (json['professional'] is String) {
+        // If it's a string ID, store it
+        professional = json['professional'] as String;
+      } else if (json['professional'] is Map<String, dynamic>) {
+        // If it's a Map (unexpected for this model but handle gracefully)
+        // Store the ID from the map
+        professional = json['professional']['_id'] as String?;
+      }
+    } else {
+      professional = json['professional']; // original assignment for null case
+    }
+
     conversationId = json['conversation_id'];
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['_id'] = sId;
+    if (parent != null) {
+      data['parent'] = parent!.toJson();
+    }
+    data['professional'] = professional;
+    data['conversation_id'] = conversationId;
+    data['isDeleted'] = isDeleted;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['__v'] = iV;
+    return data;
+  }
 }
 
-class Parent {
+class ParentData {
   String? sId;
-  User? user;
+  ParentUser? user;
   String? name;
   String? phoneNumber;
   String? childsName;
@@ -47,7 +84,7 @@ class Parent {
   String? updatedAt;
   int? iV;
 
-  Parent({
+  ParentData({
     this.sId,
     this.user,
     this.name,
@@ -62,9 +99,9 @@ class Parent {
     this.iV,
   });
 
-  Parent.fromJson(Map<String, dynamic> json) {
+  ParentData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? ParentUser.fromJson(json['user']) : null;
     name = json['name'];
     phoneNumber = json['phoneNumber'];
     childsName = json['childs_name'];
@@ -76,18 +113,45 @@ class Parent {
     updatedAt = json['updatedAt'];
     iV = json['__v'];
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['_id'] = sId;
+    if (user != null) {
+      data['user'] = user!.toJson();
+    }
+    data['name'] = name;
+    data['phoneNumber'] = phoneNumber;
+    data['childs_name'] = childsName;
+    data['childs_grade'] = childsGrade;
+    data['relationship_with_child'] = relationshipWithChild;
+    data['profileImage'] = profileImage;
+    data['isDeleted'] = isDeleted;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    data['__v'] = iV;
+    return data;
+  }
 }
 
-class User {
+class ParentUser {
   String? sId;
   String? email;
   String? role;
 
-  User({this.sId, this.email, this.role});
+  ParentUser({this.sId, this.email, this.role});
 
-  User.fromJson(Map<String, dynamic> json) {
+  ParentUser.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     email = json['email'];
     role = json['role'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['_id'] = sId;
+    data['email'] = email;
+    data['role'] = role;
+    return data;
   }
 }

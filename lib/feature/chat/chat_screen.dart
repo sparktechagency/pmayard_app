@@ -67,19 +67,17 @@ class _ChatScreenState extends State<ChatScreen> {
               },
               child: GetBuilder<ChatController>(
                 builder: (controller) {
-                  if(controller.isLoadingChat){
-                    return Center(
-                      child: CustomLoader(),
-                    );
+                  if (controller.isLoadingChat) {
+                    return Center(child: CustomLoader());
                   }
-                  if(controller.chatData.isEmpty){
-                      return Center(
-                        child: CustomText(
-                          text: 'No chats available.',
-                          fontSize: 14.sp,
-                          color: AppColors.appGreyColor,
-                        ),
-                      );
+                  if (controller.chatData.isEmpty) {
+                    return Center(
+                      child: CustomText(
+                        text: 'No chats available.',
+                        fontSize: 14.sp,
+                        color: AppColors.appGreyColor,
+                      ),
+                    );
                   }
                   return ListView.builder(
                     physics: AlwaysScrollableScrollPhysics(),
@@ -89,7 +87,11 @@ class _ChatScreenState extends State<ChatScreen> {
                       return Padding(
                         padding: EdgeInsets.only(bottom: 8.0.h),
                         child: CustomListTile(
-                          selectedColor: chatItem.lastMsg != null && chatItem.lastMsg?.isRead != true ? Color(0xffDAE9F3) : null,
+                          selectedColor:
+                              chatItem.lastMsg != null &&
+                                  chatItem.lastMsg?.isRead != true
+                              ? Color(0xffDAE9F3)
+                              : null,
                           borderColor: Color(0xffE8E9EB),
                           borderRadius: 8.r,
                           onTap: () {
@@ -98,14 +100,17 @@ class _ChatScreenState extends State<ChatScreen> {
                               arguments: chatItem.sId ?? '',
                             );
                           },
-                          image: chatItem.users?.first.roleId?.profileImage ??
+                          image:
+                              chatItem.users?.first.roleId?.profileImage ??
                               'N/A',
                           title: chatItem.users?.first.roleId?.name ?? 'N/A',
                           subTitle: chatItem.lastMsg?.messageType == 'text'
                               ? chatItem.lastMsg?.messageText ?? ''
                               : chatItem.lastMsg?.messageType ?? '',
                           trailing: CustomText(
-                            text: TimeFormatHelper.timeFormat(chatItem.lastMsg?.createdAt ?? ''),
+                            text: TimeFormatHelper.timeFormat(
+                              chatItem.lastMsg?.createdAt ?? '',
+                            ),
                             color: AppColors.appGreyColor,
                             fontSize: 10.sp,
                           ),

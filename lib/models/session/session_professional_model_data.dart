@@ -33,8 +33,17 @@ class SessionProfessionalModelData {
 
   SessionProfessionalModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    parent =
-    json['parent'] != null ? new Parent.fromJson(json['parent']) : null;
+
+    // Handle the case where parent might be an ID string or a full object
+    if (json['parent'] != null) {
+      if (json['parent'] is String) {
+        // If it's a string ID, we can't create a Parent object from it
+      } else if (json['parent'] is Map<String, dynamic>) {
+        // If it's a Map, create the Parent object
+        parent = Parent.fromJson(json['parent'] as Map<String, dynamic>);
+      }
+    }
+
     professional = json['professional'];
     conversationId = json['conversation_id'];
     day = json['day'];

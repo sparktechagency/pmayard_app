@@ -86,7 +86,7 @@ class _SessionScreenState extends State<SessionScreen> {
               // Session Related work are here
               GetBuilder<SessionsController>(
                 builder: (sessionController) {
-                  if (sessionController.isLoadingMySection) {
+                  if (sessionController.isLoadingMySection.value) {
                     return Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20.h),

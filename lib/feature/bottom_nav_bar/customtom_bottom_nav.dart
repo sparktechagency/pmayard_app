@@ -16,10 +16,11 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 class CustomBottomNavBar extends StatelessWidget {
   CustomBottomNavBar({super.key});
 
-  final CustomBottomNavBarController _navBarController =
-  Get.put(CustomBottomNavBarController());
+  final CustomBottomNavBarController _navBarController = Get.put(
+    CustomBottomNavBarController(),
+  );
 
-  final List<Widget> _screens =  [
+  final List<Widget> _screens = [
     HomeScreen(),
     SessionScreen(),
     ChatScreen(),
@@ -35,35 +36,39 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      body: _screens[_navBarController.selectedIndex.value],
-      bottomNavigationBar: SafeArea(
-        child: CurvedNavigationBar(
-          backgroundColor: Colors.white,
-          color: AppColors.primaryColor,
-          buttonBackgroundColor: AppColors.secondaryColor,
-          index: _navBarController.selectedIndex.value,
-          items: List.generate(_navItems.length, (index) {
-            bool isSelected = _navBarController.selectedIndex.value == index;
-            return CurvedNavigationBarItem(
-              child: SvgPicture.asset(
-                _navItems[index]["icon"],
-                color: isSelected ? Colors.white : AppColors.secondaryColor,
-                width: isSelected ? 24.w : 24.w,
-                height: isSelected ? 24.h : 24.h,
-              ),
-              label: _navItems[index]["label"],
-              labelStyle: TextStyle(
-                fontFamily: FontFamily.inter,
-                fontSize: 10.sp,
-                color: isSelected ? Colors.transparent : AppColors.secondaryColor,
-              ),
-            );
-          }),
-          onTap: (index) => _navBarController.onChange(index),
+    return Obx(
+      () => Scaffold(
+        backgroundColor: AppColors.primaryColor,
+        body: _screens[_navBarController.selectedIndex.value],
+        bottomNavigationBar: SafeArea(
+          child: CurvedNavigationBar(
+            backgroundColor: Colors.white,
+            color: AppColors.primaryColor,
+            buttonBackgroundColor: AppColors.secondaryColor,
+            index: _navBarController.selectedIndex.value,
+            items: List.generate(_navItems.length, (index) {
+              bool isSelected = _navBarController.selectedIndex.value == index;
+              return CurvedNavigationBarItem(
+                child: SvgPicture.asset(
+                  _navItems[index]["icon"],
+                  color: isSelected ? Colors.white : AppColors.secondaryColor,
+                  width: isSelected ? 24.w : 24.w,
+                  height: isSelected ? 24.h : 24.h,
+                ),
+                label: _navItems[index]["label"],
+                labelStyle: TextStyle(
+                  fontFamily: FontFamily.inter,
+                  fontSize: 10.sp,
+                  color: isSelected
+                      ? Colors.transparent
+                      : AppColors.secondaryColor,
+                ),
+              );
+            }),
+            onTap: (index) => _navBarController.onChange(index),
+          ),
         ),
       ),
-    ));
+    );
   }
 }
