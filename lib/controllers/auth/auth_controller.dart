@@ -311,8 +311,7 @@ class AuthController extends GetxController {
     await PrefsHelper.remove(AppConstants.bearerToken);
     await PrefsHelper.remove(AppConstants.role);
     Get.find<UserController>().user = null;
-    Get.find<AssignedController>().assignedProfessionalData.clear();
-    Get.find<AssignedController>().assignedParentData.clear();
+    Get.find<AssignedController>().assignModel.clear();
     Get.find<SessionsController>().sessionProfessionalData.clear();
     Get.find<SessionsController>().sessionParentData.clear();
     Get.offAllNamed(AppRoutes.loginScreen);

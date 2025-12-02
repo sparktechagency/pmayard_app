@@ -5,8 +5,6 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
-import 'package:pmayard_app/models/session/my_session_parent_model.dart';
-import 'package:pmayard_app/models/session/my_session_professional_model.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
 import 'package:pmayard_app/widgets/custom_dialog.dart';
@@ -57,8 +55,9 @@ class _SessionScreenState extends State<SessionScreen> {
                     setState(() {
                       _selectedDay = selectedDay;
                       _focusedDay = focusedDay;
-                      // controller.fetchSelectedSession(_focusedDay);
-                      // controller.fetchMySection();
+                      // You can implement date filtering here if needed
+                      // String formattedDate = "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
+                      // controller.fetchMySection(formattedDate);
                     });
                   },
                   headerStyle: HeaderStyle(
@@ -95,11 +94,7 @@ class _SessionScreenState extends State<SessionScreen> {
                     );
                   }
 
-                  final sessionData = userRole == 'professional'
-                      ? sessionController.mySessionProfessionalData
-                      : sessionController.mySessionParentData;
-
-                  if (sessionData.isEmpty) {
+                  if (sessionController.mySessionData.isEmpty) {
                     return Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 40.h),
@@ -113,57 +108,31 @@ class _SessionScreenState extends State<SessionScreen> {
 
                   return Expanded(
                     child: ListView.builder(
-                      itemCount: userRole == 'professional'
-                          ? sessionController.mySessionProfessionalData.length
-                          : sessionController.mySessionParentData.length,
-
+                      itemCount: sessionController.mySessionData.length,
                       itemBuilder: (context, index) {
+                        final session = sessionController.mySessionData[index];
+
+                        // Extract data based on user role
                         String name = '';
                         String imageUrl = '';
-                        String? day;
-                        String? date;
-                        String? status;
-                        String? userID;
 
                         if (userRole == 'professional') {
-                          final session =
-                              sessionData[index]
-                                  as MySessionProfessionalModelData;
-
-                          print(
-                            '=================> Maruf Profession Data $session',
-                          );
-
-                          name = session.parent?.name ?? 'Unknown';
-                          imageUrl = session.parent?.profileImage ?? 'Unknown';
-                          day = session.day;
-                          date = session.date;
-                          status = session.status;
-                          userID = session.sId;
+                          final parent = session['parent'] as Map<String, dynamic>?;
+                          name = parent?['name'] ?? 'Unknown';
+                          imageUrl = parent?['profileImage'] ?? '';
                         } else {
-                          final session =
-                              sessionData[index] as MySessionParentModelData;
-
-                          print(
-                            '=================> Maruf Parent Data $session',
-                          );
-
-                          name = session.professional?.name ?? 'Unknown';
-                          imageUrl =
-                              session.professional?.profileImage ?? 'Unknown';
-                          day = session.day;
-                          date = session.date;
-                          status = session.status;
-                          userID = session.sId;
+                          final professional = session['professional'] as Map<String, dynamic>?;
+                          name = professional?['name'] ?? 'Unknown';
+                          imageUrl = professional?['profileImage'] ?? '';
                         }
 
-                        final hasDateTime =
-                            (day != null && day.isNotEmpty) &&
-                            (date != null && date.isNotEmpty);
+                        final String day = session['day'] ?? '';
+                        final String date = session['date'] ?? '';
+                        final String status = session['status'] ?? 'Pending';
+                        final String sessionId = session['_id'] ?? '';
 
-                        final subTitle = hasDateTime
-                            ? '$date at $day'
-                            : 'Waiting';
+                        final hasDateTime = day.isNotEmpty && date.isNotEmpty;
+                        final subTitle = hasDateTime ? '$date at $day' : 'Waiting';
 
                         return Padding(
                           padding: EdgeInsets.symmetric(
@@ -183,36 +152,28 @@ class _SessionScreenState extends State<SessionScreen> {
                                 titleFontSize: 16.sp,
                                 trailing: status == 'Confirmed'
                                     ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Flexible(
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) => CustomDialog(
-                                                    title:
-                                                        "You sure you want to cancel the session?",
-                                                    confirmButtonColor: Color(
-                                                      0xffF40000,
-                                                    ),
-                                                    confirmButtonText: 'Yes',
-                                                    onCancel: (){
-                                                      Get.back();
-                                                      //Get.offAllNamed(AppRoutes.loginScreen);
-                                                    },
-                                                    onConfirm: () => controller
-                                                        .completeSessionDBHandler(
-                                                      userID!,
-                                                      status!,
-                                                    )
-                                                  ),
-                                                );
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Flexible(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => CustomDialog(
+                                              title: "You sure you want to cancel the session?",
+                                              confirmButtonColor: Color(0xffF40000),
+                                              confirmButtonText: 'Yes',
+                                              onCancel: () {
+                                                Get.back();
                                               },
-
-                                              child: Assets.icons.cleanIcon
-                                            .svg(),
+                                              onConfirm: () => controller.completeSessionDBHandler(
+                                                sessionId,
+                                                'Cancelled',
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Assets.icons.cleanIcon.svg(),
                                       ),
                                     ),
                                     SizedBox(width: 12.w),
@@ -221,22 +182,17 @@ class _SessionScreenState extends State<SessionScreen> {
                                         onTap: () {
                                           showDialog(
                                             context: context,
-                                            builder: (context) =>
-                                                CustomDialog(
-                                                  title:
-                                                  "Do you want to mark this session as completed?",
-                                                  confirmButtonText: 'Yes',
-                                                  onCancel: () {
-                                                    Get.back();
-                                                    //Get.offAllNamed(AppRoutes.loginScreen);
-                                                  },
-                                                  onConfirm: () =>
-                                                      controller
-                                                          .completeSessionDBHandler(
-                                                        userID!,
-                                                        status!,
-                                                      ),
-                                                ),
+                                            builder: (context) => CustomDialog(
+                                              title: "Do you want to mark this session as completed?",
+                                              confirmButtonText: 'Yes',
+                                              onCancel: () {
+                                                Get.back();
+                                              },
+                                              onConfirm: () => controller.completeSessionDBHandler(
+                                                sessionId,
+                                                'Completed',
+                                              ),
+                                            ),
                                           );
                                         },
                                         child: Assets.icons.success.svg(),
@@ -244,7 +200,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                     ),
                                   ],
                                 )
-                                    : _buildSessionStatus(status!),
+                                    : _buildSessionStatus(status),
                               );
                             },
                           ),
@@ -258,7 +214,6 @@ class _SessionScreenState extends State<SessionScreen> {
           );
         },
       ),
-
     );
   }
 
@@ -271,10 +226,13 @@ class _SessionScreenState extends State<SessionScreen> {
         value = status;
         bgColor = const Color(0xFFC2B067);
         break;
-
-      default: // Check spelling!
+      case 'Cancelled':
         value = status;
         bgColor = const Color(0xFFF40000);
+        break;
+      default:
+        value = status;
+        bgColor = const Color(0xFF0ABAB5);
         break;
     }
 

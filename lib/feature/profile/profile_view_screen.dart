@@ -16,22 +16,31 @@ class ProfileViewScreen extends StatefulWidget {
 }
 
 class _ProfileViewScreenState extends State<ProfileViewScreen> {
-  // final String userId = Get.arguments['id'];
-  final String scheduleID = Get.arguments['scheduleUserID'];
-
   final controller = Get.find<SessionsController>();
   final userController = Get.find<UserController>();
+
+  String userId = '';
+  String scheduleID = '';
 
   @override
   void initState() {
     super.initState();
-    var argument=Get.arguments;
-    final String userId=argument["id"];
-    // final String scheduleID=argument["scheduleUserID"];
+
+    // Get arguments
+    var argument = Get.arguments;
+    if (argument != null) {
+      userId = argument["id"] ?? '';
+      scheduleID = argument["scheduleUserID"] ?? '';
+    }
+
+    // Fetch data after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchAssignViewProfile(userId);
+      if (userId.isNotEmpty) {
+        controller.fetchAssignViewProfile(userId);
+      }
     });
-    if(userController.user == null){
+
+    if (userController.user == null) {
       userController.userData();
     }
   }
@@ -40,77 +49,113 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(backgroundColor: AppColors.secondaryColor),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomContainer(
-              alignment: Alignment.bottomCenter,
-              bottomLeft: 70.r,
-              bottomRight: 70.r,
-              height: 150.h,
-              width: double.infinity,
-              color: AppColors.secondaryColor,
-              child: GetBuilder<SessionsController>(
-                  builder: (controller) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomImageAvatar(radius: 48.r,
-                            image: controller.assignViewProfileModel?.profileImage?? ''),
-                        CustomText(
-                          text: controller.assignViewProfileModel?.name ?? '',
-                          fontSize: 18.h,
-                          fontWeight: FontWeight.w500,
-                          top: 4.h,
-                          bottom: 8.h,
-                          color: Colors.white,
-                        ),
-                      ],
-                    );
-                  }
-              ),
-            ),
-            Center(
+      body: GetBuilder<SessionsController>(
+        builder: (controller) {
+          if (controller.isLoadingAssignViewProfile.value) {
+            return Center(child: CustomLoader());
+          }
+
+          final profile = controller.assignViewProfileModel;
+
+          if (profile == null) {
+            return Center(
               child: CustomText(
-                text: controller.assignViewProfileModel?.user.role ?? "",
-                fontSize: 12.h,
-                fontWeight: FontWeight.w500,
-                top: 4.h,
-                color: AppColors.appGreyColor,
+                text: 'No profile data available',
+                fontSize: 14.sp,
               ),
-            ),
-            SizedBox(height: 44.h),
-            GetBuilder<SessionsController>(
-                builder: (controller){
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            );
+          }
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomContainer(
+                  alignment: Alignment.bottomCenter,
+                  bottomLeft: 70.r,
+                  bottomRight: 70.r,
+                  height: 150.h,
+                  width: double.infinity,
+                  color: AppColors.secondaryColor,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildListTile(title: 'Child’s Name', subtitle: controller.assignViewProfileModel?.childsName ?? ''),
-                      _buildListTile(title: 'Child’s Grade', subtitle: controller.assignViewProfileModel?.childsGrade ?? ''),
-                      _buildListTile(title: 'Subjects', subtitle: 'Data Dibo pore'),
-                      _buildListTile(title: 'Email', subtitle: controller.assignViewProfileModel?.user.email ?? ''),
-                      _buildListTile(title: 'Phone Number', subtitle: controller.assignViewProfileModel?.phoneNumber ?? ''),
-                      _buildListTile(
-                        title: 'Confirmed Session data dibo pore',
-                        subtitle: '08/08/25 at 4:30 PM',
+                      CustomImageAvatar(
+                        radius: 48.r,
+                        image: profile.profileImage,
+                      ),
+                      CustomText(
+                        text: profile.name,
+                        fontSize: 18.h,
+                        fontWeight: FontWeight.w500,
+                        top: 4.h,
+                        bottom: 8.h,
+                        color: Colors.white,
                       ),
                     ],
-                  );
-                }
+                  ),
+                ),
+                Center(
+                  child: CustomText(
+                    text: profile.user.role,
+                    fontSize: 12.h,
+                    fontWeight: FontWeight.w500,
+                    top: 4.h,
+                    color: AppColors.appGreyColor,
+                  ),
+                ),
+                SizedBox(height: 44.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildListTile(
+                      title: "Child's Name",
+                    subtitle: profile.childsName.isNotEmpty
+                      ? profile.childsName
+                      : 'Not provided',
+                    ),
+                    _buildListTile(
+                      title: "Child's Grade",
+                    subtitle: profile.childsGrade.isNotEmpty
+                      ? profile.childsGrade
+                      : 'Not provided',
+                    ),
+                    _buildListTile(
+                      title: 'Subjects',
+                      subtitle: 'Data will be added later',
+                    ),
+                    _buildListTile(
+                      title: 'Email',
+                      subtitle: profile.user.email,
+                    ),
+                    _buildListTile(
+                      title: 'Phone Number',
+                      subtitle: profile.phoneNumber.isNotEmpty
+                          ? profile.phoneNumber
+                          : 'Not provided',
+                    ),
+                    _buildListTile(
+                      title: 'Confirmed Session',
+                      subtitle: 'Session data will be added later',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 44.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: CustomButton(
+                    onPressed: () => Get.toNamed(
+                      AppRoutes.setScheduleScreen,
+                      arguments: {'scheduleID': scheduleID},
+                    ),
+                    label: 'Set Schedule',
+                  ),
+                ),
+                SizedBox(height: 44.h),
+              ],
             ),
-            SizedBox(height: 44.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: CustomButton(
-                  onPressed: () => Get.toNamed(AppRoutes.setScheduleScreen,arguments: { 'scheduleID' : scheduleID}),
-                  label: 'Set Schedule'
-              ),
-            ),
-
-            SizedBox(height: 44.h),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -139,5 +184,4 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
         ],
       ),
     );
-  }
-}
+  }}
