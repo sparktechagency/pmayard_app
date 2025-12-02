@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -15,33 +14,27 @@ import 'package:pmayard_app/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final AssignedController _assignedController = Get.find<AssignedController>();
+  final SessionsController _sessionsController = Get.find<SessionsController>();
 
   @override
   void initState() {
     super.initState();
     if (_assignedController.assignModel.isEmpty) {
       _assignedController.getAssigned();
+      _sessionsController.getSessions();
     }
-
-    // _assignedController
   }
-
-  // final controller = Get.find<UserController>();
-
-  // final SessionsController _sessionsController = Get.find<SessionsController>();
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 0,
-
       // App Bar Related Work are here
       appBar: CustomAppBar(
         titleWidget: GetBuilder<UserController>(
@@ -69,20 +62,17 @@ class _HomeScreenState extends State<HomeScreen> {
         toolbarHeight: 90.h,
         backgroundColor: AppColors.secondaryColor,
       ),
-
       body: RefreshIndicator(
         color: AppColors.primaryColor,
         onRefresh: () async {
           await _assignedController.getAssigned();
-          // await _sessionsController.getSessions();
+          await _sessionsController.getSessions();
         },
-
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: GetBuilder<UserController>(
             builder: (userController) {
               final role = userController.user?.role ?? '';
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -98,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 16.sp,
                   ),
 
+                  // Assign Related Work
                   Obx(() {
                     if (_assignedController.isLoadingAssigned.value) {
                       return SizedBox(
@@ -133,21 +124,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           String imageUrl = '';
                           String id = '';
                           String chatId = '';
-
                           if (role == 'professional') {
-                            // For professionals, show parent data
-                            name = item.parent?.name ?? '';
-                            imageUrl = item.parent?.profileImage ?? '';
-                            id = item.parent?.id ?? '';
-                            chatId = item.conversationId ?? '';
+                            name = item.parent.name;
+                            imageUrl = item.parent.profileImage;
+                            id = item.parent.id;
+                            chatId = item.conversationId;
                           } else {
-                            // For parents, show professional data
-                            name = item.professional?.name ?? '';
-                            imageUrl = item.professional?.profileImage ?? '';
-                            id = item.professional?.id ?? '';
-                            chatId = item.conversationId ?? '';
+                            name = item.professional.name;
+                            imageUrl = item.professional.profileImage;
+                            id = item.professional.id;
+                            chatId = item.conversationId;
                           }
-
                           return AssignedCardWidget(
                             chatId: chatId,
                             id: id,
@@ -172,112 +159,89 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
+                  Obx(() {
+                    if (_sessionsController.isLoadingSession.value) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: CustomLoader(),
+                        ),
+                      );
+                    }
+                    final sessionData = role == 'professional'
+                        ? _sessionsController.upComingSessionParentList
+                        : _sessionsController.upComingSessionProfessionalList;
 
-                  GetBuilder<SessionsController>(
-                    builder: (sessionsController) {
-                      print('🖼️ [UI-SESSIONS] GetBuilder rebuilding...');
-                      print(
-                        '🖼️ [UI-SESSIONS] Loading: ${sessionsController.isLoadingSession.value}',
-                      );
-                      print(
-                        '🖼️ [UI-SESSIONS] Data count professional: ${sessionsController.sessionProfessionalData.length}',
-                      );
-                      print(
-                        '🖼️ [UI-SESSIONS] Data count parent: ${sessionsController.sessionParentData.length}',
-                      );
-
-                      if (sessionsController.isLoadingSession.value) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20.h),
-                            child: CustomLoader(),
+                    if (sessionData.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                          child: CustomText(
+                            text: 'No upcoming sessions',
+                            fontSize: 14.sp,
                           ),
-                        );
-                      }
+                        ),
+                      );
+                    }
 
-                      final sessionData = role == 'professional'
-                          ? sessionsController.sessionProfessionalData
-                          : sessionsController.sessionParentData;
-
-                      if (sessionData.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40.h),
-                            child: CustomText(
-                              text: 'No upcoming sessions',
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: sessionData.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
+                    return ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: sessionData.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        String name = '';
+                        String imageUrl = '';
+                        String? day;
+                        String? date;
+                        if (role == 'professional') {
                           final session = sessionData[index];
+                          name = session.parent?.name ?? 'Unknown';
+                          imageUrl = session.parent?.profileImage ?? '';
+                          day = session.day ?? '';
+                          date = session.date ?? '';
+                        } else {
+                          final session = sessionData[index];
+                          name = session.professional?.name ?? 'Unknown';
+                          imageUrl = session.professional?.profileImage ?? '';
+                          day = session.day ?? '';
+                          date = session.date ?? '';
+                        }
+                        final hasDateTime =
+                            (day.isNotEmpty) &&
+                            (date.isNotEmpty);
 
-                          String name = '';
-                          String imageUrl = '';
-                          String? day;
-                          String? date;
-                          if (role == 'professional') {
-                            final session =
-                                sessionData[index]
-                                    as SessionProfessionalModelData;
+                        // Format the subtitle
+                        final subtitle = hasDateTime
+                            ? '$date at $day'
+                            : 'Waiting';
 
-                            name = session.parent?.name ?? 'Unknown';
-                            imageUrl = session.parent?.profileImage ?? '';
-                            day = session.day;
-                            date = session.date;
-                          } else {
-                            final session =
-                                sessionData[index] as SessionParentModelData;
-                            name = session.professional?.name ?? 'Unknown';
-                            imageUrl = session.professional?.profileImage ?? '';
-                            day = session.day;
-                            date = session.date;
-                          }
-
-                          final hasDateTime =
-                              (day != null && day.isNotEmpty) &&
-                              (date != null && date.isNotEmpty);
-
-                          // Format the subtitle
-                          final subtitle = hasDateTime
-                              ? '$date at $day'
-                              : 'Waiting';
-
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 6.h,
-                            ),
-                            child: CustomListTile(
-                              contentPaddingVertical: 6.h,
-                              borderRadius: 8.r,
-                              // borderColor: AppColors.borderColor,
-                              image: imageUrl,
-                              title: name,
-                              subTitle: subtitle,
-                              titleFontSize: 16.sp,
-                              trailing: hasDateTime
-                                  ? CustomButton(
-                                      radius: 8.r,
-                                      height: 25.h,
-                                      fontSize: 10.sp,
-                                      onPressed: () => showUserData(session),
-                                      label: 'View Detail',
-                                    )
-                                  : null,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 6.h,
+                          ),
+                          child: CustomListTile(
+                            contentPaddingVertical: 6.h,
+                            borderRadius: 8.r,
+                            borderColor: AppColors.borderColor,
+                            image: imageUrl,
+                            title: name,
+                            subTitle: subtitle,
+                            titleFontSize: 16.sp,
+                            trailing: hasDateTime
+                                ? CustomButton(
+                                    radius: 8.r,
+                                    height: 25.h,
+                                    fontSize: 10.sp,
+                                    onPressed: () => showUserData("session"),
+                                    label: 'View Detail',
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
+                    );
+                  }),
                   SizedBox(height: 44.h),
                 ],
               );
@@ -287,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
   // Show User Data via Model
   void showUserData(dynamic sessionData) {
     String name = '';
@@ -311,7 +274,6 @@ class _HomeScreenState extends State<HomeScreen> {
       role = 'Parent';
       subject = sessionData.subject;
     }
-
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -338,7 +300,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundImage: NetworkImage(imageUrl),
                   ),
                 ),
-
               SizedBox(height: 16.h),
               Text(
                 '$role Name',
@@ -347,7 +308,6 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 8.h),
               // Name
               Text(name, style: TextStyle(fontSize: 14)),
-
               SizedBox(height: 16.h),
               Text(
                 'Subjects',
@@ -355,7 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 8.h),
               Text('$subject'),
-
               SizedBox(height: 16.h),
               Text(
                 'Session Time',
@@ -363,9 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 8.h),
               if (day != null && date != null) Text('$date at $day'),
-
               SizedBox(height: 16.h),
-
               // Close button
               CustomButton(
                 onPressed: () => Navigator.pop(context),

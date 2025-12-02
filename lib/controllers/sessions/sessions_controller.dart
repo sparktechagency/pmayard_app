@@ -5,67 +5,75 @@ import 'package:pmayard_app/models/session/my_session_parent_model.dart';
 import 'package:pmayard_app/models/session/my_session_professional_model.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
 import 'package:pmayard_app/models/session/session_response_data.dart';
+import 'package:pmayard_app/models/session/upcomming_session_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class SessionsController extends GetxController {
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   // =================  Upcoming Sessions (Using Models) ===============
-  final sessionParentData = <SessionParentModelData>[].obs;
-  final sessionProfessionalData = <SessionProfessionalModelData>[].obs;
+  final RxList<UpComingSessionModel>upComingSession = <UpComingSessionModel>[].obs;
+  final RxList<UpComingSessionModel> upComingSessionParentList = <UpComingSessionModel>[].obs;
+  final RxList<UpComingSessionModel> upComingSessionProfessionalList = <UpComingSessionModel>[].obs;
   final isLoadingSession = false.obs;
 
+  // Future<void> getSessions() async {
+  //   upComingSession.clear();
+  //   upComingSessionParentList.clear();
+  //   upComingSessionProfessionalList.clear();
+  //   isLoadingSession.value = true;
+  //   update();
+  //
+  //   try {
+  //     final response = await ApiClient.getData(ApiUrls.upcomingSessions);
+  //
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> datas = response.body['data'] ?? [];
+  //       for( var item in datas ){
+  //         upComingSession.add(UpComingSessionModel.fromJson(item));
+  //         upComingSessionParentList.add(item['parent']);
+  //         upComingSessionProfessionalList.add(item['professional']);
+  //       }
+  //
+  //       print('======>>>>>>> Parent $upComingSessionParentList');
+  //       print('======>>>>>>> Professional $upComingSessionProfessionalList');
+  //     }
+  //   } catch (e) {
+  //     print('❌ [SESSIONS] Error: $e');
+  //   } finally {
+  //     isLoadingSession.value = false;
+  //     update();
+  //   }
+  // }
+
   Future<void> getSessions() async {
-    print('🔵 [SESSIONS] Starting getSessions...');
-
-    sessionParentData.clear();
-    sessionProfessionalData.clear();
-
-    final userController = Get.find<UserController>();
-    String role = userController.user?.role ?? '';
-    print('🔵 [SESSIONS] User role: $role');
-
+    upComingSession.clear();
+    upComingSessionParentList.clear();
+    upComingSessionProfessionalList.clear();
     isLoadingSession.value = true;
-    print('🔵 [SESSIONS] Set loading to TRUE, calling update()');
-    update(); // Notify UI that loading started
+    update();
 
     try {
       final response = await ApiClient.getData(ApiUrls.upcomingSessions);
-      print('✅ [SESSIONS] Got response: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.body['data'] ?? [];
-        print('✅ [SESSIONS] Data count: ${data.length}');
-
-        if (role == 'professional') {
-          final professionalData = data
-              .map((e) => SessionProfessionalModelData.fromJson(e))
-              .toList();
-          sessionProfessionalData.assignAll(professionalData);
-          print('✅ [SESSIONS] Assigned ${sessionProfessionalData.length} professional sessions');
-          print('✅ [SESSIONS] First item name: ${sessionProfessionalData.firstOrNull?.parent?.name}');
-        } else {
-          final parentData = data
-              .map((e) => SessionParentModelData.fromJson(e))
-              .toList();
-          sessionParentData.assignAll(parentData);
-          print('✅ [SESSIONS] Assigned ${sessionParentData.length} parent sessions');
-          print('✅ [SESSIONS] First item name: ${sessionParentData.firstOrNull?.professional?.name}');
+        final List<dynamic> datas = response.body['data'] ?? [];
+        for (var item in datas) {
+          final session = UpComingSessionModel.fromJson(item);
+          upComingSession.add(session);
+          // Add the entire session object, not just parent/professional
+          upComingSessionParentList.add(session);
+          upComingSessionProfessionalList.add(session);
         }
+
+        print('======>>>>>>> Sessions: ${upComingSession.length}');
       }
     } catch (e) {
       print('❌ [SESSIONS] Error: $e');
-      // print('❌ [SESSIONS] Stack trace: ${StackTrace.current}');
     } finally {
       isLoadingSession.value = false;
-      print('🔴 [SESSIONS] Set loading to FALSE, calling update()');
-      update(); // THIS IS CRITICAL - Notify UI that data is ready
-      print('🔴 [SESSIONS] Update called! UI should rebuild now.');
+      update();
     }
   }
 
@@ -116,17 +124,17 @@ class SessionsController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
 
-        if (role == 'professional') {
-          final professionalData = data
-              .map((e) => SessionProfessionalModelData.fromJson(e))
-              .toList();
-          sessionProfessionalData.assignAll(professionalData);
-        } else {
-          final parentData = data
-              .map((e) => SessionParentModelData.fromJson(e))
-              .toList();
-          sessionParentData.assignAll(parentData);
-        }
+        // if (role == 'professional') {
+        //   final professionalData = data
+        //       .map((e) => SessionProfessionalModelData.fromJson(e))
+        //       .toList();
+        //   sessionProfessionalData.assignAll(professionalData);
+        // } else {
+        //   final parentData = data
+        //       .map((e) => SessionParentModelData.fromJson(e))
+        //       .toList();
+        //   sessionParentData.assignAll(parentData);
+        // }
       }
     } catch (err) {
       showToast('Something Went Wrong $err');
