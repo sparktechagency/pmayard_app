@@ -62,7 +62,6 @@ class SessionsController extends GetxController {
         for (var item in datas) {
           final session = UpComingSessionModel.fromJson(item);
           upComingSession.add(session);
-          // Add the entire session object, not just parent/professional
           upComingSessionParentList.add(session);
           upComingSessionProfessionalList.add(session);
         }
@@ -81,7 +80,6 @@ class SessionsController extends GetxController {
   final isLoadingMySection = false.obs;
   final mySessionData = <Map<String, dynamic>>[].obs;
 
-  // Keep these for backward compatibility (empty lists)
   final mySessionParentData = <MySessionParentModelData>[].obs;
   final mySessionProfessionalData = <MySessionProfessionalModelData>[].obs;
 
@@ -91,14 +89,13 @@ class SessionsController extends GetxController {
     mySessionProfessionalData.clear();
 
     isLoadingMySection.value = true;
-    update(); // Notify listeners
+    update();
 
     try {
       final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
-        // Store as raw maps for the session screen
         mySessionData.assignAll(data.cast<Map<String, dynamic>>());
         debugPrint('Fetched ${mySessionData.length} my sessions');
       }
@@ -166,6 +163,8 @@ class SessionsController extends GetxController {
 
   Future<void> fetchAssignViewProfile(String userId) async {
     isLoadingAssignViewProfile.value = true;
+    assignViewProfileData?.clear();
+    update();
 
     try {
       final response = await ApiClient.getData(ApiUrls.sessionViewProfile(userId));

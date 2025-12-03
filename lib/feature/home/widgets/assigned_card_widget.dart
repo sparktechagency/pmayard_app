@@ -14,15 +14,16 @@ class AssignedCardWidget extends StatelessWidget {
     required this.imageUrl,
     required this.id,
     required this.chatId,
-    required this.scheduleUserID,
+    required this.professionalId,
   });
 
-  final String id, chatId, scheduleUserID;
+  final String id, chatId, professionalId;
   final int index;
   final String name, role, imageUrl;
 
   @override
   Widget build(BuildContext context) {
+
     return CustomContainer(
       paddingVertical: 10.h,
       paddingHorizontal: 10.w,
@@ -57,8 +58,10 @@ class AssignedCardWidget extends StatelessWidget {
                   onPressed: () {
                     Get.toNamed(
                       AppRoutes.profileViewScreen,
-                      arguments: {'id': id, 'scheduleUserID' : scheduleUserID},
+                      arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
                     );
+                    debugPrint('schedule ID=================================$professionalId');
+                    debugPrint('schedule ID=================================$id');
                   },
                   label: 'View Profile',
                 ),

@@ -14,6 +14,7 @@ import 'package:pmayard_app/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -76,6 +77,27 @@ class _HomeScreenState extends State<HomeScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// =================== Assign New Professional Button are here ======================
+                  role == 'professional'
+                      ? Expanded(
+                          child: CustomButton(
+                            width: double.maxFinite,
+                            height: 28.h,
+                            fontSize: 10.sp,
+                            backgroundColor: AppColors.primaryColor,
+                            onPressed: () {
+                              Get.toNamed(
+                                AppRoutes.profileViewScreen,
+                                // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
+                              );
+                              // debugPrint('schedule ID=================================$professionalId');
+                              // debugPrint('schedule ID=================================$id');
+                            },
+                            label: 'View Profile',
+                          ),
+                        )
+                      : SizedBox.shrink(),
+
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
                     top: 24.h,
@@ -83,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     left: 16.w,
                     right: 16.w,
                     text:
-                        'Assigned ${userController.user?.roleId?.name == 'parent' ? 'Professionals' : 'Parents'} Data',
+                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'} Data',
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
@@ -124,25 +146,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           String imageUrl = '';
                           String id = '';
                           String chatId = '';
+                          String userRole = '';
+
                           if (role == 'professional') {
                             name = item.parent.name;
                             imageUrl = item.parent.profileImage;
                             id = item.parent.id;
                             chatId = item.conversationId;
-                          } else {
+                            userRole = 'Parent';
+                          } else if (role == 'parent') {
                             name = item.professional.name;
                             imageUrl = item.professional.profileImage;
                             id = item.professional.id;
                             chatId = item.conversationId;
+                            userRole = 'Professional';
                           }
+
                           return AssignedCardWidget(
                             chatId: chatId,
                             id: id,
                             index: index,
                             name: name,
-                            role: role,
+                            role: userRole,
                             imageUrl: imageUrl,
-                            scheduleUserID: '',
+                            professionalId: item.professional.id,
                           );
                         },
                       ),
@@ -193,6 +220,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         String imageUrl = '';
                         String? day;
                         String? date;
+
+                        final session = sessionData[index];
+
                         if (role == 'professional') {
                           final session = sessionData[index];
                           name = session.parent?.name ?? 'Unknown';
@@ -207,8 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           date = session.date ?? '';
                         }
                         final hasDateTime =
-                            (day.isNotEmpty) &&
-                            (date.isNotEmpty);
+                            (day.isNotEmpty) && (date.isNotEmpty);
 
                         // Format the subtitle
                         final subtitle = hasDateTime
@@ -233,7 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     radius: 8.r,
                                     height: 25.h,
                                     fontSize: 10.sp,
-                                    onPressed: () => showUserData("session"),
+                                    onPressed: () =>
+                                        showUserData(session, role),
                                     label: 'View Detail',
                                   )
                                 : null,
@@ -251,22 +281,23 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   // Show User Data via Model
-  void showUserData(dynamic sessionData) {
+  void showUserData(dynamic sessionData, String userRole) {
     String name = '';
     String imageUrl = '';
     String? day;
     String? date;
     String? role = '';
     String? subject;
-    if (sessionData is SessionProfessionalModelData) {
+    if (userRole == 'professional') {
       name = sessionData.parent?.name ?? 'Unknown';
       imageUrl = sessionData.parent?.profileImage ?? '';
       day = sessionData.day;
       date = sessionData.date;
       role = 'Professional';
       subject = sessionData.subject;
-    } else if (sessionData is SessionParentModelData) {
+    } else if (userRole == 'parent') {
       name = sessionData.professional?.name ?? 'Unknown';
       imageUrl = sessionData.professional?.profileImage ?? '';
       day = sessionData.day;

@@ -20,7 +20,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   final userController = Get.find<UserController>();
 
   String userId = '';
-  String scheduleID = '';
+  String professionalId = '';
+  String role = '';
 
   @override
   void initState() {
@@ -28,9 +29,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
     // Get arguments
     var argument = Get.arguments;
+
     if (argument != null) {
       userId = argument["id"] ?? '';
-      scheduleID = argument["scheduleUserID"] ?? '';
+      professionalId = argument["professionalId"] as String? ?? '';
+      role = argument["role"] as String? ?? '';
     }
 
     // Fetch data after build
@@ -43,10 +46,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     if (userController.user == null) {
       userController.userData();
     }
+
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: CustomAppBar(backgroundColor: AppColors.secondaryColor),
       body: GetBuilder<SessionsController>(
@@ -146,7 +151,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                   child: CustomButton(
                     onPressed: () => Get.toNamed(
                       AppRoutes.setScheduleScreen,
-                      arguments: {'scheduleID': scheduleID},
+                      arguments: {'professionalId': professionalId, 'role' : role},
                     ),
                     label: 'Set Schedule',
                   ),

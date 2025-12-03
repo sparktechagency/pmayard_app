@@ -42,18 +42,26 @@ class AssignedController extends GetxController {
     }
   }
 
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    print('*************************************************');
+    print('*************************************************');
+    print('*************************************************');
+    print(timeSlotDatas.length);
+  }
 
   // Schedule Are fetch here
-  bool isScheduleLoading = false;
-  List<AvailabilityModel> availabilityData = [];
+  final RxBool isScheduleLoading = false.obs;
+  final RxList<AvailabilityModel> availabilityData = <AvailabilityModel>[].obs;
+  final List<TimeSlotModel> timeSlotDatas = <TimeSlotModel>[];
 
-  List<TimeSlotModel> timeSlotDatas = [];
-
-  List slotsData = [];
+  final RxList slotsData = [].obs;
 
   Future<void> fetchAvailabilityData(String scheduleID) async {
     availabilityData.clear();
-    isScheduleLoading = true;
+    isScheduleLoading.value = true;
     update();
 
     timeSlotDatas.clear();
@@ -75,7 +83,18 @@ class AssignedController extends GetxController {
             // timeSlotDatas.addAll(slot);
             // timeSlotDatas.add(slot);
             final items = TimeSlotModel.fromJson(slot);
+
+            // timeSlotDatas.clear();
+
             timeSlotDatas.add(items);
+
+            print(
+              '///////////////////////////////////////////////////////////////////////',
+            );
+            print(timeSlotDatas.length);
+            print(timeSlotDatas.first.startTime);
+            print(timeSlotDatas.first.endTime);
+
             print('sloooooooooooooooottttttttttttt============> $slot');
           }
         }
@@ -98,18 +117,21 @@ class AssignedController extends GetxController {
         // THIS IS THE ONLY LINE THAT MATTERS - ASSIGN THE DATA
         // availabilityData = datas.map((e) => AvailabilityModel.fromJson(e)).toList();
 
-        print('✅ Loaded ${timeSlotDatas.length} days of availability');
+        // print('✅ Loaded ${timeSlotDatas.length} days of availability');
       } else {
-        availabilityData = [];
-        showToast('Something Went Wrong');
+        // availabilityData = [];
+        if( response.statusCode == 404 ){
+          Get.toNamed(AppRoutes.notFoundScreen);
+        }
+        showToast('=========   ${response.status}  ==== Something Went Wrong');
       }
     } catch (e) {
       print('❌ Error: $e');
-      availabilityData = [];
-      showToast('Error loading data');
+      // availabilityData = [];
+      showToast('Error ');
     }
 
-    isScheduleLoading = false;
+    isScheduleLoading.value = false;
     update();
   }
 
@@ -136,28 +158,43 @@ class AssignedController extends GetxController {
   bool isConfirmScheduleLoading = false;
   DateTime scheduleDate = DateTime.now();
   late String date = scheduleDate.toIso8601String().split('T')[0];
+  RxString? startTime = ''.obs;
+  RxString? endTime = ''.obs;
 
   Map<String, String>? timeSlot;
 
   void dataOnchangeHandler() {
     scheduleDate;
+    timeSlot = {"startTime": startTime!.value, "endTime": endTime!.value};
+
     update();
   }
 
   Future<void> confirmSchedule(String userID) async {
-    isConfirmScheduleLoading = true;
-    update();
+
+    print("===================>>>>> $userID");
+
+
+    // print("=====================================   $userID  ====================== Assigned Controller 171 no line ");
+    // isConfirmScheduleLoading = true;
+    // update();
+    //
 
     final reqBody = {"date": date, "time": timeSlot};
     print('maruf =========> $reqBody');
-    // final response = await ApiClient.postData( ApiUrls.confirmSchedule(userID), reqBody );
-    // if( response.statusCode == 200 ){
+
+    // final response = await ApiClient.postData(
+    //   ApiUrls.confirmSchedule(userID),
+    //   reqBody,
+    // );
+
+    // if (response.statusCode == 200) {
     //   Get.offNamed(AppRoutes.customBottomNavBar);
-    // }else{
+    // } else {
     //   showToast('Something Went Wrong');
     // }
-
-    isConfirmScheduleLoading = false;
-    update();
+    //
+    // isConfirmScheduleLoading = false;
+    // update();
   }
 }

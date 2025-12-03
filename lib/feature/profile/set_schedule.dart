@@ -15,7 +15,9 @@ import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SetScheduleScreen extends StatefulWidget {
-  const SetScheduleScreen({super.key});
+  const SetScheduleScreen({super.key, this.professionalId});
+
+  final String? professionalId;
 
   @override
   State<SetScheduleScreen> createState() => _SetScheduleScreenState();
@@ -35,24 +37,6 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
   void generateWeekTimeSlots(DateTime date) {
     final weekDays = getWeekDates(date);
-    // for (var day in weekDays) {
-    //   final availability = controller.availabilityData.firstWhere(
-    //         (e) => e.day == day,
-    //     orElse: () => AvailabilityModel(day: this.controller.availabilityData.?day, timeSlots: []),
-    //   );
-
-    // weekTimeSlots[day] = availability.timeSlots.cast<String>();
-    // for (var day in weekDays) {
-    //   weekTimeSlots[day] = [
-    //     "9:00",
-    //     "11:00",
-    //     "1:00",
-    //     "3:00",
-    //     "5:00",
-    //     "7:00",
-    //     "2:00",
-    //   ];
-    // }
   }
 
   List<String> getSelectedDaySlots() {
@@ -60,8 +44,8 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
   }
 
   bool get allSlotsSelected => selectedSlots.length == 7;
-
-  final scheduleID = Get.arguments['scheduleID'];
+  String? professionalId;
+  String? role;
 
   @override
   void initState() {
@@ -69,8 +53,9 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       generateWeekTimeSlots(selectedDate);
-      controller.fetchAvailabilityData(scheduleID);
-      print('Maruf Char =================>>>>> ${controller.availabilityData}');
+      professionalId = Get.arguments['professionalId'] as String?;
+      role = Get.arguments['role'] as String?;
+      controller.fetchAvailabilityData(professionalId ?? '');
     });
   }
 
@@ -81,375 +66,260 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       appBar: CustomAppBar(title: 'Set Schedule'),
-      body: GetBuilder<AssignedController>(
-        builder: (controller) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Set Your Schedule',
-                  style: TextStyle(
-                    color: Color(0XFF0D0D0D),
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(height: 13.h),
-
-              // CustomContainer(
-              //   color: Colors.white,
-              //   child: TableCalendar(
-              //     firstDay: DateTime.utc(2020, 1, 1),
-              //     lastDay: DateTime.utc(2030, 12, 31),
-              //     focusedDay: _focusedDay,
-              //     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              //     onDaySelected: (selectedDay, focusedDay) {
-              //       setState(() {
-              //         _selectedDay = selectedDay;
-              //         _focusedDay = focusedDay;
-              //       });
-              //     },
-              //
-              //     headerStyle: HeaderStyle(
-              //       formatButtonVisible: false,
-              //       titleTextFormatter: (date, locale) =>
-              //           DateFormat('MMMM yyyy').format(date),
-              //       titleTextStyle: TextStyle(fontSize: 20.sp),
-              //       leftChevronVisible: false,
-              //       rightChevronVisible: false,
-              //     ),
-              //     daysOfWeekStyle: DaysOfWeekStyle(
-              //       dowTextFormatter: (date, locale) {
-              //         return DateFormat.E(locale).format(date)[0];
-              //       },
-              //       weekdayStyle: TextStyle(fontSize: 14),
-              //       weekendStyle: TextStyle(fontSize: 14),
-              //     ),
-              //
-              //     calendarFormat: CalendarFormat.week,
-              //     availableGestures: AvailableGestures.horizontalSwipe,
-              //     calendarStyle: CalendarStyle(
-              //       todayDecoration: BoxDecoration(
-              //         color: AppColors.primaryColor,
-              //         shape: BoxShape.circle,
-              //       ),
-              //       selectedDecoration: const BoxDecoration(
-              //         color: AppColors.primaryColor,
-              //         shape: BoxShape.circle,
-              //       ),
-              //       selectedTextStyle: const TextStyle(color: Colors.white),
-              //       defaultTextStyle: TextStyle(fontSize: 12.sp),
-              //     ),
-              //   ),
-              // ),
-              CustomContainer(
-                color: Colors.white,
-                child: TableCalendar(
-                  headerStyle: HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: false,
-                    rightChevronVisible: false,
-                    leftChevronVisible: false,
-                  ),
-
-                  focusedDay: _focusedDay,
-                  firstDay: DateTime.utc(2022, 1, 1),
-                  lastDay: DateTime.utc(2030, 1, 1),
-
-                  onDaySelected: (selectedDay, focusedDay) {
-                    print('===========> Selected Day $selectedDay');
-                    print('===========> Selected Day $focusedDay');
-                    controller.scheduleDate = selectedDay;
-                    controller.dataOnchangeHandler();
-                    // setState(() {
-                    //   controller.scheduleDate = selectedDay;
-                    // });
-                    _focusedDay = focusedDay;
-                  },
-                  calendarFormat: CalendarFormat.week,
-                  currentDay: controller.scheduleDate,
-                  selectedDayPredicate: (day) =>
-                      isSameDay(controller.scheduleDate, day),
-                  availableGestures: AvailableGestures.verticalSwipe,
-                ),
-              ),
-
-              SizedBox(height: 15.h),
-              Text(
-                'Set Time Slot',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.sp,
-                  color: Color(0XFF0D0D0D),
-                ),
-              ),
-              SizedBox(height: 15.h),
-              Row(
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 10.w,
-                        height: 10.h,
-                        decoration: BoxDecoration(color: Color(0XFF305CDE)),
-                      ),
-                      SizedBox(width: 5.w),
-                      Text('Available'),
-                    ],
-                  ),
-                  SizedBox(width: 24.w),
-                  Row(
-                    children: [
-                      Container(
-                        width: 10.w,
-                        height: 10.h,
-                        decoration: BoxDecoration(color: Color(0XFFC2B067)),
-                      ),
-                      SizedBox(width: 5.w),
-                      Text('Booked'),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
-
-              // Expanded(
-              //   child: GetBuilder<AssignedController>(builder: (controller) {
-              //
-              //     if (controller.isScheduleLoading) {
-              //       return Center(child: CircularProgressIndicator());
-              //     }
-              //
-              //     if (controller.availabilityData.isEmpty) {
-              //       return Center(
-              //         child: Text(
-              //           'No availability data found',
-              //           style: TextStyle(fontSize: 16.sp),
-              //         ),
-              //       );
-              //     }
-              //     final selectedDayName = DateFormat('EEEE').format(_selectedDay ?? _focusedDay);
-              //
-              //     print('Looking for day: $selectedDayName');
-              //     final dayAvailability = controller.availabilityData.firstWhere(
-              //           (availability) => availability.day == selectedDayName,
-              //       orElse: () => AvailabilityModel(day: selectedDayName, timeSlots: []),
-              //     );
-              //
-              //     final timeSlots = dayAvailability.timeSlots ?? [];
-              //
-              //     if (timeSlots.isEmpty) {
-              //       return Center(
-              //         child: Text(
-              //           'No time slots available for $selectedDayName',
-              //           style: TextStyle(fontSize: 16.sp),
-              //         ),
-              //       );
-              //     }
-              //
-              //     int crossAxisCount = timeSlots.length.clamp(1, 3);
-              //
-              //     return GridView.builder(
-              //       itemCount: timeSlots.length,
-              //       padding: EdgeInsets.zero,
-              //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              //         crossAxisCount: crossAxisCount,
-              //         childAspectRatio: 109.w / 38.h,
-              //         crossAxisSpacing: 8,
-              //         mainAxisSpacing: 8,
-              //       ),
-              //       itemBuilder: (context, index) {
-              //         final slot = timeSlots[index];
-              //
-              //         // Determine colors based on status
-              //         Color backgroundColor;
-              //         Color textColor = Colors.white;
-              //
-              //         switch (slot.status?.toLowerCase()) {
-              //           case 'available':
-              //             backgroundColor = Color(0XFF305CDE); // Blue for available
-              //             break;
-              //           case 'booked':
-              //             backgroundColor = Color(0XFFC2B067); // Gold for booked
-              //             break;
-              //           case 'disabled':
-              //             backgroundColor = Colors.grey; // Grey for disabled
-              //             break;
-              //           default:
-              //             backgroundColor = Colors.grey;
-              //         }
-              //
-              //         return GestureDetector(
-              //           onTap: slot.status?.toLowerCase() == 'available' ? () {
-              //             setState(() {
-              //               selectedSlots[_selectedDay ?? _focusedDay] =
-              //               '${slot.startTime} - ${slot.endTime}';
-              //             });
-              //           } : null,
-              //           child: AnimatedContainer(
-              //             decoration: BoxDecoration(
-              //               color: backgroundColor,
-              //               borderRadius: BorderRadius.circular(8.r),
-              //               border: Border.all(
-              //                 color: Colors.black.withOpacity(0.06),
-              //               ),
-              //               boxShadow: [
-              //                 BoxShadow(
-              //                   color: Colors.black.withOpacity(0.02),
-              //                   offset: Offset(0, 0),
-              //                   blurRadius: 3,
-              //                 ),
-              //               ],
-              //             ),
-              //             alignment: Alignment.center,
-              //             duration: Duration(milliseconds: 300),
-              //             child: Column(
-              //               mainAxisAlignment: MainAxisAlignment.center,
-              //               children: [
-              //                 CustomText(
-              //                   text: '${slot.startTime} - ${slot.endTime}',
-              //                   color: textColor,
-              //                   fontSize: 12.sp,
-              //                   fontWeight: FontWeight.w600,
-              //                 ),
-              //                 SizedBox(height: 2.h),
-              //                 CustomText(
-              //                   text: slot.status ?? '',
-              //                   color: textColor.withOpacity(0.8),
-              //                   fontSize: 10.sp,
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //         );
-              //       },
-              //     );
-              //   }),
-              // ),
-              Expanded(
-                child: GetBuilder<AssignedController>(
-
-                  builder: (controller) {
-
-                    // final allSlots = controller.timeSlot;
-
-                    final selectedDayName = DateFormat(
-                      'EEEE',
-                    ).format(_selectedDay ?? _focusedDay);
-
-                    return GridView.builder(
-                      itemCount: controller.timeSlotDatas.length,
-                      padding: EdgeInsets.zero,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 109.w / 38.h,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemBuilder: (context, index) {
-                        print('=====================================>>>>>>>>>>>>>>>>>>> ${controller
-                            .timeSlotDatas[index]}');
-                        // final slot = allSlots[index];
-                        // final status = slot['status']?.toLowerCase() ?? '';
-
-
-                        // controller
-                        //     .availabilityData.map((e)=> print('349 ${e}')).toList();
-                        // print('this is 348 no line data ${controller
-                        //     .availabilityData[index].timeSlots}');
-
-                         String? slot = controller.timeSlotDatas[index].status;
-                        // Determine colors based on status
-                        Color backgroundColor;
-                        Color textColor = Colors.white;
-
-                        switch (slot?.toLowerCase()) {
-                          case 'available':
-                            backgroundColor = Color(
-                              0XFF305CDE,
-                            ); // Blue for available
-                            break;
-                          case 'booked':
-                            backgroundColor = Color(
-                              0XFFC2B067,
-                            ); // Gold for booked
-                            break;
-                          case 'disabled':
-                            backgroundColor = Colors.grey; // Grey for disabled
-                            break;
-                          default:
-                            backgroundColor = Colors.grey;
-                        }
-
-                        return GestureDetector(
-
-                          onTap: controller.timeSlotDatas[index].status == 'available' ? (){
-                            // controller.timeSlot = slot as Map<String, String>?;
-
-                          } : SizedBox.shrink,
-                          child: AnimatedContainer(
-                            decoration: BoxDecoration(
-                              // color: Colors.red,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: Colors.black.withOpacity(0.06),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.02),
-                                  offset: Offset(0, 0),
-                                  blurRadius: 3,
-                                ),
-                              ],
-                            ),
-                            alignment: Alignment.center,
-                            duration: Duration(milliseconds: 300),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CustomText(
-                                  // text: '10-10.30',
-                                  text: '${
-                                      controller.timeSlotDatas[index].startTime
-                                  } - ${controller.timeSlotDatas[index].endTime}',
-                                  color: textColor,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                SizedBox(height: 2.h),
-                                CustomText(
-                                  // text: 'Block',
-                                  text: '${
-                                      controller.timeSlotDatas[index].status
-                                  }',
-                                  color: textColor.withOpacity(0.8),
-                                  fontSize: 10.sp,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-
-              CustomButton(
-                onPressed: () => controller.confirmSchedule(scheduleID),
-                title: controller.isConfirmScheduleLoading == true
-                    ? Center(child: CustomLoader())
-                    : Text(
-                        'Confirm',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-              ),
-              SizedBox(height: 5.h),
-            ],
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.fetchAvailabilityData(professionalId ?? "");
         },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                'Set Your Schedule',
+                style: TextStyle(
+                  color: Color(0XFF0D0D0D),
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            SizedBox(height: 13.h),
+
+            // CustomContainer(
+            //   color: Colors.white,
+            //   child: TableCalendar(
+            //     firstDay: DateTime.utc(2020, 1, 1),
+            //     lastDay: DateTime.utc(2030, 12, 31),
+            //     focusedDay: _focusedDay,
+            //     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            //     onDaySelected: (selectedDay, focusedDay) {
+            //       setState(() {
+            //         _selectedDay = selectedDay;
+            //         _focusedDay = focusedDay;
+            //       });
+            //     },
+            //
+            //     headerStyle: HeaderStyle(
+            //       formatButtonVisible: false,
+            //       titleTextFormatter: (date, locale) =>
+            //           DateFormat('MMMM yyyy').format(date),
+            //       titleTextStyle: TextStyle(fontSize: 20.sp),
+            //       leftChevronVisible: false,
+            //       rightChevronVisible: false,
+            //     ),
+            //     daysOfWeekStyle: DaysOfWeekStyle(
+            //       dowTextFormatter: (date, locale) {
+            //         return DateFormat.E(locale).format(date)[0];
+            //       },
+            //       weekdayStyle: TextStyle(fontSize: 14),
+            //       weekendStyle: TextStyle(fontSize: 14),
+            //     ),
+            //
+            //     calendarFormat: CalendarFormat.week,
+            //     availableGestures: AvailableGestures.horizontalSwipe,
+            //     calendarStyle: CalendarStyle(
+            //       todayDecoration: BoxDecoration(
+            //         color: AppColors.primaryColor,
+            //         shape: BoxShape.circle,
+            //       ),
+            //       selectedDecoration: const BoxDecoration(
+            //         color: AppColors.primaryColor,
+            //         shape: BoxShape.circle,
+            //       ),
+            //       selectedTextStyle: const TextStyle(color: Colors.white),
+            //       defaultTextStyle: TextStyle(fontSize: 12.sp),
+            //     ),
+            //   ),
+            // ),
+            CustomContainer(
+              color: Colors.white,
+              child: TableCalendar(
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: false,
+                  titleCentered: false,
+                  rightChevronVisible: false,
+                  leftChevronVisible: false,
+                  titleTextStyle: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                focusedDay: _focusedDay,
+                firstDay: DateTime.utc(2022, 1, 1),
+                lastDay: DateTime.utc(2030, 1, 1),
+
+                onDaySelected: (selectedDay, focusedDay) {
+                  print('===========> Selected Day $selectedDay');
+                  print('===========> Selected Day $focusedDay');
+
+                  controller.dataOnchangeHandler();
+                  controller.scheduleDate = selectedDay;
+                  // setState(() {
+                  //   controller.scheduleDate = selectedDay;
+                  // });
+                  _focusedDay = focusedDay;
+                },
+
+                calendarFormat: CalendarFormat.week,
+                currentDay: controller.scheduleDate,
+                selectedDayPredicate: (day) =>
+                    isSameDay(controller.scheduleDate, day),
+                availableGestures: AvailableGestures.verticalSwipe,
+                calendarStyle: CalendarStyle(
+                  selectedDecoration: BoxDecoration(
+                    color: AppColors.primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  selectedTextStyle: TextStyle(
+                    color: Colors.white, // Change the text color
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 15.h),
+            Text(
+              'Set Time Slot',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18.sp,
+                color: Color(0XFF0D0D0D),
+              ),
+            ),
+            SizedBox(height: 15.h),
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 10.w,
+                      height: 10.h,
+                      decoration: BoxDecoration(color: Color(0XFF305CDE)),
+                    ),
+                    SizedBox(width: 5.w),
+                    Text('Available'),
+                  ],
+                ),
+                SizedBox(width: 24.w),
+                Row(
+                  children: [
+                    Container(
+                      width: 10.w,
+                      height: 10.h,
+                      decoration: BoxDecoration(color: Color(0XFFC2B067)),
+                    ),
+                    SizedBox(width: 5.w),
+                    Text('Booked'),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 15.h),
+
+            Expanded(
+              child: GetBuilder<AssignedController>(
+                builder: (_) {
+                  return GridView.builder(
+                    itemCount: controller.timeSlotDatas.length,
+                    padding: EdgeInsets.zero,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 109.w / 38.h,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      String? slot = controller.timeSlotDatas[index].status;
+
+                      Color backgroundColor;
+                      Color textColor = Colors.white;
+                      Color borderColor = Colors.black;
+
+                      switch (slot?.toLowerCase()) {
+                        case 'available':
+                          backgroundColor = Color(0XFF305CDE);
+                          borderColor = Colors.transparent;
+                          break;
+                        case 'booked':
+                          backgroundColor = Color(0XFFC2B067);
+                          borderColor = Colors.transparent;
+                          break;
+                        case 'disabled':
+                          backgroundColor = Colors.white;
+                          textColor = Colors.black;
+                          borderColor = Colors.black;
+                          break;
+                        default:
+                          backgroundColor = Colors.green;
+                      }
+
+                      return GestureDetector(
+                        onTap: slot == 'available'
+                            ? () {
+                                controller.startTime!.value =
+                                    controller.timeSlotDatas[index].startTime!;
+                                controller.endTime!.value =
+                                    controller.timeSlotDatas[index].endTime!;
+
+                                controller.update();
+
+                                print(controller.startTime!.value);
+                                print(controller.endTime!.value);
+
+                                controller.dataOnchangeHandler();
+                              }
+                            : null,
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                            color: backgroundColor,
+                            border: Border.all(
+                              color: borderColor
+                            ),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomText(
+                                text:
+                                    '${controller.timeSlotDatas[index].startTime} - ${controller.timeSlotDatas[index].endTime}',
+                                color: textColor,
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              SizedBox(height: 2.h),
+                              // CustomText(
+                              //   text:
+                              //       '${controller.timeSlotDatas[index].status}',
+                              //   color: textColor.withOpacity(0.8),
+                              //   fontSize: 10.sp,
+                              // ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+
+            role == 'professional' ? CustomButton(
+              onPressed: () => controller.confirmSchedule(professionalId ?? ''),
+              title: controller.isConfirmScheduleLoading == true
+                  ? Center(child: CustomLoader())
+                  : Text(
+                'Confirm',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ) : SizedBox.shrink(),
+            SizedBox(height: 5.h),
+          ],
+        ),
       ),
     );
   }
