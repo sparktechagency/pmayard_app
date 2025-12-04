@@ -46,8 +46,8 @@ class _InboxScreenState extends State<InboxScreen> {
       paddingSide: 6.w,
       appBar: CustomAppBar(
         backAction: (){
-          Get.back();
           _socketChatController.removeListeners(chatID);
+          Get.back();
         },
         titleWidget: GetBuilder<ChatController>(
           builder: (controller) {
