@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/show_dialog_helper.dart';
 import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
+import 'package:pmayard_app/controllers/auth/auth_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
@@ -79,25 +81,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// =================== Assign New Professional Button are here ======================
-                  // role == 'professional'
-                  //     ? Expanded(
-                  //         child: CustomButton(
-                  //           width: double.maxFinite,
-                  //           height: 28.h,
-                  //           fontSize: 10.sp,
-                  //           backgroundColor: AppColors.primaryColor,
-                  //           onPressed: () {
-                  //             Get.toNamed(
-                  //               AppRoutes.profileViewScreen,
-                  //               // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
-                  //             );
-                  //             // debugPrint('schedule ID=================================$professionalId');
-                  //             // debugPrint('schedule ID=================================$id');
-                  //           },
-                  //           label: 'View Profile',
-                  //         ),
-                  //       )
-                  //     : SizedBox.shrink(),
+                  role == 'professional'
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                            top: 30.h,
+                            left: 25.h,
+                            right: 25.h,
+                            bottom: 10.h,
+                          ),
+                          child: CustomButton(
+                            width: double.maxFinite,
+                            height: 52.h,
+                            fontSize: 10.sp,
+                            backgroundColor: AppColors.primaryColor,
+                            onPressed: () => assignProfessionalPopupModal(),
+                            title: Text(
+                              'Assign New Professional',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0XFF0D0D0D),
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
@@ -113,7 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // Assign Related Work
                   Obx(() {
-                    if (_assignedController.isLoadingAssigned.value || _sessionsController.isLoadingSession.value) {
+                    if (_assignedController.isLoadingAssigned.value ||
+                        _sessionsController.isLoadingSession.value) {
                       return SizedBox(
                         height: 180.h,
                         child: ShimmerHelper.assignedCardsShimmer(),
@@ -188,7 +197,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 16.sp,
                   ),
                   Obx(() {
-                    if (_sessionsController.isLoadingSession.value || _assignedController.isLoadingAssigned.value) {
+                    if (_sessionsController.isLoadingSession.value ||
+                        _assignedController.isLoadingAssigned.value) {
                       return ShimmerHelper.upcomingSessionsShimmer();
                     }
                     final sessionData = role == 'professional'
@@ -356,6 +366,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text(
                   'Close',
                   style: TextStyle(color: Colors.white, fontSize: 16.sp),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Assign Code Related Modal
+  void assignProfessionalPopupModal() {
+    final TextEditingController professionalAssignController =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 40.h
+          ),
+          child: Column(
+            children: [
+              CustomTextField(
+                controller: professionalAssignController,
+                hintText: 'Type Code',
+              ),
+              SizedBox(height: 20.h,),
+              CustomButton(
+                onPressed: () {},
+                title: Text(
+                  'Submit',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],
