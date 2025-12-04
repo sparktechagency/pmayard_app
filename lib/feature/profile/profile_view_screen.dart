@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
@@ -57,7 +58,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
       body: GetBuilder<SessionsController>(
         builder: (controller) {
           if (controller.isLoadingAssignViewProfile.value) {
-            return Center(child: CustomLoader());
+            return ShimmerHelper.profileViewShimmer();
           }
 
           final profile = controller.assignViewProfileModel;
@@ -151,7 +152,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                   child: CustomButton(
                     onPressed: () => Get.toNamed(
                       AppRoutes.setScheduleScreen,
-                      arguments: {'professionalId': professionalId, 'role' : role},
+                      arguments: {'professionalId': professionalId, 'sessionID' : profile.sId},
                     ),
                     label: 'Set Schedule',
                   ),

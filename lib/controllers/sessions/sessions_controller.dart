@@ -141,14 +141,13 @@ class SessionsController extends GetxController {
     }
   }
 
-  // =================  Assign View Profile (Using Raw Map) =====================
   final isLoadingAssignViewProfile = false.obs;
   Map<String, dynamic>? assignViewProfileData;
 
-  // Getter to maintain compatibility with existing code
   AssignViewProfileModel? get assignViewProfileModel {
     if (assignViewProfileData == null) return null;
     return AssignViewProfileModel(
+      sId: assignViewProfileData?['_id'] ?? '',
       profileImage: assignViewProfileData?['profileImage'] ?? '',
       name: assignViewProfileData?['name'] ?? '',
       childsName: assignViewProfileData?['childs_name'] ?? '',
@@ -160,6 +159,8 @@ class SessionsController extends GetxController {
       ),
     );
   }
+
+
 
   Future<void> fetchAssignViewProfile(String userId) async {
     isLoadingAssignViewProfile.value = true;
@@ -218,6 +219,7 @@ class SessionsController extends GetxController {
 
 // Simple model classes for compatibility
 class AssignViewProfileModel {
+  final String sId;
   final String profileImage;
   final String name;
   final String childsName;
@@ -225,13 +227,14 @@ class AssignViewProfileModel {
   final String phoneNumber;
   final UserData user;
 
-  AssignViewProfileModel({
+  AssignViewProfileModel( {
     required this.profileImage,
     required this.name,
     required this.childsName,
     required this.childsGrade,
     required this.phoneNumber,
     required this.user,
+    required this.sId
   });
 }
 

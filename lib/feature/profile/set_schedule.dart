@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/models/availability_model.dart';
+import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
@@ -15,9 +17,8 @@ import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SetScheduleScreen extends StatefulWidget {
-  const SetScheduleScreen({super.key, this.professionalId});
+  const SetScheduleScreen({super.key,});
 
-  final String? professionalId;
 
   @override
   State<SetScheduleScreen> createState() => _SetScheduleScreenState();
@@ -45,7 +46,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
   bool get allSlotsSelected => selectedSlots.length == 7;
   String? professionalId;
-  String? role;
+  String? sessionID;
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       generateWeekTimeSlots(selectedDate);
       professionalId = Get.arguments['professionalId'] as String?;
-      role = Get.arguments['role'] as String?;
+      sessionID = Get.arguments['sessionID'] as String?;
       controller.fetchAvailabilityData(professionalId ?? '');
     });
   }
@@ -218,6 +219,8 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
             ),
             SizedBox(height: 15.h),
 
+// SetScheduleScreen এর GridView.builder section টা এভাবে replace করুন:
+
             Expanded(
               child: GetBuilder<AssignedController>(
                 builder: (_) {
@@ -232,24 +235,30 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                     ),
                     itemBuilder: (context, index) {
                       String? slot = controller.timeSlotDatas[index].status;
+                      String currentStartTime = controller.timeSlotDatas[index].startTime ?? '';
+                      String currentEndTime = controller.timeSlotDatas[index].endTime ?? '';
+
+                      // Check if this slot is selected
+                      bool isSelected = controller.startTime?.value == currentStartTime &&
+                          controller.endTime?.value == currentEndTime;
 
                       Color backgroundColor;
-                      Color textColor = Colors.white;
-                      Color borderColor = Colors.black;
+                      Color textColor = isSelected ? AppColors.primaryColor : Colors.white;
+                      Color borderColor = Colors.transparent;
 
                       switch (slot?.toLowerCase()) {
                         case 'available':
-                          backgroundColor = Color(0XFF305CDE);
-                          borderColor = Colors.transparent;
+                          backgroundColor = AppColors.secondaryColor;
+                          borderColor = isSelected ? AppColors.primaryColor : Colors.transparent;
                           break;
                         case 'booked':
                           backgroundColor = Color(0XFFC2B067);
                           borderColor = Colors.transparent;
                           break;
                         case 'disabled':
-                          backgroundColor = Colors.white;
-                          textColor = Colors.black;
-                          borderColor = Colors.black;
+                          backgroundColor = Colors.grey.shade400;
+                          textColor = Colors.grey.shade300;
+                          borderColor = Colors.transparent;
                           break;
                         default:
                           backgroundColor = Colors.green;
@@ -258,25 +267,24 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       return GestureDetector(
                         onTap: slot == 'available'
                             ? () {
-                                controller.startTime!.value =
-                                    controller.timeSlotDatas[index].startTime!;
-                                controller.endTime!.value =
-                                    controller.timeSlotDatas[index].endTime!;
+                          controller.startTime!.value = currentStartTime;
+                          controller.endTime!.value = currentEndTime;
 
-                                controller.update();
+                          controller.update();
 
-                                print(controller.startTime!.value);
-                                print(controller.endTime!.value);
+                          print(controller.startTime!.value);
+                          print(controller.endTime!.value);
 
-                                controller.dataOnchangeHandler();
-                              }
+                          controller.dataOnchangeHandler();
+                        }
                             : null,
                         child: AnimatedContainer(
                           duration: Duration(milliseconds: 300),
                           decoration: BoxDecoration(
                             color: backgroundColor,
                             border: Border.all(
-                              color: borderColor
+                              color: borderColor,
+                              width: isSelected ? 1 : 1,
                             ),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
@@ -285,19 +293,12 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CustomText(
-                                text:
-                                    '${controller.timeSlotDatas[index].startTime} - ${controller.timeSlotDatas[index].endTime}',
+                                text: '$currentStartTime - $currentEndTime',
                                 color: textColor,
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
                               ),
                               SizedBox(height: 2.h),
-                              // CustomText(
-                              //   text:
-                              //       '${controller.timeSlotDatas[index].status}',
-                              //   color: textColor.withOpacity(0.8),
-                              //   fontSize: 10.sp,
-                              // ),
                             ],
                           ),
                         ),
@@ -307,16 +308,19 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                 },
               ),
             ),
-
-            role == 'professional' ? CustomButton(
-              onPressed: () => controller.confirmSchedule(professionalId ?? ''),
-              title: controller.isConfirmScheduleLoading == true
-                  ? Center(child: CustomLoader())
-                  : Text(
-                'Confirm',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ) : SizedBox.shrink(),
+             GetBuilder<AssignedController>(
+              builder: (controller) {
+                return Get.find<UserController>().user?.role == 'professional' ? CustomButton(
+                  onPressed: () => controller.confirmSchedule(sessionID: sessionID ?? ''),
+                  title: controller.isConfirmScheduleLoading == true
+                      ? Center(child: CustomLoader())
+                      : Text(
+                    'Confirm',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ) : SizedBox.shrink();
+              }
+            ),
             SizedBox(height: 5.h),
           ],
         ),

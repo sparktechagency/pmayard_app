@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
@@ -68,7 +69,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: GetBuilder<ChatController>(
                 builder: (controller) {
                   if (controller.isLoadingChat) {
-                    return Center(child: CustomLoader());
+                    return ShimmerHelper.upcomingSessionsShimmer();
                   }
                   if (controller.chatData.isEmpty) {
                     return Center(

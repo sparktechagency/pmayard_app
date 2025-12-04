@@ -29,6 +29,8 @@ class AssignedCardWidget extends StatelessWidget {
       paddingHorizontal: 10.w,
       marginRight: 14.w,
       marginLeft: index == 0 ? 14.w : 0,
+      marginTop: 8.h,
+      marginBottom: 8.h,
       radiusAll: 8.r,
       height: 170.h,
       width: 170.w,

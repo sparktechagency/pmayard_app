@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/models/availability_model.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/models/time_slot_model.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/models/assigned/assign_model.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
@@ -12,8 +13,7 @@ class AssignedController extends GetxController {
   final isLoadingAssigned = false.obs;
   final RxList<AssignModel> assignModel = <AssignModel>[].obs;
   final RxList<Map<String, dynamic>> parentList = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> professionalList =
-      <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> professionalList = <Map<String, dynamic>>[].obs;
 
   Future<void> getAssigned() async {
     assignModel.clear();
@@ -170,10 +170,11 @@ class AssignedController extends GetxController {
     update();
   }
 
-  Future<void> confirmSchedule(String userID) async {
+  Future<void> confirmSchedule({String sessionID = ''}) async {
+
+    final String userID = Get.find<UserController>().user?.sId ?? '';
 
     print("===================>>>>> $userID");
-
 
     // print("=====================================   $userID  ====================== Assigned Controller 171 no line ");
     // isConfirmScheduleLoading = true;
@@ -183,18 +184,19 @@ class AssignedController extends GetxController {
     final reqBody = {"date": date, "time": timeSlot};
     print('maruf =========> $reqBody');
 
-    // final response = await ApiClient.postData(
-    //   ApiUrls.confirmSchedule(userID),
-    //   reqBody,
-    // );
 
-    // if (response.statusCode == 200) {
-    //   Get.offNamed(AppRoutes.customBottomNavBar);
-    // } else {
-    //   showToast('Something Went Wrong');
-    // }
-    //
-    // isConfirmScheduleLoading = false;
-    // update();
+    final response = await ApiClient.postData(
+      ApiUrls.confirmSchedule(userID),
+      reqBody,
+    );
+
+    if (response.statusCode == 200) {
+      Get.offNamed(AppRoutes.customBottomNavBar);
+    } else {
+      showToast('Something Went Wrong');
+    }
+
+    isConfirmScheduleLoading = false;
+    update();
   }
 }

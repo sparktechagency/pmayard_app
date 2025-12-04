@@ -41,6 +41,7 @@ class CustomBottomNavBar extends StatelessWidget {
         backgroundColor: AppColors.primaryColor,
         body: _screens[_navBarController.selectedIndex.value],
         bottomNavigationBar: SafeArea(
+          top: false,
           child: CurvedNavigationBar(
             backgroundColor: Colors.white,
             color: AppColors.primaryColor,

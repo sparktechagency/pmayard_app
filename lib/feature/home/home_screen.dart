@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
@@ -78,25 +79,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// =================== Assign New Professional Button are here ======================
-                  role == 'professional'
-                      ? Expanded(
-                          child: CustomButton(
-                            width: double.maxFinite,
-                            height: 28.h,
-                            fontSize: 10.sp,
-                            backgroundColor: AppColors.primaryColor,
-                            onPressed: () {
-                              Get.toNamed(
-                                AppRoutes.profileViewScreen,
-                                // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
-                              );
-                              // debugPrint('schedule ID=================================$professionalId');
-                              // debugPrint('schedule ID=================================$id');
-                            },
-                            label: 'View Profile',
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                  // role == 'professional'
+                  //     ? Expanded(
+                  //         child: CustomButton(
+                  //           width: double.maxFinite,
+                  //           height: 28.h,
+                  //           fontSize: 10.sp,
+                  //           backgroundColor: AppColors.primaryColor,
+                  //           onPressed: () {
+                  //             Get.toNamed(
+                  //               AppRoutes.profileViewScreen,
+                  //               // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
+                  //             );
+                  //             // debugPrint('schedule ID=================================$professionalId');
+                  //             // debugPrint('schedule ID=================================$id');
+                  //           },
+                  //           label: 'View Profile',
+                  //         ),
+                  //       )
+                  //     : SizedBox.shrink(),
 
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
@@ -105,17 +106,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     left: 16.w,
                     right: 16.w,
                     text:
-                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'} Data',
+                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'}',
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
 
                   // Assign Related Work
                   Obx(() {
-                    if (_assignedController.isLoadingAssigned.value) {
+                    if (_assignedController.isLoadingAssigned.value || _sessionsController.isLoadingSession.value) {
                       return SizedBox(
                         height: 180.h,
-                        child: Center(child: CustomLoader()),
+                        child: ShimmerHelper.assignedCardsShimmer(),
                       );
                     }
 
@@ -127,14 +128,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Center(
                           child: CustomText(
                             text:
-                                'No assigned ${role == 'professional' ? 'parents' : 'professionals'} Datas',
+                                'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
                             fontSize: 14.sp,
                           ),
                         ),
                       );
                     }
                     return SizedBox(
-                      height: 180.h,
+                      height: 188.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -187,13 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 16.sp,
                   ),
                   Obx(() {
-                    if (_sessionsController.isLoadingSession.value) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20.h),
-                          child: CustomLoader(),
-                        ),
-                      );
+                    if (_sessionsController.isLoadingSession.value || _assignedController.isLoadingAssigned.value) {
+                      return ShimmerHelper.upcomingSessionsShimmer();
                     }
                     final sessionData = role == 'professional'
                         ? _sessionsController.upComingSessionParentList

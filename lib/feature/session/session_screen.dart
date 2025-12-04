@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/simmer_helper.dart';
+import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
@@ -92,12 +94,7 @@ class _SessionScreenState extends State<SessionScreen> {
                   GetBuilder<SessionsController>(
                     builder: (sessionController) {
                       if (sessionController.isLoadingMySection.value) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20.h),
-                            child: CustomLoader(),
-                          ),
-                        );
+                        return ShimmerHelper.upcomingSessionsShimmer();
                       }
 
                       if (sessionController.mySessionData.isEmpty) {
@@ -137,9 +134,6 @@ class _SessionScreenState extends State<SessionScreen> {
                             final String status = session['status'] ?? 'Pending';
                             final String sessionId = session['_id'] ?? '';
 
-                            final hasDateTime = day.isNotEmpty && date.isNotEmpty;
-                            final subTitle = hasDateTime ? '$date at $day' : 'Waiting';
-
                             return Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 16.w,
@@ -154,7 +148,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                     image: imageUrl,
                                     imageRadius: 24.r,
                                     title: name,
-                                    subTitle: subTitle,
+                                    subTitle: TimeFormatHelper.timeWithAMPM(DateTime.parse(date)) ?? 'Waiting' ,
                                     titleFontSize: 16.sp,
                                     trailing: status == 'Confirmed'
                                         ? Row(
