@@ -1,7 +1,10 @@
+import 'package:pmayard_app/models/session/parent_model.dart';
+
+import 'my_session_parent_model.dart';
 
 class SessionParentModelData {
   String? sId;
-  String? parent;
+  ParentModel? parent;
   Professional? professional;
   String? conversationId;
   String? day;
@@ -15,28 +18,29 @@ class SessionParentModelData {
   String? updatedAt;
   int? iV;
 
-  SessionParentModelData(
-      {this.sId,
-        this.parent,
-        this.professional,
-        this.conversationId,
-        this.day,
-        this.date,
-        this.subject,
-        this.status,
-        this.code,
-        this.isSessionVerified,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
-
   SessionParentModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    parent = json['parent'];
-    professional = json['professional'] != null
-        ? new Professional.fromJson(json['professional'])
-        : null;
+
+    // Handle the case where parent might be an ID string or a full object
+    if (json['parent'] != null) {
+      if (json['parent'] is String) {
+        // If it's a string ID, we can't create a ParentModel object from it
+      } else if (json['parent'] is Map<String, dynamic>) {
+        // If it's a Map, create the ParentModel object
+        parent = ParentModel.fromJson(json['parent'] as Map<String, dynamic>);
+      }
+    }
+
+    // Handle the case where professional might be an ID string or a full object
+    if (json['professional'] != null) {
+      if (json['professional'] is String) {
+        // If it's a string ID, we can't create a Professional object from it
+      } else if (json['professional'] is Map<String, dynamic>) {
+        // If it's a Map, create the Professional object
+        professional = Professional.fromJson(json['professional'] as Map<String, dynamic>);
+      }
+    }
+
     conversationId = json['conversation_id'];
     day = json['day'];
     date = json['date'];
@@ -48,61 +52,5 @@ class SessionParentModelData {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
-  }
-}
-
-class Professional {
-  String? sId;
-  User? user;
-  String? name;
-  String? bio;
-  String? phoneNumber;
-  String? profileImage;
-  String? qualification;
-  List<String>? subjects;
-  bool? isDeleted;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
-
-  Professional(
-      {this.sId,
-        this.user,
-        this.name,
-        this.bio,
-        this.phoneNumber,
-        this.profileImage,
-        this.qualification,
-        this.subjects,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.iV});
-
-  Professional.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
-    name = json['name'];
-    bio = json['bio'];
-    phoneNumber = json['phoneNumber'];
-    profileImage = json['profileImage'];
-    qualification = json['qualification'];
-    subjects = json['subjects'].cast<String>();
-    isDeleted = json['isDeleted'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-  }
-}
-
-class User {
-  String? sId;
-  String? email;
-
-  User({this.sId, this.email});
-
-  User.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    email = json['email'];
   }
 }

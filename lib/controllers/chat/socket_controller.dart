@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/models/chat/inbox_model_data.dart';
@@ -9,22 +9,40 @@ class SocketChatController extends GetxController {
   SocketServices socketService = SocketServices();
   final ChatController _chatController = Get.find<ChatController>();
 
-  // ScrollController scrollController = ScrollController();
+  // Add ScrollController
+  final ScrollController scrollController = ScrollController();
 
-   /// ===============> Listen for new messages via socket.
+  /// ===============> Listen for new messages via socket.
   void listenMessage(String conversationID) {
     SocketServices.socket?.on("new_message-$conversationID", (data) {
       if (data != null) {
         debugPrint("New message received: $data");
 
         final socketData = SocketModelData.fromJson(data);
-
         final convertedMessage = convertSocketToMessage(socketData);
 
         _chatController.inboxData?.messages?.insert(0, convertedMessage);
         _chatController.refresh();
+
+        // Auto scroll to bottom after new message
+        ever(socketData.message as RxInterface<Object?>, (_){
+          scrollToBottom();
+        });
       }
     });
+  }
+
+  // Function to scroll to bottom
+  void scrollToBottom() {
+    if (scrollController.hasClients) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent, // Scroll to actual bottom
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+    }
   }
 
   Messages convertSocketToMessage(SocketModelData socketData) {
@@ -54,19 +72,14 @@ class SocketChatController extends GetxController {
       iV: 0,
     );
   }
+
   void removeListeners(String conversationId) {
     SocketServices.socket?.off("new_message-$conversationId");
   }
 
-  // void scrollToBottom() {
-  //   if (scrollController.hasClients) {
-  //     scrollController.animateTo(
-  //       0,
-  //       duration: const Duration(milliseconds: 400),
-  //       curve: Curves.easeOut,
-  //     );
-  //   }
-  // }
-
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
 }
-

@@ -1,39 +1,4 @@
-class AssignedProfessionalModelData {
-  String? sId;
-  Parent? parent;
-  String? professional;
-  String? conversationId;
-  bool? isDeleted;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
-
-  AssignedProfessionalModelData({
-    this.sId,
-    this.parent,
-    this.professional,
-    this.conversationId,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-    this.iV,
-  });
-
-  AssignedProfessionalModelData.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    parent = json['parent'] != null
-        ? new Parent.fromJson(json['parent'])
-        : null;
-    professional = json['professional'];
-    conversationId = json['conversation_id'];
-    isDeleted = json['isDeleted'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-  }
-}
-
-class Parent {
+class ParentModel {
   String? sId;
   User? user;
   String? name;
@@ -47,7 +12,7 @@ class Parent {
   String? updatedAt;
   int? iV;
 
-  Parent({
+  ParentModel({
     this.sId,
     this.user,
     this.name,
@@ -62,9 +27,9 @@ class Parent {
     this.iV,
   });
 
-  Parent.fromJson(Map<String, dynamic> json) {
+  ParentModel.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
     name = json['name'];
     phoneNumber = json['phoneNumber'];
     childsName = json['childs_name'];
@@ -91,3 +56,4 @@ class User {
     role = json['role'];
   }
 }
+

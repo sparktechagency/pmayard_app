@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,14 +5,12 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/feature/home/widgets/assigned_card_widget.dart';
-import 'package:pmayard_app/models/assigned/assigned_professional_model_data.dart';
-import 'package:pmayard_app/models/assigned/assigned_response_data.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
 import 'package:pmayard_app/models/session/session_response_data.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
-import '../../custom_assets/assets.gen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,23 +20,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final controller = Get.find<UserController>();
   final AssignedController _assignedController = Get.find<AssignedController>();
   final SessionsController _sessionsController = Get.find<SessionsController>();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-          _assignedController.getAssigned();
-          _sessionsController.getSessions();
-  });
+    if (_assignedController.assignModel.isEmpty) {
+      _assignedController.getAssigned();
+      _sessionsController.getSessions();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 0,
+      // App Bar Related Work are here
       appBar: CustomAppBar(
         titleWidget: GetBuilder<UserController>(
           builder: (controller) {
@@ -68,19 +65,39 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: RefreshIndicator(
         color: AppColors.primaryColor,
-        onRefresh: () async{
-          _sessionsController.getSessions();
-          _assignedController.getAssigned();
+        onRefresh: () async {
+          await _assignedController.getAssigned();
+          await _sessionsController.getSessions();
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: GetBuilder<UserController>(
             builder: (userController) {
               final role = userController.user?.role ?? '';
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// =================== Assign New Professional Button are here ======================
+                  role == 'professional'
+                      ? Expanded(
+                          child: CustomButton(
+                            width: double.maxFinite,
+                            height: 28.h,
+                            fontSize: 10.sp,
+                            backgroundColor: AppColors.primaryColor,
+                            onPressed: () {
+                              Get.toNamed(
+                                AppRoutes.profileViewScreen,
+                                // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
+                              );
+                              // debugPrint('schedule ID=================================$professionalId');
+                              // debugPrint('schedule ID=================================$id');
+                            },
+                            label: 'View Profile',
+                          ),
+                        )
+                      : SizedBox.shrink(),
+
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
                     top: 24.h,
@@ -88,82 +105,76 @@ class _HomeScreenState extends State<HomeScreen> {
                     left: 16.w,
                     right: 16.w,
                     text:
-                        'Assigned ${userController.user?.roleId?.name == 'parent' ? 'Professionals' : 'Parents'}',
+                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'} Data',
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
 
-                  GetBuilder<AssignedController>(
-                    builder: (assignedController) {
-                      if (assignedController.isLoadingAssigned) {
-                        return SizedBox(
-                          height: 180.h,
-                          child: Center(child: CustomLoader()),
-                        );
-                      }
-
-                      final assignedData = role == 'professional'
-                          ? assignedController.assignedProfessionalData
-                          : assignedController.assignedParentData;
-
-                      if (assignedData.isEmpty) {
-                        return SizedBox(
-                          height: 180.h,
-                          child: Center(
-                            child: CustomText(
-                              text:
-                                  'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                        );
-                      }
-
+                  // Assign Related Work
+                  Obx(() {
+                    if (_assignedController.isLoadingAssigned.value) {
                       return SizedBox(
                         height: 180.h,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          itemCount: assignedData.length,
-                          itemBuilder: (context, index) {
-                            String name = '';
-                            String imageUrl = '';
-                            String id;
-                            String chatId;
-                            String scheduleUserID;
+                        child: Center(child: CustomLoader()),
+                      );
+                    }
 
-                            if (role == 'professional') {
-                              final item =
-                                  assignedData[index]
-                                      as AssignedProfessionalModelData;
-                              name = item.parent?.name ?? '';
-                              imageUrl = item.parent?.profileImage ?? '';
-                              id = item.parent?.sId ?? '';
-                              chatId = item.conversationId ?? '';
-                              scheduleUserID = item.professional ?? '';
-                            } else {
-                              final item =
-                                  assignedData[index] as AssignedParentModelData;
-                              name = item.professional?.name ?? '';
-                              imageUrl = item.professional?.profileImage ?? '';
-                              id = item.professional?.sId ?? '';
-                              chatId = item.conversationId ?? '';
-                              scheduleUserID = '';
-                            }
-                            return AssignedCardWidget(
-                              chatId: chatId,
-                              id: id,
-                              index: index,
-                              name: name,
-                              role: role,
-                              imageUrl: imageUrl,
-                              scheduleUserID: scheduleUserID,
-                            );
-                          },
+                    final assignedList = _assignedController.assignModel;
+
+                    if (assignedList.isEmpty) {
+                      return SizedBox(
+                        height: 180.h,
+                        child: Center(
+                          child: CustomText(
+                            text:
+                                'No assigned ${role == 'professional' ? 'parents' : 'professionals'} Datas',
+                            fontSize: 14.sp,
+                          ),
                         ),
                       );
-                    },
-                  ),
+                    }
+                    return SizedBox(
+                      height: 180.h,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        itemCount: assignedList.length,
+                        itemBuilder: (context, index) {
+                          final item = assignedList[index];
+
+                          String name = '';
+                          String imageUrl = '';
+                          String id = '';
+                          String chatId = '';
+                          String userRole = '';
+
+                          if (role == 'professional') {
+                            name = item.parent.name;
+                            imageUrl = item.parent.profileImage;
+                            id = item.parent.id;
+                            chatId = item.conversationId;
+                            userRole = 'Parent';
+                          } else if (role == 'parent') {
+                            name = item.professional.name;
+                            imageUrl = item.professional.profileImage;
+                            id = item.professional.id;
+                            chatId = item.conversationId;
+                            userRole = 'Professional';
+                          }
+
+                          return AssignedCardWidget(
+                            chatId: chatId,
+                            id: id,
+                            index: index,
+                            name: name,
+                            role: userRole,
+                            imageUrl: imageUrl,
+                            professionalId: item.professional.id,
+                          );
+                        },
+                      ),
+                    );
+                  }),
 
                   /// ===================>>>> Upcoming Sessions Section <<<================== ///
                   CustomText(
@@ -175,101 +186,92 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
-
-                  GetBuilder<SessionsController>(
-                    builder: (sessionsController) {
-                      if (sessionsController.isLoadingSession) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20.h),
-                            child: CustomLoader(),
-                          ),
-                        );
-                      }
-
-                      final sessionData = role == 'professional'
-                          ? sessionsController.sessionProfessionalData
-                          : sessionsController.sessionParentData;
-
-                      if (sessionData.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40.h),
-                            child: CustomText(
-                              text: 'No upcoming sessions',
-                              fontSize: 14.sp,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: sessionData.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final session = sessionData[index];
-
-                          String name = '';
-                          String imageUrl = '';
-                          String? day;
-                          String? date;
-                          if (role == 'professional') {
-                            final session =
-                                sessionData[index]
-                                    as SessionProfessionalModelData;
-
-                            name = session.parent?.name ?? 'Unknown';
-                            imageUrl = session.parent?.profileImage ?? '';
-                            day = session.day;
-                            date = session.date;
-                          } else {
-                            final session =
-                                sessionData[index] as SessionParentModelData;
-                            name = session.professional?.name ?? 'Unknown';
-                            imageUrl = session.professional?.profileImage ?? '';
-                            day = session.day;
-                            date = session.date;
-                          }
-
-                          final hasDateTime =
-                              (day != null && day.isNotEmpty) &&
-                              (date != null && date.isNotEmpty);
-
-                          // Format the subtitle
-                          final subtitle = hasDateTime
-                              ? '$date at $day'
-                              : 'Waiting';
-
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 6.h,
-                            ),
-                            child: CustomListTile(
-                              contentPaddingVertical: 6.h,
-                              borderRadius: 8.r,
-                              borderColor: AppColors.borderColor,
-                              image: imageUrl,
-                              title: name,
-                              subTitle: subtitle,
-                              titleFontSize: 16.sp,
-                              trailing: hasDateTime
-                                  ? CustomButton(
-                                      radius: 8.r,
-                                      height: 25.h,
-                                      fontSize: 10.sp,
-                                      onPressed: () => showUserData(session),
-                                      label: 'View Detail',
-                                    )
-                                  : null,
-                            ),
-                          );
-                        },
+                  Obx(() {
+                    if (_sessionsController.isLoadingSession.value) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: CustomLoader(),
+                        ),
                       );
-                    },
-                  ),
+                    }
+                    final sessionData = role == 'professional'
+                        ? _sessionsController.upComingSessionParentList
+                        : _sessionsController.upComingSessionProfessionalList;
 
+                    if (sessionData.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                          child: CustomText(
+                            text: 'No upcoming sessions',
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: sessionData.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        String name = '';
+                        String imageUrl = '';
+                        String? day;
+                        String? date;
+
+                        final session = sessionData[index];
+
+                        if (role == 'professional') {
+                          final session = sessionData[index];
+                          name = session.parent?.name ?? 'Unknown';
+                          imageUrl = session.parent?.profileImage ?? '';
+                          day = session.day ?? '';
+                          date = session.date ?? '';
+                        } else {
+                          final session = sessionData[index];
+                          name = session.professional?.name ?? 'Unknown';
+                          imageUrl = session.professional?.profileImage ?? '';
+                          day = session.day ?? '';
+                          date = session.date ?? '';
+                        }
+                        final hasDateTime =
+                            (day.isNotEmpty) && (date.isNotEmpty);
+
+                        // Format the subtitle
+                        final subtitle = hasDateTime
+                            ? '$date at $day'
+                            : 'Waiting';
+
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 6.h,
+                          ),
+                          child: CustomListTile(
+                            contentPaddingVertical: 6.h,
+                            borderRadius: 8.r,
+                            borderColor: AppColors.borderColor,
+                            image: imageUrl,
+                            title: name,
+                            subTitle: subtitle,
+                            titleFontSize: 16.sp,
+                            trailing: hasDateTime
+                                ? CustomButton(
+                                    radius: 8.r,
+                                    height: 25.h,
+                                    fontSize: 10.sp,
+                                    onPressed: () =>
+                                        showUserData(session, role),
+                                    label: 'View Detail',
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
+                    );
+                  }),
                   SizedBox(height: 44.h),
                 ],
               );
@@ -281,21 +283,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Show User Data via Model
-  void showUserData(dynamic sessionData) {
+  void showUserData(dynamic sessionData, String userRole) {
     String name = '';
     String imageUrl = '';
     String? day;
     String? date;
     String? role = '';
     String? subject;
-    if (sessionData is SessionProfessionalModelData) {
+    if (userRole == 'professional') {
       name = sessionData.parent?.name ?? 'Unknown';
       imageUrl = sessionData.parent?.profileImage ?? '';
       day = sessionData.day;
       date = sessionData.date;
       role = 'Professional';
       subject = sessionData.subject;
-    } else if (sessionData is SessionParentModelData) {
+    } else if (userRole == 'parent') {
       name = sessionData.professional?.name ?? 'Unknown';
       imageUrl = sessionData.professional?.profileImage ?? '';
       day = sessionData.day;
@@ -303,7 +305,6 @@ class _HomeScreenState extends State<HomeScreen> {
       role = 'Parent';
       subject = sessionData.subject;
     }
-
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -330,7 +331,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundImage: NetworkImage(imageUrl),
                   ),
                 ),
-
               SizedBox(height: 16.h),
               Text(
                 '$role Name',
@@ -339,7 +339,6 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 8.h),
               // Name
               Text(name, style: TextStyle(fontSize: 14)),
-
               SizedBox(height: 16.h),
               Text(
                 'Subjects',
@@ -347,7 +346,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 8.h),
               Text('$subject'),
-
               SizedBox(height: 16.h),
               Text(
                 'Session Time',
@@ -355,9 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 8.h),
               if (day != null && date != null) Text('$date at $day'),
-
               SizedBox(height: 16.h),
-
               // Close button
               CustomButton(
                 onPressed: () => Navigator.pop(context),

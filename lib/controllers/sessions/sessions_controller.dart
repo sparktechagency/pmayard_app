@@ -1,170 +1,246 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
-import 'package:pmayard_app/models/session/assign_view_profile_model.dart';
 import 'package:pmayard_app/models/session/my_session_parent_model.dart';
 import 'package:pmayard_app/models/session/my_session_professional_model.dart';
 import 'package:pmayard_app/models/session/session_professional_model_data.dart';
 import 'package:pmayard_app/models/session/session_response_data.dart';
+import 'package:pmayard_app/models/session/upcomming_session_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class SessionsController extends GetxController {
-  @override
-  void onInit() {
-    super.onInit();
-    getSessions();
-  }
 
-  // =================  Upcoming Sessions Related work are here ===============
-  List<SessionParentModelData> sessionParentData = [];
-  List<SessionProfessionalModelData> sessionProfessionalData = [];
-  bool isLoadingSession = false;
+  // =================  Upcoming Sessions (Using Models) ===============
+  final RxList<UpComingSessionModel>upComingSession = <UpComingSessionModel>[].obs;
+  final RxList<UpComingSessionModel> upComingSessionParentList = <UpComingSessionModel>[].obs;
+  final RxList<UpComingSessionModel> upComingSessionProfessionalList = <UpComingSessionModel>[].obs;
+  final isLoadingSession = false.obs;
+
+  // Future<void> getSessions() async {
+  //   upComingSession.clear();
+  //   upComingSessionParentList.clear();
+  //   upComingSessionProfessionalList.clear();
+  //   isLoadingSession.value = true;
+  //   update();
+  //
+  //   try {
+  //     final response = await ApiClient.getData(ApiUrls.upcomingSessions);
+  //
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> datas = response.body['data'] ?? [];
+  //       for( var item in datas ){
+  //         upComingSession.add(UpComingSessionModel.fromJson(item));
+  //         upComingSessionParentList.add(item['parent']);
+  //         upComingSessionProfessionalList.add(item['professional']);
+  //       }
+  //
+  //       print('======>>>>>>> Parent $upComingSessionParentList');
+  //       print('======>>>>>>> Professional $upComingSessionProfessionalList');
+  //     }
+  //   } catch (e) {
+  //     print('❌ [SESSIONS] Error: $e');
+  //   } finally {
+  //     isLoadingSession.value = false;
+  //     update();
+  //   }
+  // }
 
   Future<void> getSessions() async {
-    sessionParentData.clear();
-    sessionProfessionalData.clear();
-
-    final role = Get.find<UserController>().user?.role ?? '';
-    isLoadingSession = true;
+    upComingSession.clear();
+    upComingSessionParentList.clear();
+    upComingSessionProfessionalList.clear();
+    isLoadingSession.value = true;
     update();
 
     try {
       final response = await ApiClient.getData(ApiUrls.upcomingSessions);
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.body['data'] ?? [];
-        if (role == 'professional') {
-          sessionProfessionalData = data
-              .map((e) => SessionProfessionalModelData.fromJson(e))
-              .toList();
-        } else {
-          sessionParentData = data
-              .map((e) => SessionParentModelData.fromJson(e))
-              .toList();
+        final List<dynamic> datas = response.body['data'] ?? [];
+        for (var item in datas) {
+          final session = UpComingSessionModel.fromJson(item);
+          upComingSession.add(session);
+          upComingSessionParentList.add(session);
+          upComingSessionProfessionalList.add(session);
         }
+
+        print('======>>>>>>> Sessions: ${upComingSession.length}');
       }
+    } catch (e) {
+      print('❌ [SESSIONS] Error: $e');
     } finally {
-      isLoadingSession = false;
+      isLoadingSession.value = false;
       update();
     }
   }
 
-  // =================  MY Sessions Related work are here =====================
-  bool isLoadingMySection = false;
-  List<MySessionParentModelData> mySessionParentData = [];
-  List<MySessionProfessionalModelData> mySessionProfessionalData = [];
+  // =================  MY Sessions (Using Raw Maps - No Models) =====================
+  final isLoadingMySection = false.obs;
+  final mySessionData = <Map<String, dynamic>>[].obs;
 
-  Future<void> fetchMySection( String date ) async {
-    mySessionProfessionalData.clear();
+  final mySessionParentData = <MySessionParentModelData>[].obs;
+  final mySessionProfessionalData = <MySessionProfessionalModelData>[].obs;
+
+  Future<void> fetchMySection(String date) async {
+    mySessionData.clear();
     mySessionParentData.clear();
-    final role = Get.find<UserController>().user?.role ?? '';
+    mySessionProfessionalData.clear();
 
-    isLoadingMySection = true;
+    isLoadingMySection.value = true;
     update();
 
-    final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
+    try {
+      final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
 
-    if (response.statusCode == 200) {
-      final List data = response.body['data'] ?? [];
-
-      if (role == 'parent') {
-        final session = data
-            .map((e) => MySessionParentModelData.fromJson(e))
-            .toList();
-        mySessionParentData.addAll(session);
-        debugPrint(
-          '=====================>>> parent ${mySessionParentData.length}',
-        );
-      } else {
-        final session = data
-            .map((e) => MySessionProfessionalModelData.fromJson(e))
-            .toList();
-        mySessionProfessionalData.addAll(session);
-        debugPrint(
-          '=====================>> >Professional ${mySessionProfessionalData.length}',
-        );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.body['data'] ?? [];
+        mySessionData.assignAll(data.cast<Map<String, dynamic>>());
+        debugPrint('Fetched ${mySessionData.length} my sessions');
       }
+    } catch (e) {
+      print('Error fetching my sessions: $e');
+    } finally {
+      isLoadingMySection.value = false;
+      update(); // Notify listeners after data is loaded
     }
-    isLoadingMySection = false;
-    update();
   }
 
-  // =================  Selected Session Related work are here are here =====================
-  bool isLoadingSelectedSession = false;
+  // =================  Selected Session =====================
+  final isLoadingSelectedSession = false.obs;
 
   Future<void> fetchSelectedSession(String date) async {
     try {
-      isLoadingSelectedSession = true;
+      isLoadingSelectedSession.value = true;
+      update(); // Notify listeners
+
       final role = Get.find<UserController>().user?.role ?? '';
-      update();
       final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
+
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
 
-        if (role == 'professional') {
-          sessionProfessionalData = data
-              .map((e) => SessionProfessionalModelData.fromJson(e))
-              .toList();
-        } else {
-          sessionParentData = data
-              .map((e) => SessionParentModelData.fromJson(e))
-              .toList();
-        }
+        // if (role == 'professional') {
+        //   final professionalData = data
+        //       .map((e) => SessionProfessionalModelData.fromJson(e))
+        //       .toList();
+        //   sessionProfessionalData.assignAll(professionalData);
+        // } else {
+        //   final parentData = data
+        //       .map((e) => SessionParentModelData.fromJson(e))
+        //       .toList();
+        //   sessionParentData.assignAll(parentData);
+        // }
       }
     } catch (err) {
       showToast('Something Went Wrong $err');
     } finally {
-      isLoadingSelectedSession = false;
-      update();
+      isLoadingSelectedSession.value = false;
+      update(); // Notify listeners after data is loaded
     }
   }
 
-  bool isLoadingAssignViewProfile = false;
-  AssignViewProfileModel? assignViewProfileModel;
+  // =================  Assign View Profile (Using Raw Map) =====================
+  final isLoadingAssignViewProfile = false.obs;
+  Map<String, dynamic>? assignViewProfileData;
 
-  Future<void> fetchAssignViewProfile(String userId) async{
-    isLoadingAssignViewProfile = true;
-    update();
-
-    final response = await ApiClient.getData(ApiUrls.sessionViewProfile(userId));
-    if( response.statusCode == 200 ){
-        final data = response.body['data'];
-        assignViewProfileModel = AssignViewProfileModel.fromJson(data);
-    }else{
-      showToast('Something Went Wrong');
-    }
-
-    isLoadingAssignViewProfile = false;
-    update();
-  }
-
-
-
-  bool isChangeStatus = false;
-
-  Future<void> completeSessionDBHandler(String userID, String status) async {
-    isChangeStatus = true;
-    update();
-
-    final responseBody = {
-      'status': status,
-    };
-
-    final response = await ApiClient.patch(
-      ApiUrls.completeSession(userID),
-      responseBody,
+  // Getter to maintain compatibility with existing code
+  AssignViewProfileModel? get assignViewProfileModel {
+    if (assignViewProfileData == null) return null;
+    return AssignViewProfileModel(
+      profileImage: assignViewProfileData?['profileImage'] ?? '',
+      name: assignViewProfileData?['name'] ?? '',
+      childsName: assignViewProfileData?['childs_name'] ?? '',
+      childsGrade: assignViewProfileData?['childs_grade'] ?? '',
+      phoneNumber: assignViewProfileData?['phoneNumber'] ?? '',
+      user: UserData(
+        role: assignViewProfileData?['user']?['role'] ?? '',
+        email: assignViewProfileData?['user']?['email'] ?? '',
+      ),
     );
-
-    if (response.statusCode == 200) {
-      print( response.status);
-
-    } else {
-      showToast('Something Went Wrong');
-    }
-    isChangeStatus = false;
-    update();
   }
 
+  Future<void> fetchAssignViewProfile(String userId) async {
+    isLoadingAssignViewProfile.value = true;
+    assignViewProfileData?.clear();
+    update();
+
+    try {
+      final response = await ApiClient.getData(ApiUrls.sessionViewProfile(userId));
+      if (response.statusCode == 200) {
+        assignViewProfileData = response.body['data'];
+        debugPrint('Fetched profile data');
+        update(); // Notify listeners
+      } else {
+        showToast('Something Went Wrong');
+      }
+    } catch (e) {
+      print('Error fetching profile: $e');
+      showToast('Error: $e');
+    } finally {
+      isLoadingAssignViewProfile.value = false;
+    }
+  }
+
+  // =================  Complete Session =====================
+  final isChangeStatus = false.obs;
+
+  Future<void> completeSessionDBHandler(String userID, String newStatus) async {
+    isChangeStatus.value = true;
+
+    try {
+      final responseBody = {
+        'status': newStatus,
+      };
+
+      final response = await ApiClient.patch(
+        ApiUrls.completeSession(userID),
+        responseBody,
+      );
+
+      if (response.statusCode == 200) {
+        showToast('Session status updated successfully');
+        // Refresh the session list
+        await fetchMySection('');
+        Get.back(); // Close the dialog
+      } else {
+        showToast('Failed to update session status');
+      }
+    } catch (e) {
+      print('Error updating session: $e');
+      showToast('Error: $e');
+    } finally {
+      isChangeStatus.value = false;
+    }
+  }
+}
+
+// Simple model classes for compatibility
+class AssignViewProfileModel {
+  final String profileImage;
+  final String name;
+  final String childsName;
+  final String childsGrade;
+  final String phoneNumber;
+  final UserData user;
+
+  AssignViewProfileModel({
+    required this.profileImage,
+    required this.name,
+    required this.childsName,
+    required this.childsGrade,
+    required this.phoneNumber,
+    required this.user,
+  });
+}
+
+class UserData {
+  final String role;
+  final String email;
+
+  UserData({
+    required this.role,
+    required this.email,
+  });
 }

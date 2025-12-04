@@ -50,7 +50,6 @@ class _CalenderScreenState extends State<CalenderScreen> {
               },
             ),
           ),
-          SizedBox(height: 30.h),
           Text('Events', style: TextStyle(fontSize: 18.sp)),
           SizedBox(height: 15.h),
           Flexible(

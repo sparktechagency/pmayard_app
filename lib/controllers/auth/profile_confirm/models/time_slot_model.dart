@@ -3,6 +3,7 @@ class TimeSlotModel {
   String? startTime;
   String? endTime;
   String? status;
+  String? _id;
 
   TimeSlotModel({this.startTime, this.endTime, this.status});
 
@@ -19,6 +20,7 @@ class TimeSlotModel {
       "startTime": startTime,
       "endTime": endTime,
       "status": status,
+      "_id": _id,
     };
   }
 }

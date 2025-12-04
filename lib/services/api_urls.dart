@@ -26,8 +26,10 @@ class ApiUrls {
   static const String changePassword = '/auth/change-password';
   static const String parentCreate = '/parents/parent';
   static const String professionalCreate = '/professionals/professional';
+
   static const String assigned = '/sessions/assigned-roles';
   static const String upcomingSessions = '/sessions/upcoming-sessions';
+
   static String sessionViewProfile(String id) => '/sessions/$id/role';
 
   //Message Related work
@@ -43,4 +45,6 @@ class ApiUrls {
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
   static String completeSession(String userID) => '/sessions/$userID/status';
   static String professionalAvailability( String scheduleID ) => '/professionals/$scheduleID';
+  static String editAvailabilitySchedule( String availabilityID ) => '/professionals/$availabilityID/availability';
+  static String confirmSchedule( String userID ) => '/professionals/$userID/confirm-session';
 }

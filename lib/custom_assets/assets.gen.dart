@@ -1,3 +1,5 @@
+// dart format width=80
+
 /// GENERATED CODE - DO NOT MODIFY BY HAND
 /// *****************************************************
 ///  FlutterGen
@@ -85,6 +87,9 @@ class $AssetsIconsGen {
   SvgGenImage get massegeSend =>
       const SvgGenImage('assets/icons/massege_send.svg');
 
+  /// File path: assets/icons/not_found.svg
+  SvgGenImage get notFound => const SvgGenImage('assets/icons/not_found.svg');
+
   /// File path: assets/icons/notification.svg
   SvgGenImage get notification =>
       const SvgGenImage('assets/icons/notification.svg');
@@ -158,6 +163,7 @@ class $AssetsIconsGen {
     logout,
     love,
     massegeSend,
+    notFound,
     notification,
     number,
     password,
@@ -193,6 +199,10 @@ class $AssetsImagesGen {
   AssetGenImage get locationImage =>
       const AssetGenImage('assets/images/location_image.png');
 
+  /// File path: assets/images/not_found.png
+  AssetGenImage get notFound =>
+      const AssetGenImage('assets/images/not_found.png');
+
   /// File path: assets/images/onboarding_image.png
   AssetGenImage get onboardingImage =>
       const AssetGenImage('assets/images/onboarding_image.png');
@@ -219,6 +229,7 @@ class $AssetsImagesGen {
     img,
     img1,
     locationImage,
+    notFound,
     onboardingImage,
     splashBottom,
     splashLogo,
