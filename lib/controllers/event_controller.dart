@@ -37,4 +37,11 @@ class EventController extends GetxController {
     isLoadingEvent = false;
     update();
   }
+
+
+  void onDateChanged (selectedDate) {
+    final String date = selectedDate.toIso8601String().split('T')[0];
+  eventGet(date:date);
+  update();
+  }
 }

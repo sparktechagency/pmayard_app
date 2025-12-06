@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/event_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
+import 'package:pmayard_app/widgets/custom_text.dart';
 
 class CalenderScreen extends StatefulWidget {
   const CalenderScreen({super.key});
@@ -14,23 +16,6 @@ class CalenderScreen extends StatefulWidget {
 }
 
 class _CalenderScreenState extends State<CalenderScreen> {
-  // Store Events are here
-  List<Map<String, String>> storeEvents = [
-    {'eventName': 'Meeting', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'John’s Birthday', 'time': '3:30AM - 5:00AM'},
-    {'eventName': 'Football Match', 'time': '3:30AM - 5:00AM'},
-  ];
-
 
   final EventController _eventController = Get.find<EventController>();
 
@@ -56,21 +41,30 @@ class _CalenderScreenState extends State<CalenderScreen> {
             Container(
               width: double.maxFinite,
               decoration: BoxDecoration(
-                // color: Colors.red,
               ),
-              child: CalendarDatePicker(
-                initialDate: DateTime.now(),
-                firstDate: DateTime(1990),
-                lastDate: DateTime(2050),
-                onDateChanged: (selectedDate) {
-        
-                },
+              child: GetBuilder<EventController>(
+                builder: (controller) {
+                  return CalendarDatePicker(
+                    initialDate: null,
+                    firstDate: DateTime.now().subtract(Duration(days: 365)),
+                    lastDate: DateTime.now(),
+                    onDateChanged: (selectedDate) => controller.onDateChanged(selectedDate),
+                  );
+                }
               ),
             ),
             Text('Events', style: TextStyle(fontSize: 18.sp)),
             SizedBox(height: 15.h),
             GetBuilder<EventController>(
               builder: (controller) {
+
+                if(controller.isLoadingEvent){
+                  return ShimmerHelper.upcomingSessionsShimmer();
+                }else if(controller.eventData.isEmpty){
+                  return Center(child: CustomText(
+                    top: 24.h,
+                      text: 'Event not yet'));
+                }
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
