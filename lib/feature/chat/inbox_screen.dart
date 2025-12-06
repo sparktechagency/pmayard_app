@@ -24,11 +24,11 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
-
   final String chatID = Get.arguments['chatId'] as String;
 
   final ChatController _chatController = Get.find<ChatController>();
-  final SocketChatController _socketChatController = Get.find<SocketChatController>();
+  final SocketChatController _socketChatController =
+      Get.find<SocketChatController>();
 
   @override
   void initState() {
@@ -39,15 +39,14 @@ class _InboxScreenState extends State<InboxScreen> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 6.w,
       appBar: CustomAppBar(
-        backAction: (){
-          Get.back();
+        backAction: () {
           _socketChatController.removeListeners(chatID);
+          Get.back();
         },
         titleWidget: GetBuilder<ChatController>(
           builder: (controller) {
@@ -56,7 +55,7 @@ class _InboxScreenState extends State<InboxScreen> {
               statusColor: Colors.grey,
               title: controller.inboxData?.oppositeUser?.userName ?? 'N/A',
             );
-          }
+          },
         ),
       ),
       body: Column(
@@ -64,11 +63,12 @@ class _InboxScreenState extends State<InboxScreen> {
           Expanded(
             child: GetBuilder<ChatController>(
               builder: (controller) {
-                if(controller.isLoadingInbox){
-                  return Center(
-                    child: CustomLoader(),
-                  );
-                }if(controller.inboxData == null || controller.inboxData?.messages == null || controller.inboxData!.messages!.isEmpty){
+                if (controller.isLoadingInbox) {
+                  return Center(child: CustomLoader());
+                }
+                if (controller.inboxData == null ||
+                    controller.inboxData?.messages == null ||
+                    controller.inboxData!.messages!.isEmpty) {
                   return Center(
                     child: CustomText(
                       text: 'No messages yet. Start the conversation!',
@@ -78,22 +78,31 @@ class _InboxScreenState extends State<InboxScreen> {
                   );
                 }
                 return ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12.h,
+                    horizontal: 8.w,
+                  ),
                   itemCount: controller.inboxData?.messages?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final message = controller.inboxData?.messages?.reversed.toList()[index];
-                    List<String>? fileUrls = message?.attachmentId?.map((attachment) => attachment.fileUrl as String).toList();
+                    final message = controller.inboxData?.messages?.reversed
+                        .toList()[index];
+                    List<String>? fileUrls = message?.attachmentId
+                        ?.map((attachment) => attachment.fileUrl as String)
+                        .toList();
 
                     return ChatBubbleMessage(
-                      profileImage: controller.inboxData?.oppositeUser?.userImage ?? '',
+                      profileImage:
+                          controller.inboxData?.oppositeUser?.userImage ?? '',
                       images: fileUrls,
                       text: message?.messageText ?? '',
                       time: message?.createdAt ?? '',
-                      isMe: message?.senderId?.sId == Get.find<UserController>().user?.sId ,
+                      isMe:
+                          message?.senderId?.sId ==
+                          Get.find<UserController>().user?.sId,
                     );
                   },
                 );
-              }
+              },
             ),
           ),
           _buildMessageSender(),
@@ -115,8 +124,10 @@ class _InboxScreenState extends State<InboxScreen> {
               hintText: 'Type message...',
               suffixIcon: IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.attachment_outlined,
-                    color: AppColors.appGreyColor),
+                icon: Icon(
+                  Icons.attachment_outlined,
+                  color: AppColors.appGreyColor,
+                ),
               ),
             ),
           ),
@@ -136,7 +147,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 color: AppColors.secondaryColor,
                 child: Assets.icons.massegeSend.svg(),
               );
-            }
+            },
           ),
         ],
       ),

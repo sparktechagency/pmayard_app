@@ -7,9 +7,9 @@ import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
+import 'package:pmayard_app/feature/home/widgets/assign_professional_popup_modal.dart';
 import 'package:pmayard_app/feature/home/widgets/assigned_card_widget.dart';
-import 'package:pmayard_app/models/session/session_professional_model_data.dart';
-import 'package:pmayard_app/models/session/session_response_data.dart';
+import 'package:pmayard_app/feature/home/widgets/showUserDataPopUpModal.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
@@ -79,25 +79,31 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// =================== Assign New Professional Button are here ======================
-                  // role == 'professional'
-                  //     ? Expanded(
-                  //         child: CustomButton(
-                  //           width: double.maxFinite,
-                  //           height: 28.h,
-                  //           fontSize: 10.sp,
-                  //           backgroundColor: AppColors.primaryColor,
-                  //           onPressed: () {
-                  //             Get.toNamed(
-                  //               AppRoutes.profileViewScreen,
-                  //               // arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
-                  //             );
-                  //             // debugPrint('schedule ID=================================$professionalId');
-                  //             // debugPrint('schedule ID=================================$id');
-                  //           },
-                  //           label: 'View Profile',
-                  //         ),
-                  //       )
-                  //     : SizedBox.shrink(),
+                  role == 'parent'
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                            top: 30.h,
+                            left: 25.h,
+                            right: 25.h,
+                            bottom: 10.h,
+                          ),
+                          child: CustomButton(
+                            width: double.maxFinite,
+                            height: 52.h,
+                            fontSize: 10.sp,
+                            backgroundColor: AppColors.primaryColor,
+                            onPressed: () => assignProfessionalPopupModal(context),
+                            title: Text(
+                              'Assign New Professional',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0XFF0D0D0D),
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
@@ -113,7 +119,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // Assign Related Work
                   Obx(() {
-                    if (_assignedController.isLoadingAssigned.value || _sessionsController.isLoadingSession.value) {
+                    if (_assignedController.isLoadingAssigned.value ||
+                        _sessionsController.isLoadingSession.value) {
                       return SizedBox(
                         height: 180.h,
                         child: ShimmerHelper.assignedCardsShimmer(),
@@ -188,7 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 16.sp,
                   ),
                   Obx(() {
-                    if (_sessionsController.isLoadingSession.value || _assignedController.isLoadingAssigned.value) {
+                    if (_sessionsController.isLoadingSession.value ||
+                        _assignedController.isLoadingAssigned.value) {
                       return ShimmerHelper.upcomingSessionsShimmer();
                     }
                     final sessionData = role == 'professional'
@@ -259,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     height: 25.h,
                                     fontSize: 10.sp,
                                     onPressed: () =>
-                                        showUserData(session, role),
+                                        showUserData(context, session, role),
                                     label: 'View Detail',
                                   )
                                 : null,
@@ -272,93 +280,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
             },
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Show User Data via Model
-  void showUserData(dynamic sessionData, String userRole) {
-    String name = '';
-    String imageUrl = '';
-    String? day;
-    String? date;
-    String? role = '';
-    String? subject;
-    if (userRole == 'professional') {
-      name = sessionData.parent?.name ?? 'Unknown';
-      imageUrl = sessionData.parent?.profileImage ?? '';
-      day = sessionData.day;
-      date = sessionData.date;
-      role = 'Professional';
-      subject = sessionData.subject;
-    } else if (userRole == 'parent') {
-      name = sessionData.professional?.name ?? 'Unknown';
-      imageUrl = sessionData.professional?.profileImage ?? '';
-      day = sessionData.day;
-      date = sessionData.date;
-      role = 'Parent';
-      subject = sessionData.subject;
-    }
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'View Details',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              if (imageUrl.isNotEmpty)
-                Center(
-                  child: CircleAvatar(
-                    radius: 30.r,
-                    backgroundImage: NetworkImage(imageUrl),
-                  ),
-                ),
-              SizedBox(height: 16.h),
-              Text(
-                '$role Name',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.h),
-              // Name
-              Text(name, style: TextStyle(fontSize: 14)),
-              SizedBox(height: 16.h),
-              Text(
-                'Subjects',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.h),
-              Text('$subject'),
-              SizedBox(height: 16.h),
-              Text(
-                'Session Time',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.h),
-              if (day != null && date != null) Text('$date at $day'),
-              SizedBox(height: 16.h),
-              // Close button
-              CustomButton(
-                onPressed: () => Navigator.pop(context),
-                title: Text(
-                  'Close',
-                  style: TextStyle(color: Colors.white, fontSize: 16.sp),
-                ),
-              ),
-            ],
           ),
         ),
       ),
