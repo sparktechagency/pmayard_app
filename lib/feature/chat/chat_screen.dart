@@ -16,7 +16,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _searchController = TextEditingController();
+
   final ChatController _chatController = Get.find<ChatController>();
 
   @override
@@ -47,7 +47,9 @@ class _ChatScreenState extends State<ChatScreen> {
             contentPaddingVertical: 14.h,
             borderRadio: 16.r,
             filColor: Colors.white,
-            onChanged: (val) {},
+            onChanged: (val) {
+              print('================>>>>>>>> $val');
+            },
             validator: (_) {
               return null;
             },
@@ -55,7 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Icons.search,
               color: AppColors.secondaryColor,
             ),
-            controller: _searchController,
+            controller: _chatController.searchController,
             hintText: 'Search people to chat...',
           ),
           SizedBox(height: 16.h),

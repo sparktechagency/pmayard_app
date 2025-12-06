@@ -7,6 +7,9 @@ import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 
 class ChatController extends GetxController {
+
+  final TextEditingController searchController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();

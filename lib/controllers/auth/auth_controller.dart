@@ -230,6 +230,7 @@ class AuthController extends GetxController {
     update();
   }
 
+
   /// <======================= reset Password ===========================>
   bool isLoadingReset = false;
   final TextEditingController resetPasswordController = TextEditingController();
