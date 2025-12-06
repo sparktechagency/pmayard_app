@@ -47,4 +47,15 @@ class ApiUrls {
   static String professionalAvailability( String scheduleID ) => '/professionals/$scheduleID';
   static String editAvailabilitySchedule( String availabilityID ) => '/professionals/$availabilityID/availability';
   static String confirmSchedule( String userID ) => '/professionals/$userID/confirm-session';
+
+
+  static String eventGet (String date) {
+    String url = '/events/';
+
+    if(date.isNotEmpty){
+      '$url?eventDate=$date';
+    }
+
+    return url;
+  }
 }
