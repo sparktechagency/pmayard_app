@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -31,8 +32,10 @@ class UserController extends GetxController {
     update();
   }
 
+
+
+
   /// ========================>>> profile edit controller =======================>>>
-  ///
   late TextEditingController emailController = TextEditingController(
     text: user?.email ?? '',
   );
@@ -42,12 +45,14 @@ class UserController extends GetxController {
   late TextEditingController bioController = TextEditingController(
     text: user!.roleId?.bio ?? '',
   );
-  // late TextEditingController subjectsController = TextEditingController(
-  //   text: user!.roleId?.name ?? '',
-  // );
+
   File? selectedImage;
 
-  final TextEditingController subjectsController = TextEditingController();
+  late TextEditingController subjectsController = TextEditingController(
+      text: user?.roleId?.subjects?.map((s) => s).join(', ') ?? ''
+  );
+
+
   final List<String> subjectList = [];
   List<Map<String, dynamic>> availability = [];
   DateTime? selectedDate;
@@ -64,24 +69,32 @@ class UserController extends GetxController {
 
   /// Update Profile related work are here
   bool isProfileUpdateLoader = false;
-  Future<void>profileUpdateHandler() async {
+  Future<void>profileUpdate() async {
     isProfileUpdateLoader = true;
     update();
 
-    final responseBody = {
-      'email' : emailController,
-      'name' : nameController,
-      'bio' : bioController,
-      'subjects' : subjectList,
+    List<MultipartBody>? multipartBody;
+    if (selectedImage != null) {
+      multipartBody = [MultipartBody('image', selectedImage ?? File(''))];
+    }
+
+    final requestBody = {
+      'data': jsonEncode({
+        'email' : emailController.text.trim(),
+        'name' : nameController.text.trim(),
+        'bio' : bioController.text.trim(),
+        'subjects' : subjectList,
+      }),
     };
 
-    //
-    // if( response.statusCode == 200 ){
-    //   /// Go to Navigator Screen
-    //   //Get.toNamed(AppRoutes.customBottomNavBar);
-    // }else{
-    //   showToast('Something Went Wrong');
-    // }
+    final response = await ApiClient.patchMultipartData(ApiUrls.editProfile,requestBody,multipartBody: multipartBody);
+
+    if( response.statusCode == 200 ){
+      Get.back();
+      Get.find<UserController>().userData();
+    }else{
+      showToast('Something Went Wrong');
+    }
 
     isProfileUpdateLoader = false;
     update();

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,6 +5,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
+import 'package:pmayard_app/widgets/custom_loader.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 
 import '../../app/helpers/menu_show_helper.dart';
@@ -44,7 +44,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   children: [
                     CustomImageAvatar(
                       radius: 44.r,
-                      image:  controller.user?.roleId?.profileImage ?? '',
+                      image: controller.user?.roleId?.profileImage ?? '',
                       fileImage: controller.selectedImage,
                     ),
                     Positioned.fill(
@@ -60,7 +60,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     ),
                   ],
                 );
-              }
+              },
             ),
             Form(
               key: _globalKey,
@@ -69,6 +69,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 children: [
                   SizedBox(height: 32.h),
                   CustomTextField(
+                    readOnly: true,
                     labelText: 'Email',
                     controller: _userController.emailController,
                     hintText: '',
@@ -88,23 +89,23 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   // Multiple Subject Related work are here
                   GestureDetector(
                     onTapDown: (TapDownDetails details) async {
-                      final currentSubjects = _userController.subjectsController
+                      final currentSubjects = _userController
+                          .subjectsController
                           .text
                           .split(", ")
                           .where((s) => s.isNotEmpty)
                           .toList();
 
                       final selectedList =
-                      await MenuShowHelper.showMultiSelectMenu(
-                        context: context,
-                        details: details,
-                        options: MenuShowHelper.subjects,
-                        preSelectedItems: currentSubjects,
-                      );
+                          await MenuShowHelper.showMultiSelectMenu(
+                            context: context,
+                            details: details,
+                            options: MenuShowHelper.subjects,
+                            preSelectedItems: currentSubjects,
+                          );
 
                       if (selectedList != null) {
-                        _userController.subjectsController
-                            .text = selectedList
+                        _userController.subjectsController.text = selectedList
                             .join(", ");
 
                         _userController.subjectList
@@ -124,7 +125,16 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
 
                   SizedBox(height: 60.h),
-                  CustomButton(label: "Update", onPressed: _onUpdate),
+                  GetBuilder<UserController>(
+                    builder: (controller) {
+                      return controller.isProfileUpdateLoader
+                          ? CustomLoader()
+                          : CustomButton(label: "Update", onPressed: () {
+                        if (!_globalKey.currentState!.validate()) return;
+                        controller.profileUpdate();
+                      });
+                    },
+                  ),
                   SizedBox(height: 24.h),
                 ],
               ),
@@ -133,10 +143,5 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
       ),
     );
-  }
-
-  void _onUpdate() {
-    if (!_globalKey.currentState!.validate()) return;
-    // Get.offAllNamed(AppRoutes.resetPasswordSuccess);
   }
 }

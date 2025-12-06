@@ -1,43 +1,62 @@
-class GroupChatMessageModel {
-  String id;
-  String conversationName;
-  String type;
-  List<String> users;
-  bool isDeleted;
-  DateTime createdAt;
-  DateTime updatedAt;
-  int v;
+class GroupModelData {
+  String? sId;
+  String? conversationName;
+  String? type;
+  List<String>? users;
+  bool? isDeleted;
+  String? createdAt;
+  String? updatedAt;
+  int? iV;
+  LastMsg? lastMsg;
 
-  GroupChatMessageModel({
-    required this.id,
-    required this.conversationName,
-    required this.type,
-    required this.users,
-    required this.isDeleted,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
-  });
+  GroupModelData(
+      {this.sId,
+        this.conversationName,
+        this.type,
+        this.users,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV,
+        this.lastMsg});
 
-  factory GroupChatMessageModel.fromJson(Map<String, dynamic> json) => GroupChatMessageModel(
-    id: json["_id"]  ?? '',
-    conversationName: json["conversationName"] ?? '',
-    type: json["type"]  ?? '',
-    users: List<String>.from(json["users"].map((x) => x)),
-    isDeleted: json["isDeleted"],
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    v: json["__v"],
-  );
+  GroupModelData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    conversationName = json['conversationName'];
+    type = json['type'];
+    users = json['users'].cast<String>();
+    isDeleted = json['isDeleted'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
+    lastMsg =
+    json['lastMsg'] != null ? new LastMsg.fromJson(json['lastMsg']) : null;
+  }
 
-  Map<String, dynamic> toJson() => {
-    "_id": id,
-    "conversationName": conversationName,
-    "type": type,
-    "users": List<dynamic>.from(users.map((x) => x)),
-    "isDeleted": isDeleted,
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "__v": v,
-  };
+}
+
+class LastMsg {
+  String? sId;
+  String? senderId;
+  String? messageText;
+  bool? isRead;
+  String? messageType;
+  String? createdAt;
+
+  LastMsg(
+      {this.sId,
+        this.senderId,
+        this.messageText,
+        this.isRead,
+        this.messageType,
+        this.createdAt});
+
+  LastMsg.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    senderId = json['sender_id'];
+    messageText = json['message_text'];
+    isRead = json['is_read'];
+    messageType = json['message_type'];
+    createdAt = json['createdAt'];
+  }
 }

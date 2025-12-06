@@ -10,11 +10,7 @@ class ChatController extends GetxController {
 
   final TextEditingController searchController = TextEditingController();
 
-  @override
-  void onInit() {
-    super.onInit();
-    getChat(selectedValueType.value);
-  }
+
 
   // bool isLoadingChat = false;
   RxBool isLoadingChat = false.obs;
@@ -24,7 +20,7 @@ class ChatController extends GetxController {
   //
 
   var  chatData = <ChatModelData>[].obs;
-  var groupChatData =<GroupChatMessageModel>[].obs;
+  var groupChatData =<GroupModelData>[].obs;
 
   final chatType = [
     {'label': 'Chat', 'value': 'individual'},
@@ -36,8 +32,13 @@ class ChatController extends GetxController {
   RxString selectedValueType = 'individual'.obs;
 
   void onTapChatType(String value) {
+    if(value == 'group'){
+      chatData.clear();
+    }else{
+      groupChatData.clear();
+    }
     selectedValueType.value = value;
-    getChat(value);
+    getChat(selectedValueType.value);
     print('Selected chat type: $value');
   }
 
@@ -52,12 +53,12 @@ class ChatController extends GetxController {
     if (response.statusCode == 200) {
       final List data = response.body['data'] ?? [];
 
-      if( selectedValueType == 'individual'){
+      if( selectedValueType.value == 'individual'){
         final chats = data.map((item) => ChatModelData.fromJson(item)).toList();
         chatData.addAll(chats);
         print('=============> Message $chats');
-      }else if( selectedValueType == 'group') {
-        final chats = data.map((item) => GroupChatMessageModel.fromJson(item)).toList();
+      }else if( selectedValueType.value == 'group') {
+        final chats = data.map((item) => GroupModelData.fromJson(item)).toList();
         groupChatData.addAll(chats);
         print('=====================> group $chats');
       }

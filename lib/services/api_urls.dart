@@ -7,6 +7,7 @@ class ApiUrls {
 
   // Authentication
   static const String userData = '/users/me';
+  static const String editProfile = '/users/edit-profile';
   static const String register = '/users/register';
   static const String verifyOtp = '/auth/verify-otp';
   static const String login = '/auth/login';
@@ -47,6 +48,7 @@ class ApiUrls {
   static String professionalAvailability( String scheduleID ) => '/professionals/$scheduleID';
   static String editAvailabilitySchedule( String availabilityID ) => '/professionals/$availabilityID/availability';
   static String confirmSchedule( String userID ) => '/professionals/$userID/confirm-session';
+  static String editSchedule( String roleID ) => '/professionals/$roleID/availability';
 
 
   static String eventGet(String date) {

@@ -53,7 +53,7 @@ class _InboxScreenState extends State<InboxScreen> {
             return CustomListTile(
               image: controller.inboxData?.oppositeUser?.userImage ?? '',
               statusColor: Colors.grey,
-              title: controller.inboxData?.oppositeUser?.userName ?? 'N/A',
+              title: controller.inboxData?.oppositeUser?.userName ?? 'Admin',
             );
           },
         ),
@@ -112,45 +112,55 @@ class _InboxScreenState extends State<InboxScreen> {
   }
 
   Widget _buildMessageSender() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: CustomTextField(
-              validator: (_) => null,
-              controller: _chatController.messageController,
-              hintText: 'Type message...',
-              suffixIcon: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.attachment_outlined,
-                  color: AppColors.appGreyColor,
+    return GetBuilder<ChatController>(
+      builder: (controller) {
+        if(_chatController.isLoadingInbox){
+          return SizedBox.shrink();
+        }
+        if(_chatController.inboxData?.messages?.first.senderId?.role == 'admin'){
+          return CustomText(text: 'Only admin can send messages');
+        }
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  validator: (_) => null,
+                  controller: _chatController.messageController,
+                  hintText: 'Type message...',
+                  suffixIcon: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.attachment_outlined,
+                      color: AppColors.appGreyColor,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(width: 10.w),
-          GetBuilder<ChatController>(
-            builder: (controller) {
-              return CustomContainer(
-                onTap: () {
-                  if (controller.messageController.text.isNotEmpty) {
-                    controller.sendMessage(chatID);
-                    controller.messageController.clear();
-                  }
+              SizedBox(width: 10.w),
+              GetBuilder<ChatController>(
+                builder: (controller) {
+                  return CustomContainer(
+                    onTap: () {
+                      if (controller.messageController.text.isNotEmpty) {
+                        controller.sendMessage(chatID);
+                        controller.messageController.clear();
+                      }
+                    },
+                    paddingVertical: 12.r,
+                    paddingHorizontal: 12.r,
+                    shape: BoxShape.circle,
+                    color: AppColors.secondaryColor,
+                    child: Assets.icons.massegeSend.svg(),
+                  );
                 },
-                paddingVertical: 12.r,
-                paddingHorizontal: 12.r,
-                shape: BoxShape.circle,
-                color: AppColors.secondaryColor,
-                child: Assets.icons.massegeSend.svg(),
-              );
-            },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      }
     );
   }
 
