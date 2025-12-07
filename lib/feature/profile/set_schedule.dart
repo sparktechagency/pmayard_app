@@ -1,12 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
-import 'package:pmayard_app/controllers/auth/profile_confirm/models/availability_model.dart';
-import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
@@ -17,8 +13,7 @@ import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SetScheduleScreen extends StatefulWidget {
-  const SetScheduleScreen({super.key,});
-
+  const SetScheduleScreen({super.key});
 
   @override
   State<SetScheduleScreen> createState() => _SetScheduleScreenState();
@@ -53,10 +48,13 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      generateWeekTimeSlots(selectedDate);
-      professionalId = Get.arguments['professionalId'] as String?;
-      sessionID = Get.arguments['sessionID'] as String?;
-      controller.fetchAvailabilityData(professionalId ?? '');
+      setState(() {
+        generateWeekTimeSlots(selectedDate);
+        professionalId = Get.arguments['professionalId'] as String?;
+        sessionID = Get.arguments['sessionID'] as String?;
+        controller.fetchAvailabilityData(professionalId ?? '');
+      });
+      print('==========Set Schedule page ===========>>>>>>>> 56 no line $professionalId');
     });
   }
 
@@ -65,6 +63,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('Set Schedule page =====================>>>>>>>> 64 no line $professionalId');
     return CustomScaffold(
       appBar: CustomAppBar(title: 'Set Schedule'),
       body: RefreshIndicator(
@@ -85,53 +84,6 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
               ),
             ),
             SizedBox(height: 13.h),
-
-            // CustomContainer(
-            //   color: Colors.white,
-            //   child: TableCalendar(
-            //     firstDay: DateTime.utc(2020, 1, 1),
-            //     lastDay: DateTime.utc(2030, 12, 31),
-            //     focusedDay: _focusedDay,
-            //     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            //     onDaySelected: (selectedDay, focusedDay) {
-            //       setState(() {
-            //         _selectedDay = selectedDay;
-            //         _focusedDay = focusedDay;
-            //       });
-            //     },
-            //
-            //     headerStyle: HeaderStyle(
-            //       formatButtonVisible: false,
-            //       titleTextFormatter: (date, locale) =>
-            //           DateFormat('MMMM yyyy').format(date),
-            //       titleTextStyle: TextStyle(fontSize: 20.sp),
-            //       leftChevronVisible: false,
-            //       rightChevronVisible: false,
-            //     ),
-            //     daysOfWeekStyle: DaysOfWeekStyle(
-            //       dowTextFormatter: (date, locale) {
-            //         return DateFormat.E(locale).format(date)[0];
-            //       },
-            //       weekdayStyle: TextStyle(fontSize: 14),
-            //       weekendStyle: TextStyle(fontSize: 14),
-            //     ),
-            //
-            //     calendarFormat: CalendarFormat.week,
-            //     availableGestures: AvailableGestures.horizontalSwipe,
-            //     calendarStyle: CalendarStyle(
-            //       todayDecoration: BoxDecoration(
-            //         color: AppColors.primaryColor,
-            //         shape: BoxShape.circle,
-            //       ),
-            //       selectedDecoration: const BoxDecoration(
-            //         color: AppColors.primaryColor,
-            //         shape: BoxShape.circle,
-            //       ),
-            //       selectedTextStyle: const TextStyle(color: Colors.white),
-            //       defaultTextStyle: TextStyle(fontSize: 12.sp),
-            //     ),
-            //   ),
-            // ),
             CustomContainer(
               color: Colors.white,
               child: TableCalendar(
@@ -218,9 +170,6 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
               ],
             ),
             SizedBox(height: 15.h),
-
-// SetScheduleScreen এর GridView.builder section টা এভাবে replace করুন:
-
             Expanded(
               child: GetBuilder<AssignedController>(
                 builder: (_) {
@@ -235,21 +184,28 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                     ),
                     itemBuilder: (context, index) {
                       String? slot = controller.timeSlotDatas[index].status;
-                      String currentStartTime = controller.timeSlotDatas[index].startTime ?? '';
-                      String currentEndTime = controller.timeSlotDatas[index].endTime ?? '';
+                      String currentStartTime =
+                          controller.timeSlotDatas[index].startTime ?? '';
+                      String currentEndTime =
+                          controller.timeSlotDatas[index].endTime ?? '';
 
                       // Check if this slot is selected
-                      bool isSelected = controller.startTime?.value == currentStartTime &&
+                      bool isSelected =
+                          controller.startTime?.value == currentStartTime &&
                           controller.endTime?.value == currentEndTime;
 
                       Color backgroundColor;
-                      Color textColor = isSelected ? AppColors.primaryColor : Colors.white;
+                      Color textColor = isSelected
+                          ? AppColors.primaryColor
+                          : Colors.white;
                       Color borderColor = Colors.transparent;
 
                       switch (slot?.toLowerCase()) {
                         case 'available':
                           backgroundColor = AppColors.secondaryColor;
-                          borderColor = isSelected ? AppColors.primaryColor : Colors.transparent;
+                          borderColor = isSelected
+                              ? AppColors.primaryColor
+                              : Colors.transparent;
                           break;
                         case 'booked':
                           backgroundColor = Color(0XFFC2B067);
@@ -267,16 +223,16 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       return GestureDetector(
                         onTap: slot == 'available'
                             ? () {
-                          controller.startTime!.value = currentStartTime;
-                          controller.endTime!.value = currentEndTime;
+                                controller.startTime!.value = currentStartTime;
+                                controller.endTime!.value = currentEndTime;
 
-                          controller.update();
+                                controller.update();
 
-                          print(controller.startTime!.value);
-                          print(controller.endTime!.value);
+                                print(controller.startTime!.value);
+                                print(controller.endTime!.value);
 
-                          controller.dataOnchangeHandler();
-                        }
+                                controller.dataOnchangeHandler();
+                              }
                             : null,
                         child: AnimatedContainer(
                           duration: Duration(milliseconds: 300),
@@ -308,18 +264,26 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                 },
               ),
             ),
-             GetBuilder<AssignedController>(
+            SizedBox(height: 10.h,),
+            GetBuilder<AssignedController>(
               builder: (controller) {
-                return Get.find<UserController>().user?.role == 'professional' ? CustomButton(
-                  onPressed: () => controller.confirmSchedule(sessionID: sessionID ?? ''),
-                  title: controller.isConfirmScheduleLoading == true
-                      ? Center(child: CustomLoader())
-                      : Text(
-                    'Confirm',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ) : SizedBox.shrink();
-              }
+                return Get.find<UserController>().user?.role == 'professional'
+                    ? CustomButton(
+                        onPressed: () => controller.confirmSchedule(
+                          sessionID: professionalId ?? '',
+                        ),
+                        title: controller.isConfirmScheduleLoading == true
+                            ? Center(child: CustomLoader())
+                            : Text(
+                                'Confirm',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      )
+                    : SizedBox.shrink();
+              },
             ),
             SizedBox(height: 5.h),
           ],

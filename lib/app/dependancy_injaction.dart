@@ -6,6 +6,7 @@ import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/controllers/chat/chat_listen_controller.dart';
 import 'package:pmayard_app/controllers/event_controller.dart';
 import 'package:pmayard_app/controllers/legal/legal_controller.dart';
+import 'package:pmayard_app/controllers/notification/notification_controller.dart';
 import 'package:pmayard_app/controllers/resources/resource_controller.dart';
 import 'package:pmayard_app/controllers/schedule/schedule_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
@@ -27,4 +28,5 @@ class DependencyInjection implements Bindings {
     Get.put(EventController());
     Get.put(ScheduleController());
     Get.put(CustomBottomNavBarController());
+    Get.put(NotificationController());
   }}

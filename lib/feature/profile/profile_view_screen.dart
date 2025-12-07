@@ -36,7 +36,6 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
       professionalId = argument["professionalId"] as String? ?? '';
       role = argument["role"] as String? ?? '';
     }
-
     // Fetch data after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (userId.isNotEmpty) {
