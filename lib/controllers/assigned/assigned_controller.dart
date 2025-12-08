@@ -1,56 +1,39 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/models/availability_model.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/models/time_slot_model.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/models/assigned/assign_model.dart';
+import 'package:pmayard_app/models/assigned/assign_view_profile_model.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class AssignedController extends GetxController {
-  // Assigned Data Are here
-  final isLoadingAssigned = false.obs;
-  final RxList<AssignModel> assignModel = <AssignModel>[].obs;
-  final RxList<Map<String, dynamic>> parentList = <Map<String, dynamic>>[].obs;
-  final RxList<Map<String, dynamic>> professionalList = <Map<String, dynamic>>[].obs;
+   bool isLoadingAssigned = false;
+  final List<AssignModelData> assignModel = [];
 
   Future<void> getAssigned() async {
     assignModel.clear();
-    parentList.clear();
-    professionalList.clear();
-    isLoadingAssigned.value = true;
+    isLoadingAssigned = true;
     update();
 
-    try {
       final response = await ApiClient.getData(ApiUrls.assigned);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> datas = response.body['data'] ?? [];
+    final responseBody = response.body;
 
-        for (var item in datas) {
-          assignModel.add(AssignModel.fromJson(item));
-          parentList.add(item['parent']);
-          professionalList.add(item['professional']);
-        }
+    if (response.statusCode == 200) {
+         final List  data = responseBody['data'];
+         final  assign = data.map((e) => AssignModelData.fromJson(e)).toList();
+        assignModel.addAll(assign);
+        }else{
+      debugPrint('${responseBody['message']}');
       }
-    } catch (e) {
-      print("❌ Error Assigned: $e");
-    } finally {
-      isLoadingAssigned.value = false;
+      isLoadingAssigned = false;
       update();
-    }
   }
 
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    print('*************************************************');
-    print('*************************************************');
-    print('*************************************************');
-    print(timeSlotDatas.length);
-  }
 
   // Schedule Are fetch here
   final RxBool isScheduleLoading = false.obs;
@@ -135,68 +118,121 @@ class AssignedController extends GetxController {
     update();
   }
 
-  // Schedule Related work are here
-  bool isScheduleUpdateLoader = false;
+   // Variables
+   DateTime? selectedDate;
+   List<TimeSlots> allTimeSlots = []; // সব সময়ের সব স্লট
 
-  Future<void> editAvailabilityScheduleHandler(String availabilityID) async {
-    isScheduleUpdateLoader = true;
-    update();
-    final request = {};
+   // Selected time slot
+   String? startTime;
+   String? endTime;
 
-    final response = await ApiClient.patch(
-      ApiUrls.editAvailabilitySchedule(availabilityID),
-      request,
-    );
-    if (response.statusCode == 200) {
-      Get.offNamed(AppRoutes.customBottomNavBar);
-    } else {
-      showToast('Something went wrong Please Try Again');
-    }
-  }
+   // Loading states
+   bool isConfirmScheduleLoading = false;
 
-  // Set Schedule Related Work are here
-  bool isConfirmScheduleLoading = false;
-  DateTime scheduleDate = DateTime.now();
-  late String date = scheduleDate.toIso8601String().split('T')[0];
-  RxString? startTime = ''.obs;
-  RxString? endTime = ''.obs;
+   // Data
+   AssignViewProfileModel? profileData;
 
-  Map<String, String>? timeSlot;
+   @override
+   void onInit() {
+     super.onInit();
+     initializeData();
+   }
 
-  void dataOnchangeHandler() {
-    scheduleDate;
-    timeSlot = {"startTime": startTime!.value, "endTime": endTime!.value};
+   void initializeData() {
+     if (Get.arguments != null && Get.arguments is AssignViewProfileModel) {
+       profileData = Get.arguments as AssignViewProfileModel;
+       loadAllTimeSlots(); // শুধু একবার লোড করবে
+     }
+   }
 
-    update();
-  }
+   void loadAllTimeSlots() {
+     allTimeSlots.clear();
 
-  Future<void> confirmSchedule({String sessionID = ''}) async {
+     final availability = profileData?.professional?.availability ?? [];
 
-    final String userID = Get.find<UserController>().user?.sId ?? '';
+     // সব ডে এর সব স্লট একসাথে নাও
+     for (var dayAvailability in availability) {
+       if (dayAvailability.timeSlots != null) {
+         allTimeSlots.addAll(dayAvailability.timeSlots!);
+       }
+     }
 
-    print("final user id are here 177 no line are here ===================>>>>> $userID");
+     update();
+   }
 
-    // print("=====================================   $userID  ====================== Assigned Controller 171 no line ");
-    // isConfirmScheduleLoading = true;
-    // update();
-    //
+   void setSelectedDate(DateTime date) {
+     selectedDate = date;
+     update(); // শুধু ডেট আপডেট, স্লট ফিল্টার না
+   }
 
-    final reqBody = {"date": date, "time": timeSlot};
-    print('maruf =========> $reqBody');
+   void selectTimeSlot(String start, String end) {
+     startTime = start;
+     endTime = end;
+     update();
+   }
 
+   bool isTimeSlotSelected(String start, String end) {
+     return startTime == start && endTime == end;
+   }
 
-    final response = await ApiClient.postData(
-      ApiUrls.confirmSchedule(userID),
-      reqBody,
-    );
+   void clearSelection() {
+     startTime = null;
+     endTime = null;
+     update();
+   }
 
-    if (response.statusCode == 200) {
-      Get.offNamed(AppRoutes.customBottomNavBar);
-    } else {
-      showToast('Something Went Wrong');
-    }
+   bool get hasSelectedTimeSlot {
+     return startTime != null && endTime != null;
+   }
 
-    isConfirmScheduleLoading = false;
-    update();
-  }
+   bool get hasSelectedDate {
+     return selectedDate != null;
+   }
+
+   Future<void> confirmSchedule({String sessionID = ''}) async {
+     if (!hasSelectedDate) {
+       showToast('Please select a date');
+       return;
+     }
+
+     if (!hasSelectedTimeSlot) {
+       showToast('Please select a time slot');
+       return;
+     }
+
+     isConfirmScheduleLoading = true;
+     update();
+
+     try {
+       final formattedDate = "${selectedDate!.year}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
+
+       final reqBody = {
+         "date": formattedDate,
+         "time": {
+           "startTime": startTime,
+           "endTime": endTime
+         }
+       };
+
+       final response = await ApiClient.postData(
+         ApiUrls.confirmSchedule(sessionID),
+         reqBody,
+       );
+
+       if (response.statusCode == 200) {
+         showToast('Schedule confirmed successfully');
+         selectedDate = null;
+         startTime = null;
+         endTime = null;
+         Get.back(result: true);
+       } else {
+         showToast('Failed to confirm schedule');
+       }
+     } catch (e) {
+       showToast('An error occurred: $e');
+     } finally {
+       isConfirmScheduleLoading = false;
+       update();
+     }
+   }
 }

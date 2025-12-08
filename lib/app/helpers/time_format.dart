@@ -30,6 +30,16 @@ class TimeFormatHelper {
   }
 
 
+  static String formatCustom(DateTime dateTime) {
+    try {
+      final formatter = DateFormat('dd/MM/yy \'at\' hh:mm a');
+      return formatter.format(dateTime);
+    } catch (e) {
+      return 'Invalid date';
+    }
+  }
+
+
 
   static timeWithAMPM( DateTime time){
     // DateTime parsedTime = DateFormat('HH:mm:ss').parse(time);

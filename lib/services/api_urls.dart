@@ -32,7 +32,8 @@ class ApiUrls {
   static const String upcomingSessions = '/sessions/upcoming-sessions';
   static const String notification = '/notifications';
 
-  static String sessionViewProfile(String id) => '/sessions/$id/role';
+  //static String sessionViewProfile(String id) => '/sessions/$id/role';
+  static String sessionViewProfile(String sessionID) => '/sessions/$sessionID';
 
   //Message Related work
   static String conversations(String type) => '/conversations/?type=$type';

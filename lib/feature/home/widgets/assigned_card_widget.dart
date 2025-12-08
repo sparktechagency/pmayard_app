@@ -10,16 +10,12 @@ class AssignedCardWidget extends StatelessWidget {
     super.key,
     required this.index,
     required this.name,
-    required this.role,
-    required this.imageUrl,
-    required this.id,
-    required this.chatId,
-    required this.professionalId,
+    required this.imageUrl, required this.role, this.sub, required this.sessionID, required this.chatID,
   });
 
-  final String id, chatId, professionalId;
   final int index;
-  final String name, role, imageUrl;
+  final String name, role, imageUrl,sessionID,chatID;
+  final String? sub;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +28,7 @@ class AssignedCardWidget extends StatelessWidget {
       marginTop: 8.h,
       marginBottom: 8.h,
       radiusAll: 8.r,
-      height: 170.h,
+      height: 180.h,
       width: 170.w,
       color: Colors.white,
       boxShadow: [
@@ -48,7 +44,9 @@ class AssignedCardWidget extends StatelessWidget {
           CustomImageAvatar(image: imageUrl, radius: 26.r),
           SizedBox(height: 8.h),
           CustomText(text: name, fontWeight: FontWeight.w500, fontSize: 16.sp),
-          CustomText(bottom: 8.h, text: role, color: AppColors.appGreyColor),
+          CustomText( text: role, color: AppColors.appGreyColor,bottom: sub == null ? 4.h : 0,),
+          if(sub != null && sub!.isNotEmpty)
+          CustomText(bottom: 4.h ,text: sub!,fontSize: 12.sp),
 
           Row(
             children: [
@@ -60,10 +58,8 @@ class AssignedCardWidget extends StatelessWidget {
                   onPressed: () {
                     Get.toNamed(
                       AppRoutes.profileViewScreen,
-                      arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
+                      arguments: sessionID,
                     );
-                    debugPrint('professional id from assigned card 65 no line =======>>> $professionalId');
-                    debugPrint('schedule ID=================================$id');
                   },
                   label: 'View Profile',
                 ),
@@ -77,7 +73,7 @@ class AssignedCardWidget extends StatelessWidget {
                   onPressed: () {
                     Get.toNamed(
                       AppRoutes.inboxScreen,
-                      arguments: {'chatId': chatId},
+                      arguments: {'chatId': chatID},
                     );
                   },
                   label: 'Message',

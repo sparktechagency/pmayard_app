@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       paddingSide: 0,
-      // App Bar Related Work are here
       appBar: CustomAppBar(
         titleWidget: GetBuilder<UserController>(
           builder: (controller) {
@@ -79,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// =================== Assign New Professional Button are here ======================
-                  role == 'parent'
-                      ? Padding(
+                  if(role == 'parent')
+                      Padding(
                           padding: EdgeInsets.only(
                             top: 30.h,
                             left: 25.h,
@@ -102,8 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                        )
-                      : SizedBox.shrink(),
+                        ),
 
                   /// ===================>>>> Assigned Section <<<================== ///
                   CustomText(
@@ -118,9 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   // Assign Related Work
-                  Obx(() {
-                    if (_assignedController.isLoadingAssigned.value ||
-                        _sessionsController.isLoadingSession.value) {
+                  GetBuilder<AssignedController>(builder: (controller) {
+                    if (_assignedController.isLoadingAssigned) {
                       return SizedBox(
                         height: 180.h,
                         child: ShimmerHelper.assignedCardsShimmer(),
@@ -142,42 +139,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     return SizedBox(
-                      height: 188.h,
+                      height: 198.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         itemCount: assignedList.length,
                         itemBuilder: (context, index) {
                           final item = assignedList[index];
+                          final professionalItem = assignedList[index].professional;
+                          final parentItem = assignedList[index].parent;
 
                           String name = '';
                           String imageUrl = '';
-                          String id = '';
-                          String chatId = '';
                           String userRole = '';
 
                           if (role == 'professional') {
-                            name = item.parent.name;
-                            imageUrl = item.parent.profileImage;
-                            id = item.parent.id;
-                            chatId = item.conversationId;
-                            userRole = 'Parent';
+                            name = parentItem?.name ?? '';
+                            imageUrl = parentItem?.profileImage ?? '';
+                            userRole = parentItem?.user?.role ?? '';
                           } else if (role == 'parent') {
-                            name = item.professional.name;
-                            imageUrl = item.professional.profileImage;
-                            id = item.professional.id;
-                            chatId = item.conversationId;
-                            userRole = 'Professional';
+                            name = professionalItem?.name ?? '';
+                            imageUrl = professionalItem?.profileImage ?? '';
+                            userRole = professionalItem?.user?.role ?? '';
                           }
 
                           return AssignedCardWidget(
-                            chatId: chatId,
-                            id: id,
                             index: index,
                             name: name,
                             role: userRole,
                             imageUrl: imageUrl,
-                            professionalId: item.professional.id,
+                            sub: role == 'parent' ? item.subject : null,
+                            sessionID: item.sId ?? '', chatID: item.conversationId ?? '',
                           );
                         },
                       ),
@@ -195,8 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 16.sp,
                   ),
                   Obx(() {
-                    if (_sessionsController.isLoadingSession.value ||
-                        _assignedController.isLoadingAssigned.value) {
+                    if (_sessionsController.isLoadingSession.value) {
                       return ShimmerHelper.upcomingSessionsShimmer();
                     }
                     final sessionData = role == 'professional'
