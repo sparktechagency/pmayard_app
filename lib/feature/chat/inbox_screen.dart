@@ -35,6 +35,13 @@ class _InboxScreenState extends State<InboxScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _chatController.getInbox(chatID);
       _socketChatController.listenMessage(chatID);
+      ever(_chatController.chatData, (_) {
+        _chatController.scrollBottom();
+      });
+
+      ever(_chatController.groupChatData, (_) {
+        _chatController.scrollBottom();
+      });
     });
     super.initState();
   }
@@ -89,6 +96,9 @@ class _InboxScreenState extends State<InboxScreen> {
                     List<String>? fileUrls = message?.attachmentId
                         ?.map((attachment) => attachment.fileUrl as String)
                         .toList();
+                    // ever( controller.inboxData?.messages!, (_){
+                    //   controller.scrollBottom();
+                    // });
 
                     return ChatBubbleMessage(
                       profileImage:
@@ -114,10 +124,11 @@ class _InboxScreenState extends State<InboxScreen> {
   Widget _buildMessageSender() {
     return GetBuilder<ChatController>(
       builder: (controller) {
-        if(_chatController.isLoadingInbox){
+        if (_chatController.isLoadingInbox) {
           return SizedBox.shrink();
         }
-        if(_chatController.inboxData?.messages?.first.senderId?.role == 'admin'){
+        if (_chatController.inboxData?.messages?.first.senderId?.role ==
+            'admin') {
           return CustomText(text: 'Only admin can send messages');
         }
         return Container(
@@ -160,7 +171,7 @@ class _InboxScreenState extends State<InboxScreen> {
             ],
           ),
         );
-      }
+      },
     );
   }
 

@@ -16,6 +16,7 @@ class SessionsController extends GetxController {
   final RxList<UpComingSessionModel>upComingSession = <UpComingSessionModel>[].obs;
   final RxList<UpComingSessionModel> upComingSessionParentList = <UpComingSessionModel>[].obs;
   final RxList<UpComingSessionModel> upComingSessionProfessionalList = <UpComingSessionModel>[].obs;
+
   final isLoadingSession = false.obs;
 
   // Future<void> getSessions() async {

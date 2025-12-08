@@ -89,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   chatItem.lastMsg?.isRead != true
                                   ? Color(0xffDAE9F3)
                                   : null,
-                              borderColor: Color(0xffE8E9EB),
+                              borderColor: Colors.red,
                               borderRadius: 8.r,
                               onTap: () {
                                 Get.toNamed(
