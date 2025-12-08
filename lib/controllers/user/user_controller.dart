@@ -80,7 +80,7 @@ class UserController extends GetxController {
 
     final requestBody = {
       'data': jsonEncode({
-        'email' : emailController.text.trim(),
+        // 'email' : emailController.text.trim(),
         'name' : nameController.text.trim(),
         'bio' : bioController.text.trim(),
         'subjects' : subjectList,

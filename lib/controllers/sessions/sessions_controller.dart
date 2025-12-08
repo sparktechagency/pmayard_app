@@ -16,6 +16,7 @@ class SessionsController extends GetxController {
   final RxList<UpComingSessionModel>upComingSession = <UpComingSessionModel>[].obs;
   final RxList<UpComingSessionModel> upComingSessionParentList = <UpComingSessionModel>[].obs;
   final RxList<UpComingSessionModel> upComingSessionProfessionalList = <UpComingSessionModel>[].obs;
+
   final isLoadingSession = false.obs;
 
   // Future<void> getSessions() async {
@@ -83,6 +84,15 @@ class SessionsController extends GetxController {
   final mySessionParentData = <MySessionParentModelData>[].obs;
   final mySessionProfessionalData = <MySessionProfessionalModelData>[].obs;
 
+  Rx<DateTime> focusedDay = DateTime.now().obs;
+  Rxn<DateTime> selectedDay = Rxn<DateTime>();
+  RxString stringDate = ''.obs;
+
+  void onHandle(String date) {
+    stringDate.value = date;
+    fetchMySection(date);
+  }
+
   Future<void> fetchMySection(String date) async {
     mySessionData.clear();
     mySessionParentData.clear();
@@ -110,36 +120,36 @@ class SessionsController extends GetxController {
   // =================  Selected Session =====================
   final isLoadingSelectedSession = false.obs;
 
-  Future<void> fetchSelectedSession(String date) async {
-    try {
-      isLoadingSelectedSession.value = true;
-      update(); // Notify listeners
-
-      final role = Get.find<UserController>().user?.role ?? '';
-      final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.body['data'] ?? [];
-
-        // if (role == 'professional') {
-        //   final professionalData = data
-        //       .map((e) => SessionProfessionalModelData.fromJson(e))
-        //       .toList();
-        //   sessionProfessionalData.assignAll(professionalData);
-        // } else {
-        //   final parentData = data
-        //       .map((e) => SessionParentModelData.fromJson(e))
-        //       .toList();
-        //   sessionParentData.assignAll(parentData);
-        // }
-      }
-    } catch (err) {
-      showToast('Something Went Wrong $err');
-    } finally {
-      isLoadingSelectedSession.value = false;
-      update(); // Notify listeners after data is loaded
-    }
-  }
+  // Future<void> fetchSelectedSession(String date) async {
+  //   try {
+  //     isLoadingSelectedSession.value = true;
+  //     update(); // Notify listeners
+  //
+  //     final role = Get.find<UserController>().user?.role ?? '';
+  //     final response = await ApiClient.getData(ApiUrls.sessionSearch(date));
+  //
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> data = response.body['data'] ?? [];
+  //
+  //       // if (role == 'professional') {
+  //       //   final professionalData = data
+  //       //       .map((e) => SessionProfessionalModelData.fromJson(e))
+  //       //       .toList();
+  //       //   sessionProfessionalData.assignAll(professionalData);
+  //       // } else {
+  //       //   final parentData = data
+  //       //       .map((e) => SessionParentModelData.fromJson(e))
+  //       //       .toList();
+  //       //   sessionParentData.assignAll(parentData);
+  //       // }
+  //     }
+  //   } catch (err) {
+  //     showToast('Something Went Wrong $err');
+  //   } finally {
+  //     isLoadingSelectedSession.value = false;
+  //     update(); // Notify listeners after data is loaded
+  //   }
+  // }
 
   final isLoadingAssignViewProfile = false.obs;
   Map<String, dynamic>? assignViewProfileData;
@@ -172,7 +182,7 @@ class SessionsController extends GetxController {
       if (response.statusCode == 200) {
         assignViewProfileData = response.body['data'];
         debugPrint('Fetched profile data');
-        update(); // Notify listeners
+        update();
       } else {
         showToast('Something Went Wrong');
       }
@@ -202,9 +212,8 @@ class SessionsController extends GetxController {
 
       if (response.statusCode == 200) {
         showToast('Session status updated successfully');
-        // Refresh the session list
         await fetchMySection('');
-        Get.back(); // Close the dialog
+        Get.back();
       } else {
         showToast('Failed to update session status');
       }

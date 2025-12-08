@@ -55,6 +55,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   String normalizeTime(String time) {
     return time.trim().replaceFirst(RegExp(r'^0'), '');
   }
+
   void _initializeSelectedSlots() {
     if (_userController.user?.roleId?.availability != null) {
       for (var availability in _userController.user!.roleId!.availability!) {
@@ -77,28 +78,28 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       }
     }
 
-    debugPrint('Initialized selectedTimeSlots: ${selectedTimeSlots.toString()}');
+    debugPrint(
+      'Initialized selectedTimeSlots: ${selectedTimeSlots.toString()}',
+    );
   }
 
   String formatTimeSlot(Map<String, String> slot) {
     return "${slot['start']} - ${slot['end']}";
   }
+
   String? getTimeSlotStatus(Map<String, String> timeSlot) {
     String selectedDay = weekDays.values.toList()[selectedDayIndex];
 
     if (selectedTimeSlots[selectedDay] == null) return null;
 
-    var slot = selectedTimeSlots[selectedDay]!.firstWhere(
-          (slot) {
-        String slotStart = normalizeTime(slot['start'] ?? '');
-        String slotEnd = slot['end']?.trim() ?? '';
-        String staticStart = normalizeTime(timeSlot['start'] ?? '');
-        String staticEnd = timeSlot['end']?.trim() ?? '';
+    var slot = selectedTimeSlots[selectedDay]!.firstWhere((slot) {
+      String slotStart = normalizeTime(slot['start'] ?? '');
+      String slotEnd = slot['end']?.trim() ?? '';
+      String staticStart = normalizeTime(timeSlot['start'] ?? '');
+      String staticEnd = timeSlot['end']?.trim() ?? '';
 
-        return slotStart == staticStart && slotEnd == staticEnd;
-      },
-      orElse: () => {},
-    );
+      return slotStart == staticStart && slotEnd == staticEnd;
+    }, orElse: () => {});
 
     return slot['status'];
   }
@@ -152,7 +153,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       }
     });
 
-    debugPrint('Selected for $selectedDay: ${selectedTimeSlots[selectedDay].toString()}');
+    debugPrint(
+      'Selected for $selectedDay: ${selectedTimeSlots[selectedDay].toString()}',
+    );
   }
 
   Map<String, dynamic> prepareApiData() {
@@ -170,12 +173,8 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       }
     }
 
-    return {
-      "day": selectedDay,
-      "timeSlots": timeSlotsList,
-    };
+    return {"day": selectedDay, "timeSlots": timeSlotsList};
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -194,16 +193,14 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   bottom: 16.h,
                 ),
               ),
-              CustomText(
-                bottom: 16.h,
-                text: 'Set you Day',
-                fontSize: 16.sp,
-              ),
+              CustomText(bottom: 16.h, text: 'Set you Day', fontSize: 16.sp),
 
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: weekDays.entries.toList().asMap().entries.map((entry) {
+                  children: weekDays.entries.toList().asMap().entries.map((
+                    entry,
+                  ) {
                     int index = entry.key;
                     MapEntry<String, String> day = entry.value;
                     bool isSelected = selectedDayIndex == index;
@@ -215,15 +212,19 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                         });
                       },
                       child: CustomContainer(
-                        color: isSelected ? AppColors.primaryColor : Colors.white,
+                        color: isSelected
+                            ? AppColors.primaryColor
+                            : Colors.white,
                         paddingVertical: 8.h,
                         paddingHorizontal: 12.w,
-                        elevation: true,
+                        elevation: false,
                         marginRight: 10.w,
                         child: CustomText(
                           text: day.key,
                           color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                     );
@@ -299,7 +300,9 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                               text: formatTimeSlot(timeSlot),
                               fontSize: 12.sp,
                               color: textColor,
-                              fontWeight: (isSelected || isBooked) ? FontWeight.w600 : FontWeight.w400,
+                              fontWeight: (isSelected || isBooked)
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                             ),
                             if (isBooked) ...[
                               SizedBox(height: 2.h),
@@ -320,13 +323,18 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
 
               GetBuilder<ScheduleController>(
                 builder: (controller) {
-                  return controller.isLoading ? CustomLoader() : CustomButton(
-                    onPressed: (){
-                      controller.editSchedule(_userController.user?.roleId?.sId ?? '',prepareApiData());
-                    },
-                    label: "Confirm",
-                  );
-                }
+                  return controller.isLoading
+                      ? CustomLoader()
+                      : CustomButton(
+                          onPressed: () {
+                            controller.editSchedule(
+                              _userController.user?.roleId?.sId ?? '',
+                              prepareApiData(),
+                            );
+                          },
+                          label: "Confirm",
+                        );
+                },
               ),
             ],
           );

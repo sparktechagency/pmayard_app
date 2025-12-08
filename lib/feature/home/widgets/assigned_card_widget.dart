@@ -62,7 +62,7 @@ class AssignedCardWidget extends StatelessWidget {
                       AppRoutes.profileViewScreen,
                       arguments: {'id': id, 'professionalId' : professionalId, 'role' : role},
                     );
-                    debugPrint('schedule ID=================================$professionalId');
+                    debugPrint('professional id from assigned card 65 no line =======>>> $professionalId');
                     debugPrint('schedule ID=================================$id');
                   },
                   label: 'View Profile',

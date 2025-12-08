@@ -30,6 +30,7 @@ class ApiUrls {
 
   static const String assigned = '/sessions/assigned-roles';
   static const String upcomingSessions = '/sessions/upcoming-sessions';
+  static const String notification = '/notifications';
 
   static String sessionViewProfile(String id) => '/sessions/$id/role';
 
@@ -40,7 +41,7 @@ class ApiUrls {
       '/messages/$conversationID/send-message';
 
   // Resource
-  static String sessionSearch(String date) => '/sessions/my-sessions';
+
   static String gradeSearch( String searchTerm ) => '/grades/?searchTerm=$searchTerm';
   static String subjectsSearch( String userId ) => '/subjects/$userId';
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
@@ -53,5 +54,11 @@ class ApiUrls {
 
   static String eventGet(String date) {
     return date.isNotEmpty ? '/events/?eventDate=$date' : '/events/';
+  }
+  static String sessionSearch(String date){
+    print('=============== 59 this is with data related >/sessions/my-sessions?date=$date');
+    print('===============60 this is without data related >/sessions/my-sessions');
+
+    return  date.isNotEmpty ? '/sessions/my-sessions?date=$date' :  '/sessions/my-sessions';
   }
 }

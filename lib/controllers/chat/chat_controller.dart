@@ -7,10 +7,8 @@ import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 
 class ChatController extends GetxController {
-
   final TextEditingController searchController = TextEditingController();
-
-
+  ScrollController scrollController = ScrollController();
 
   // bool isLoadingChat = false;
   RxBool isLoadingChat = false.obs;
@@ -19,8 +17,8 @@ class ChatController extends GetxController {
   // List<GroupChatMessageModel> groupChatData = [];
   //
 
-  var  chatData = <ChatModelData>[].obs;
-  var groupChatData =<GroupModelData>[].obs;
+  var chatData = <ChatModelData>[].obs;
+  var groupChatData = <GroupModelData>[].obs;
 
   final chatType = [
     {'label': 'Chat', 'value': 'individual'},
@@ -32,9 +30,9 @@ class ChatController extends GetxController {
   RxString selectedValueType = 'individual'.obs;
 
   void onTapChatType(String value) {
-    if(value == 'group'){
+    if (value == 'group') {
       chatData.clear();
-    }else{
+    } else {
       groupChatData.clear();
     }
     selectedValueType.value = value;
@@ -53,12 +51,14 @@ class ChatController extends GetxController {
     if (response.statusCode == 200) {
       final List data = response.body['data'] ?? [];
 
-      if( selectedValueType.value == 'individual'){
+      if (selectedValueType.value == 'individual') {
         final chats = data.map((item) => ChatModelData.fromJson(item)).toList();
         chatData.addAll(chats);
         print('=============> Message $chats');
-      }else if( selectedValueType.value == 'group') {
-        final chats = data.map((item) => GroupModelData.fromJson(item)).toList();
+      } else if (selectedValueType.value == 'group') {
+        final chats = data
+            .map((item) => GroupModelData.fromJson(item))
+            .toList();
         groupChatData.addAll(chats);
         print('=====================> group $chats');
       }
@@ -102,5 +102,15 @@ class ChatController extends GetxController {
     if (response.statusCode == 200) {}
     isSendingMessage = false;
     update();
+  }
+
+  void scrollBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(microseconds: 400),
+        curve: Curves.easeOut,
+      );
+    }
   }
 }

@@ -28,7 +28,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   @override
   void initState() {
-    if( controller.mySessionData.isEmpty){
+    if (controller.mySessionData.isEmpty) {
       controller.fetchMySection('');
     }
     super.initState();
@@ -41,179 +41,205 @@ class _SessionScreenState extends State<SessionScreen> {
   Widget build(BuildContext context) {
     final userRole = Get.find<UserController>().user?.role ?? '';
 
-    return CustomScaffold(
-      paddingSide: 0,
-      appBar: CustomAppBar(title: 'Session'),
-      body: RefreshIndicator(
-          onRefresh: () async {
-            await controller.fetchMySection('');
-          },
-          child: GetBuilder<SessionsController>(
-            builder: (controller) {
-              return Column(
-                children: [
-                  CustomContainer(
-                    color: Colors.white,
-                    child: TableCalendar(
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      focusedDay: _focusedDay,
-                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                          // You can implement date filtering here if needed
-                          // String formattedDate = "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
-                          // controller.fetchMySection(formattedDate);
-                        });
-                      },
-                      headerStyle: HeaderStyle(
-                        titleTextStyle: TextStyle(fontSize: 12.sp),
-                        formatButtonVisible: false,
-                        titleCentered: false,
+    return RefreshIndicator(
+      onRefresh: () async {
+        await controller.fetchMySection('');
+      },
+      child: CustomScaffold(
+        paddingSide: 0,
+        appBar: CustomAppBar(title: 'Session'),
+        body: GetBuilder<SessionsController>(
+          builder: (controller) {
+            return Column(
+              children: [
+                CustomContainer(
+                  color: Colors.white,
+                  child: TableCalendar(
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: (selectedDay, focusedDay) {
+
+                      String stringDate = selectedDay.toIso8601String().split(
+                        'T',
+                      )[0];
+                      controller.onHandle(stringDate);
+
+                      print('=============> String Dtate $stringDate');
+
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                        // You can implement date filtering here if needed
+                        // String formattedDate = "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
+                        // controller.fetchMySection(formattedDate);
+                      });
+
+                    },
+                    headerStyle: HeaderStyle(
+                      titleTextStyle: TextStyle(fontSize: 12.sp),
+                      formatButtonVisible: false,
+                      titleCentered: false,
+                    ),
+                    calendarFormat: CalendarFormat.week,
+                    availableGestures: AvailableGestures.horizontalSwipe,
+                    calendarStyle: CalendarStyle(
+                      todayDecoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        shape: BoxShape.circle,
                       ),
-                      calendarFormat: CalendarFormat.week,
-                      availableGestures: AvailableGestures.horizontalSwipe,
-                      calendarStyle: CalendarStyle(
-                        todayDecoration: BoxDecoration(
-                          color: AppColors.primaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                        selectedDecoration: const BoxDecoration(
-                          color: AppColors.primaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                        selectedTextStyle: const TextStyle(color: Colors.white),
-                        defaultTextStyle: TextStyle(fontSize: 12.sp),
+                      selectedDecoration: const BoxDecoration(
+                        color: AppColors.primaryColor,
+                        shape: BoxShape.circle,
                       ),
+                      selectedTextStyle: const TextStyle(color: Colors.white),
+                      defaultTextStyle: TextStyle(fontSize: 12.sp),
                     ),
                   ),
+                ),
 
-                  // Session Related work are here
-                  GetBuilder<SessionsController>(
-                    builder: (sessionController) {
-                      if (sessionController.isLoadingMySection.value) {
-                        return ShimmerHelper.upcomingSessionsShimmer();
-                      }
+                // Session Related work are here
+                GetBuilder<SessionsController>(
+                  builder: (sessionController) {
+                    if (sessionController.isLoadingMySection.value) {
+                      return ShimmerHelper.upcomingSessionsShimmer();
+                    }
 
-                      if (sessionController.mySessionData.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40.h),
-                            child: CustomText(
-                              text: 'No sessions are Available yet',
-                              fontSize: 14.sp,
-                            ),
+                    if (sessionController.mySessionData.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                          child: CustomText(
+                            text: 'No sessions are Available yet',
+                            fontSize: 14.sp,
                           ),
-                        );
-                      }
-
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: sessionController.mySessionData.length,
-                          itemBuilder: (context, index) {
-                            final session = sessionController.mySessionData[index];
-
-                            // Extract data based on user role
-                            String name = '';
-                            String imageUrl = '';
-
-                            if (userRole == 'professional') {
-                              final parent = session['parent'] as Map<String, dynamic>?;
-                              name = parent?['name'] ?? 'Unknown';
-                              imageUrl = parent?['profileImage'] ?? '';
-                            } else {
-                              final professional = session['professional'] as Map<String, dynamic>?;
-                              name = professional?['name'] ?? 'Unknown';
-                              imageUrl = professional?['profileImage'] ?? '';
-                            }
-
-                            final String day = session['day'] ?? '';
-                            final String date = session['date'] ?? '';
-                            final String status = session['status'] ?? 'Pending';
-                            final String sessionId = session['_id'] ?? '';
-
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 16.w,
-                                vertical: 6.h,
-                              ),
-                              child: GetBuilder<SessionsController>(
-                                builder: (controller) {
-                                  return CustomListTile(
-                                    contentPaddingVertical: 6.h,
-                                    borderRadius: 8.r,
-                                    borderColor: AppColors.borderColor,
-                                    image: imageUrl,
-                                    imageRadius: 24.r,
-                                    title: name,
-                                    subTitle: TimeFormatHelper.timeWithAMPM(DateTime.parse(date)) ?? 'Waiting' ,
-                                    titleFontSize: 16.sp,
-                                    trailing: status == 'Confirmed'
-                                        ? Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Flexible(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(
-                                                  title: "You sure you want to cancel the session?",
-                                                  confirmButtonColor: Color(0xffF40000),
-                                                  confirmButtonText: 'Yes',
-                                                  onCancel: () {
-                                                    Get.back();
-                                                  },
-                                                  onConfirm: () => controller.completeSessionDBHandler(
-                                                    sessionId,
-                                                    'Cancelled',
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: Assets.icons.cleanIcon.svg(),
-                                          ),
-                                        ),
-                                        SizedBox(width: 12.w),
-                                        Flexible(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => CustomDialog(
-                                                  title: "Do you want to mark this session as completed?",
-                                                  confirmButtonText: 'Yes',
-                                                  onCancel: () {
-                                                    Get.back();
-                                                  },
-                                                  onConfirm: () => controller.completeSessionDBHandler(
-                                                    sessionId,
-                                                    'Completed',
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: Assets.icons.success.svg(),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                        : _buildSessionStatus(status),
-                                  );
-                                },
-                              ),
-                            );
-                          },
                         ),
                       );
-                    },
-                  ),
-                ],
-              );
-            },
-          )
+                    }
+
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: sessionController.mySessionData.length,
+                        itemBuilder: (context, index) {
+                          final session =
+                              sessionController.mySessionData[index];
+
+                          // Extract data based on user role
+                          String name = '';
+                          String imageUrl = '';
+
+                          if (userRole == 'professional') {
+                            final parent =
+                                session['parent'] as Map<String, dynamic>?;
+                            name = parent?['name'] ?? 'Unknown';
+                            imageUrl = parent?['profileImage'] ?? '';
+                          } else {
+                            final professional =
+                                session['professional']
+                                    as Map<String, dynamic>?;
+                            name = professional?['name'] ?? 'Unknown';
+                            imageUrl = professional?['profileImage'] ?? '';
+                          }
+
+                          final String day = session['day'] ?? '';
+                          final String date = session['date'] ?? '';
+                          final String status = session['status'] ?? 'Pending';
+                          final String sessionId = session['_id'] ?? '';
+
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 6.h,
+                            ),
+                            child: GetBuilder<SessionsController>(
+                              builder: (controller) {
+                                return CustomListTile(
+                                  contentPaddingVertical: 6.h,
+                                  borderRadius: 8.r,
+                                  borderColor: AppColors.borderColor,
+                                  image: imageUrl,
+                                  imageRadius: 24.r,
+                                  title: name,
+                                  subTitle:
+                                      TimeFormatHelper.timeWithAMPM(
+                                        DateTime.parse(date),
+                                      ) ??
+                                      'Waiting',
+                                  titleFontSize: 16.sp,
+                                  trailing: status == 'Confirmed'
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Flexible(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => CustomDialog(
+                                                      title:
+                                                          "You sure you want to cancel the session?",
+                                                      confirmButtonColor: Color(
+                                                        0xffF40000,
+                                                      ),
+                                                      confirmButtonText: 'Yes',
+                                                      onCancel: () {
+                                                        Get.back();
+                                                      },
+                                                      onConfirm: () => controller
+                                                          .completeSessionDBHandler(
+                                                            sessionId,
+                                                            'Cancelled',
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Assets.icons.cleanIcon
+                                                    .svg(),
+                                              ),
+                                            ),
+                                            SizedBox(width: 12.w),
+                                            Flexible(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => CustomDialog(
+                                                      title:
+                                                          "Do you want to mark this session as completed?",
+                                                      confirmButtonText: 'Yes',
+                                                      onCancel: () {
+                                                        Get.back();
+                                                      },
+                                                      onConfirm: () => controller
+                                                          .completeSessionDBHandler(
+                                                            sessionId,
+                                                            'Completed',
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Assets.icons.success
+                                                    .svg(),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : _buildSessionStatus(status),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

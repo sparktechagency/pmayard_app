@@ -174,7 +174,7 @@ class AssignedController extends GetxController {
 
     final String userID = Get.find<UserController>().user?.sId ?? '';
 
-    print("===================>>>>> $userID");
+    print("final user id are here 177 no line are here ===================>>>>> $userID");
 
     // print("=====================================   $userID  ====================== Assigned Controller 171 no line ");
     // isConfirmScheduleLoading = true;
