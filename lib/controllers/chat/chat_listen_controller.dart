@@ -8,6 +8,8 @@ import 'package:pmayard_app/services/socket_services.dart';
 class SocketChatController extends GetxController {
   SocketServices socketService = SocketServices();
   final ChatController _chatController = Get.find<ChatController>();
+  ScrollController scrollController = ScrollController();
+
 
   // ScrollController scrollController = ScrollController();
 
@@ -23,8 +25,20 @@ class SocketChatController extends GetxController {
 
         _chatController.inboxData?.messages?.insert(0, convertedMessage);
         _chatController.refresh();
+        scrollBottom();
+
       }
     });
+  }
+
+  void scrollBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(microseconds: 400),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   Messages convertSocketToMessage(SocketModelData socketData) {
