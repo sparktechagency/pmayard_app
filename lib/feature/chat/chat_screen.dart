@@ -40,23 +40,23 @@ class _ChatScreenState extends State<ChatScreen> {
 
               if(_chatController.selectedValueType.value != 'group')...[
                 SizedBox(height: 12.h),
-              CustomTextField(
-                contentPaddingVertical: 14.h,
-                borderRadio: 16.r,
-                filColor: Colors.white,
-                onChanged: (val) {
-                  print('================>>>>>>>> $val');
-                },
-                validator: (_) {
-                  return null;
-                },
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.secondaryColor,
+                CustomTextField(
+                  contentPaddingVertical: 14.h,
+                  borderRadio: 16.r,
+                  filColor: Colors.white,
+                  onChanged: (val) {
+                    _chatController.filterChats(val);
+                  },
+                  validator: (_) {
+                    return null;
+                  },
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.secondaryColor,
+                  ),
+                  controller: _chatController.searchController,
+                  hintText: 'Search people to chat...',
                 ),
-                controller: _chatController.searchController,
-                hintText: 'Search people to chat...',
-              ),
               ],
               SizedBox(height: 16.h),
               Expanded(
@@ -78,9 +78,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       }
                       return ListView.builder(
                         physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: _chatController.chatData.length,
+                        itemCount: _chatController.filteredChatData.length,
                         itemBuilder: (context, index) {
-                          final chatItem = _chatController.chatData[index];
+                          final chatItem = _chatController.filteredChatData[index];
                           return Padding(
                             padding: EdgeInsets.only(bottom: 8.0.h),
                             child: CustomListTile(
@@ -155,73 +155,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     }
                   })
-
-                  /*  child: GetBuilder<ChatController>(
-                    builder: (controller) {
-                      if (controller.isLoadingChat.value) {
-                        return ShimmerHelper.upcomingSessionsShimmer();
-                      }
-
-                      if (controller.chatData.isEmpty) {
-                        return Center(
-                          child: CustomText(
-                            text: 'No chats available.',
-                            fontSize: 14.sp,
-                            color: AppColors.appGreyColor,
-                          ),
-                        );
-                      }else if( controller.groupChatData.isEmpty ){
-                        return Center(
-                          child: CustomText(
-                            text: 'No chats available.',
-                            fontSize: 14.sp,
-                            color: AppColors.appGreyColor,
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: controller.chatData.length,
-                        itemBuilder: (context, index) {
-                          final chatItem = controller.chatData[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 8.0.h),
-                            child: CustomListTile(
-                              selectedColor:
-                                  chatItem.lastMsg != null &&
-                                      chatItem.lastMsg?.isRead != true
-                                  ? Color(0xffDAE9F3)
-                                  : null,
-                              borderColor: Color(0xffE8E9EB),
-                              borderRadius: 8.r,
-                              onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.inboxScreen,
-                                  // arguments: chatItem.sId ?? '',
-                                  arguments: {'chatId' : chatItem.sId ?? '',},
-                                );
-                              },
-                              image:
-                                  chatItem.users?.first.roleId?.profileImage ??
-                                  'N/A',
-                              title: chatItem.users?.first.roleId?.name ?? 'N/A',
-                              subTitle: chatItem.lastMsg?.messageType == 'text'
-                                  ? chatItem.lastMsg?.messageText ?? ''
-                                  : chatItem.lastMsg?.messageType ?? '',
-                              trailing: CustomText(
-                                text: TimeFormatHelper.timeFormat(
-                                  chatItem.lastMsg?.createdAt ?? '',
-                                ),
-                                color: AppColors.appGreyColor,
-                                fontSize: 10.sp,
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),*/
                 ),
               ),
             ],

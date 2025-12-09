@@ -29,6 +29,23 @@ class ChatController extends GetxController {
   var chatData = <ChatModelData>[].obs;
   var groupChatData = <GroupModelData>[].obs;
 
+
+  var filteredChatData = <ChatModelData>[].obs;
+
+
+  void filterChats(String query) {
+    if (query.isEmpty) {
+      filteredChatData.value = List.from(chatData);
+    } else {
+      filteredChatData.value = chatData
+          .where((chat) => chat.users?.first.roleId?.name
+          ?.toLowerCase()
+          .contains(query.toLowerCase()) ?? false)
+          .toList();
+    }
+  }
+
+
   final chatType = [
     {'label': 'Chat', 'value': 'individual'},
     {'label': 'Announcement', 'value': 'group'},
@@ -63,6 +80,7 @@ class ChatController extends GetxController {
       if (selectedValueType.value == 'individual') {
         final chats = data.map((item) => ChatModelData.fromJson(item)).toList();
         chatData.addAll(chats);
+        filteredChatData.value = List.from(chatData); // keep filtered copy
         print('=============> Message $chats');
       } else if (selectedValueType.value == 'group') {
         final chats = data
