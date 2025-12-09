@@ -145,7 +145,7 @@ class AssignedController extends GetxController {
 
       if (response.statusCode == 200) {
         showToast('Schedule confirmed successfully');
-        Get.back(result: true);
+        Get.back();
       } else {
         showToast('Failed to confirm schedule');
       }
