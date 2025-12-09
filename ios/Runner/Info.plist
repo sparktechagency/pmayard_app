@@ -48,5 +48,11 @@
 
 	<key>NSMicrophoneUsageDescription</key>
     <string>We need microphone access to record voice messages</string>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

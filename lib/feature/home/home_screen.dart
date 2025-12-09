@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/simmer_helper.dart';
+import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
@@ -236,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // Format the subtitle
                         final subtitle = hasDateTime
-                            ? '$date at $day'
+                            ? '${TimeFormatHelper.formatDate(DateTime.parse(date))} at $day'
                             : 'Waiting';
 
                         return Padding(

@@ -23,8 +23,6 @@ class SocketChatController extends GetxController {
 
         _chatController.inboxData?.messages?.insert(0, convertedMessage);
         _chatController.refresh();
-
-        // Auto scroll to bottom after new message
         ever(socketData.message as RxInterface<Object?>, (_){
           scrollToBottom();
         });
@@ -35,15 +33,16 @@ class SocketChatController extends GetxController {
   // Function to scroll to bottom
   void scrollToBottom() {
     if (scrollController.hasClients) {
-      Future.delayed(Duration(milliseconds: 100), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         scrollController.animateTo(
-          scrollController.position.maxScrollExtent, // Scroll to actual bottom
-          duration: Duration(milliseconds: 300),
+          scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       });
     }
   }
+
 
   Messages convertSocketToMessage(SocketModelData socketData) {
     final msg = socketData.message;

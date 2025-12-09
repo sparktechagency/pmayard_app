@@ -78,14 +78,16 @@ class _InboxScreenState extends State<InboxScreen> {
                   );
                 }
                 return ListView.builder(
+                  reverse: true,
+                  controller: Get.find<SocketChatController>().scrollController,
                   padding: EdgeInsets.symmetric(
                     vertical: 12.h,
                     horizontal: 8.w,
                   ),
                   itemCount: controller.inboxData?.messages?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final message = controller.inboxData?.messages?.reversed
-                        .toList()[index];
+                    final message = controller.inboxData?.messages?
+                        [index];
                     List<String>? fileUrls = message?.attachmentId
                         ?.map((attachment) => attachment.fileUrl as String)
                         .toList();
@@ -118,6 +120,15 @@ class _InboxScreenState extends State<InboxScreen> {
   Widget _buildMessageSender() {
     return GetBuilder<ChatController>(
       builder: (controller) {
+        final bool isBlockedByAdmin =
+            _chatController.selectedValueType.value == 'group';
+
+        if (_chatController.isLoadingInbox) return SizedBox.shrink();
+
+        if (isBlockedByAdmin) {
+          return CustomText(text: 'Only admin can send messages');
+        }
+
         // 🔥 If uploading audio or image → show progress bubble
         if (controller.isLoadingAudio || controller.isLoadingImage) {
           return Container(

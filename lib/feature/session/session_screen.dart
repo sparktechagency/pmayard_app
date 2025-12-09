@@ -28,9 +28,8 @@ class _SessionScreenState extends State<SessionScreen> {
 
   @override
   void initState() {
-    if (controller.mySessionData.isEmpty) {
       controller.fetchMySection('');
-    }
+
     super.initState();
   }
 
@@ -122,30 +121,40 @@ class _SessionScreenState extends State<SessionScreen> {
                       child: ListView.builder(
                         itemCount: sessionController.mySessionData.length,
                         itemBuilder: (context, index) {
-                          final session =
-                              sessionController.mySessionData[index];
+                          final session = sessionController.mySessionData[index];
 
                           // Extract data based on user role
                           String name = '';
                           String imageUrl = '';
 
                           if (userRole == 'professional') {
-                            final parent =
-                                session['parent'] as Map<String, dynamic>?;
-                            name = parent?['name'] ?? 'Unknown';
-                            imageUrl = parent?['profileImage'] ?? '';
+                            // Check if parent is a Map or just an ID string
+                            final parentData = session['parent'];
+                            if (parentData is Map<String, dynamic>) {
+                              name = parentData['name']?.toString() ?? 'Unknown';
+                              imageUrl = parentData['profileImage']?.toString() ?? '';
+                            } else if (parentData is String) {
+                              // If it's just an ID, you might need to fetch parent details separately
+                              // Or handle it differently based on your data structure
+                              name = 'Parent';
+                              imageUrl = '';
+                            }
                           } else {
-                            final professional =
-                                session['professional']
-                                    as Map<String, dynamic>?;
-                            name = professional?['name'] ?? 'Unknown';
-                            imageUrl = professional?['profileImage'] ?? '';
+                            // For parent role
+                            final professionalData = session['professional'];
+                            if (professionalData is Map<String, dynamic>) {
+                              name = professionalData['name']?.toString() ?? 'Unknown';
+                              imageUrl = professionalData['profileImage']?.toString() ?? '';
+                            } else if (professionalData is String) {
+                              name = 'Professional';
+                              imageUrl = '';
+                            }
                           }
 
-                          final String day = session['day'] ?? '';
-                          final String date = session['date'] ?? '';
-                          final String status = session['status'] ?? 'Pending';
-                          final String sessionId = session['_id'] ?? '';
+                          final String day = session['day']?.toString() ?? '';
+                          final String date = session['date']?.toString() ?? '';
+                          final String status = session['status']?.toString() ?? 'Pending';
+                          final String sessionId = session['_id']?.toString() ?? '';
 
                           return Padding(
                             padding: EdgeInsets.symmetric(
@@ -154,6 +163,17 @@ class _SessionScreenState extends State<SessionScreen> {
                             ),
                             child: GetBuilder<SessionsController>(
                               builder: (controller) {
+                                // Parse date safely
+                                String timeString = 'Waiting';
+                                if (date.isNotEmpty) {
+                                  try {
+                                    final parsedDate = DateTime.parse(date);
+                                    timeString = TimeFormatHelper.timeWithAMPM(parsedDate) ?? 'Waiting';
+                                  } catch (e) {
+                                    debugPrint('Error parsing date: $e');
+                                  }
+                                }
+
                                 return CustomListTile(
                                   contentPaddingVertical: 6.h,
                                   borderRadius: 8.r,
@@ -161,71 +181,54 @@ class _SessionScreenState extends State<SessionScreen> {
                                   image: imageUrl,
                                   imageRadius: 24.r,
                                   title: name,
-                                  subTitle:
-                                      TimeFormatHelper.timeWithAMPM(
-                                        DateTime.parse(date),
-                                      ) ??
-                                      'Waiting',
+                                  subTitle: timeString,
                                   titleFontSize: 16.sp,
                                   trailing: status == 'Confirmed'
                                       ? Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Flexible(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => CustomDialog(
-                                                      title:
-                                                          "You sure you want to cancel the session?",
-                                                      confirmButtonColor: Color(
-                                                        0xffF40000,
-                                                      ),
-                                                      confirmButtonText: 'Yes',
-                                                      onCancel: () {
-                                                        Get.back();
-                                                      },
-                                                      onConfirm: () => controller
-                                                          .completeSessionDBHandler(
-                                                            sessionId,
-                                                            'Canceled',
-                                                          ),
-                                                    ),
-                                                  );
-                                                },
-                                                child: Assets.icons.cleanIcon
-                                                    .svg(),
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Flexible(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(
+                                                title: "You sure you want to cancel the session?",
+                                                confirmButtonColor: const Color(0xffF40000),
+                                                confirmButtonText: 'Yes',
+                                                onCancel: () => Get.back(),
+                                                onConfirm: () => controller.completeSessionDBHandler(
+                                                  sessionId,
+                                                  'Canceled',
+                                                ),
                                               ),
-                                            ),
-                                            SizedBox(width: 12.w),
-                                            Flexible(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => CustomDialog(
-                                                      title:
-                                                          "Do you want to mark this session as completed?",
-                                                      confirmButtonText: 'Yes',
-                                                      onCancel: () {
-                                                        Get.back();
-                                                      },
-                                                      onConfirm: () => controller
-                                                          .completeSessionDBHandler(
-                                                            sessionId,
-                                                            'Completed',
-                                                          ),
-                                                    ),
-                                                  );
-                                                },
-                                                child: Assets.icons.success
-                                                    .svg(),
+                                            );
+                                          },
+                                          child: Assets.icons.cleanIcon.svg(),
+                                        ),
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Flexible(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => CustomDialog(
+                                                title: "Do you want to mark this session as completed?",
+                                                confirmButtonText: 'Yes',
+                                                onCancel: () => Get.back(),
+                                                onConfirm: () => controller.completeSessionDBHandler(
+                                                  sessionId,
+                                                  'Completed',
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        )
+                                            );
+                                          },
+                                          child: Assets.icons.success.svg(),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                       : _buildSessionStatus(status),
                                 );
                               },
@@ -233,8 +236,7 @@ class _SessionScreenState extends State<SessionScreen> {
                           );
                         },
                       ),
-                    );
-                  },
+                    );                  },
                 ),
               ],
             );
