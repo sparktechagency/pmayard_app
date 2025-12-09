@@ -148,9 +148,16 @@ class _InboxScreenState extends State<InboxScreen> {
                   ),
                 ),
               ),
+
+              SizedBox(width: 6.w),
+              InkWell(
+                child: Icon(Icons.keyboard_voice_outlined),
+                onLongPress: (){
+
+                }
+              ),
               SizedBox(width: 6.w),
 
-              // Voice Button with Glow Effect
               GetBuilder<ChatController>(
                 builder: (controller) {
                   return GestureDetector(
