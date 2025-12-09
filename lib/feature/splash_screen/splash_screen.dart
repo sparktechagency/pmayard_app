@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/prefs_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/app/utils/app_constants.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/splash_screen/widgets/splash_loading.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 
@@ -19,16 +20,29 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   void _goNextScreen() async {
-    String accessTocken = await PrefsHelper.getString(AppConstants.bearerToken);
+    final accessToken = await PrefsHelper.getString(AppConstants.bearerToken);
+    final role = await PrefsHelper.getString(AppConstants.role);
+    final completed = await PrefsHelper.getBool(AppConstants.completed);
+
     Future.delayed(const Duration(seconds: 2), () {
-      if (accessTocken.isNotEmpty) {
-          Get.offAllNamed(AppRoutes.customBottomNavBar);
-      } else {
+      if (accessToken.isEmpty) {
         Get.offAllNamed(AppRoutes.onboardingScreen);
+        return;
       }
+
+      if (completed == false) {
+        if (role == 'parent') {
+          Get.toNamed(AppRoutes.completeProfileParent);
+        } else {
+          Get.toNamed(AppRoutes.completeProfileProfessional);
+        }
+        return;
+      }
+
+      // Otherwise, go to main app
+      Get.offAllNamed(AppRoutes.customBottomNavBar);
     });
   }
-
   // void _goNextScreen() async {
   //   Future.delayed(const Duration(seconds: 2), () {
   //       Get.offAllNamed(AppRoutes.completeProfileParent);

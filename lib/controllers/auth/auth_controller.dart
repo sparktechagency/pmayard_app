@@ -178,11 +178,19 @@ class AuthController extends GetxController {
 
     if (response.statusCode == 200) {
       await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']['accessToken']);
+      await PrefsHelper.setBool(AppConstants.completed, responseBody['data']['user']['isActive']);
+      await PrefsHelper.setString(AppConstants.role, responseBody['data']['role']);
       if (responseBody['data']['user']['isVerified'] == false) {
         Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       } else if (responseBody['data']['user']['isActive'] == true) {
         Get.offAllNamed(AppRoutes.customBottomNavBar);
         Get.find<CustomBottomNavBarController>().onChange(0);
+      }else{
+        if(responseBody['data']['role'] == 'professional'){
+          Get.toNamed(AppRoutes.completeProfileProfessional);
+        }else{
+          Get.toNamed(AppRoutes.completeProfileParent);
+        }
       }
       Get.find<UserController>().userData();
       //cleanFieldLogin();
