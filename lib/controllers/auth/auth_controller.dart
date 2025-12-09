@@ -318,6 +318,19 @@ class AuthController extends GetxController {
     Get.offAllNamed(AppRoutes.loginScreen);
   }
 
+  /// <======================= Delete user Related work are here ===========================>
+
+  Future<bool>deleteUser(String userID ) async {
+    bool flag = false;
+    final response = await ApiClient.deleteData(ApiUrls.deleteUser(userID));
+    if( response.statusCode == 200 ){
+      flag = true;
+      PrefsHelper.remove(AppConstants.bearerToken);
+      Get.offAllNamed(AppRoutes.signUpScreen);
+    }
+    return flag;
+  }
+
   /// <======================= dispose all controllers ===========================>
   @override
   void onClose() {

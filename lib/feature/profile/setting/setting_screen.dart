@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/controllers/auth/auth_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 
 import '../../../custom_assets/assets.gen.dart';
@@ -53,25 +55,30 @@ class SettingScreen extends StatelessWidget {
             },
           ),
 
-          _buildSettingTile(
-            icon: Assets.icons.delete.svg(),
-            label: 'Delete Account',
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => CustomDialog(
-                  title: "Do you want to delete your account?",
-                  confirmButtonText: 'Delete',
-                  confirmButtonColor: AppColors.errorColor,
-                  onCancel: () {
-                    Get.back();
+          GetBuilder<AuthController>(
+              builder: (controller){
+                return _buildSettingTile(
+                  icon: Assets.icons.delete.svg(),
+                  label: 'Delete Account',
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => CustomDialog(
+                        title: "Do you want to delete your account?",
+                        confirmButtonText: 'Delete',
+                        confirmButtonColor: AppColors.errorColor,
+                        onCancel: () {
+                          Get.back();
+                        },
+                        onConfirm: () {
+                          controller.deleteUser(Get.find<UserController>().user?.sId ?? '');
+                          // Get.offAllNamed(AppRoutes.signUpScreen);
+                        },
+                      ),
+                    );
                   },
-                  onConfirm: () {
-                    //Get.offAllNamed(AppRoutes.signUpScreen);
-                  },
-                ),
-              );
-            },
+                );
+              }
           ),
         ],
       ),

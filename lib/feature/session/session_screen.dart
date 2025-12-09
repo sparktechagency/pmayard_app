@@ -190,7 +190,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                                       onConfirm: () => controller
                                                           .completeSessionDBHandler(
                                                             sessionId,
-                                                            'Cancelled',
+                                                            'Canceled',
                                                           ),
                                                     ),
                                                   );

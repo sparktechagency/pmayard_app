@@ -150,7 +150,16 @@ class _InboxScreenState extends State<InboxScreen> {
                   ),
                 ),
               ),
-              SizedBox(width: 10.w),
+
+              SizedBox(width: 6.w),
+              InkWell(
+                child: Icon(Icons.keyboard_voice_outlined),
+                onLongPress: (){
+
+                }
+              ),
+              SizedBox(width: 6.w),
+
               GetBuilder<ChatController>(
                 builder: (controller) {
                   return CustomContainer(

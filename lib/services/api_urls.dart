@@ -34,6 +34,7 @@ class ApiUrls {
 
   //static String sessionViewProfile(String id) => '/sessions/$id/role';
   static String sessionViewProfile(String sessionID) => '/sessions/$sessionID';
+  static String deleteUser(String userID) => '/users/$userID';
 
   //Message Related work
   static String conversations(String type) => '/conversations/?type=$type';
