@@ -28,10 +28,10 @@ class NotificationController extends GetxController{
         print('==============================>>>>>>>>>>>>>>>>>>>>> $items');
 
       }else{
-        showToast('Something went wrong');
+       // showToast('Something went wrong');
       }
     }catch(e){
-      showToast('Something Went Wrong $e');
+     // showToast('Something Went Wrong $e');
     }
 
     isLoadingNotification.value = false;

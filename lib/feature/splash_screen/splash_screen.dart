@@ -32,9 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (completed == false) {
         if (role == 'parent') {
-          Get.toNamed(AppRoutes.completeProfileParent);
+          Get.offAllNamed(AppRoutes.completeProfileParent);
         } else {
-          Get.toNamed(AppRoutes.completeProfileProfessional);
+          Get.offAllNamed(AppRoutes.completeProfileProfessional);
         }
         return;
       }

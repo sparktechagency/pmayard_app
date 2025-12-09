@@ -32,10 +32,10 @@ class LegalController extends GetxController {
           aboutUs = AboutUsDataModel.fromJson(data.first);
         }
       } else {
-        showToast(response.body?['message']);
+       // showToast(response.body?['message']);
       }
     } catch (err) {
-      showToast('Something went wrong $err');
+     // showToast('Something went wrong $err');
     } finally {
       isAboutLoading = false;
       update();
@@ -57,11 +57,11 @@ class LegalController extends GetxController {
         if (data is List && data.isNotEmpty) {
           termsAndCondition = TermsAndConditionDataModel.fromJson(data.first);
         } else {
-          showToast(response.body?['message']);
+         // showToast(response.body?['message']);
         }
       }
     } catch (err) {
-      showToast('Something Went Wrong $err');
+      //showToast('Something Went Wrong $err');
     } finally {
       isTermsLoading = false;
       update();
@@ -83,11 +83,11 @@ class LegalController extends GetxController {
         if (data is List && data.isNotEmpty) {
           privacyPolicyDataModel = PrivacyPolicyDataModel.fromJson(data.first);
         } else {
-          showToast(response.body?['message']);
+        //  showToast(response.body?['message']);
         }
       }
     } catch (err) {
-      showToast('Something Went Wrong $err');
+     // showToast('Something Went Wrong $err');
     } finally {
       isPrivacyPolicyLoading = false;
       update();
