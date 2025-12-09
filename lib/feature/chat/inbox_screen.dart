@@ -35,13 +35,6 @@ class _InboxScreenState extends State<InboxScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _chatController.getInbox(chatID);
       _socketChatController.listenMessage(chatID);
-      ever(_chatController.chatData, (_) {
-        _chatController.scrollBottom();
-      });
-
-      ever(_chatController.groupChatData, (_) {
-        _chatController.scrollBottom();
-      });
     });
     super.initState();
   }
@@ -103,7 +96,8 @@ class _InboxScreenState extends State<InboxScreen> {
                     return ChatBubbleMessage(
                       profileImage:
                           controller.inboxData?.oppositeUser?.userImage ?? '',
-                      images: fileUrls,
+                      images:  message?.messageType == 'attachments' ? fileUrls : null,
+                      audioUrls: message?.messageType == 'audio' ? fileUrls : null,
                       text: message?.messageText ?? '',
                       time: message?.createdAt ?? '',
                       isMe:
@@ -127,10 +121,10 @@ class _InboxScreenState extends State<InboxScreen> {
         if (_chatController.isLoadingInbox) {
           return SizedBox.shrink();
         }
-        if (_chatController.inboxData?.messages?.first.senderId?.role ==
-            'admin') {
+        if (_chatController.inboxData?.messages?.first.senderId?.role == 'admin') {
           return CustomText(text: 'Only admin can send messages');
         }
+
         return Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -140,9 +134,13 @@ class _InboxScreenState extends State<InboxScreen> {
                 child: CustomTextField(
                   validator: (_) => null,
                   controller: _chatController.messageController,
-                  hintText: 'Type message...',
+                  hintText: controller.isRecording
+                      ? 'Recording... ${controller.recordingDuration.inSeconds}s'
+                      : 'Type message...',
                   suffixIcon: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.onTapImageShow(context, chatID);
+                    },
                     icon: Icon(
                       Icons.attachment_outlined,
                       color: AppColors.appGreyColor,
@@ -162,19 +160,87 @@ class _InboxScreenState extends State<InboxScreen> {
 
               GetBuilder<ChatController>(
                 builder: (controller) {
-                  return CustomContainer(
-                    onTap: () {
-                      if (controller.messageController.text.isNotEmpty) {
-                        controller.sendMessage(chatID);
-                        controller.messageController.clear();
+                  return GestureDetector(
+                    onTapDown: (_) {
+                      if (!controller.isRecording) {
+                        controller.startRecording();
                       }
                     },
-                    paddingVertical: 12.r,
-                    paddingHorizontal: 12.r,
-                    shape: BoxShape.circle,
-                    color: AppColors.secondaryColor,
-                    child: Assets.icons.massegeSend.svg(),
+                    onTapUp: (_) {
+                      if (controller.isRecording) {
+                        controller.stopRecording(chatID);
+                      }
+                    },
+                    onLongPressMoveUpdate: (_) {
+                    },
+                    onLongPressEnd: (_) {
+                      if (controller.isRecording) {
+                        controller.cancelRecording();
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10.r),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: controller.isRecording
+                            ? AppColors.errorColor.withOpacity(0.1)
+                            : Colors.transparent,
+                        boxShadow: controller.showGlowEffect
+                            ? [
+                          BoxShadow(
+                            color: AppColors.errorColor.withOpacity(0.1),
+                            blurRadius: 15,
+                            spreadRadius: 5,
+                          ),
+                        ]
+                            : [],
+                      ),
+                      child: Icon(
+                        controller.isRecording
+                            ? Icons.mic
+                            : Icons.keyboard_voice_rounded,
+                        color: controller.isRecording
+                            ? AppColors.errorColor.withOpacity(0.5)
+                            : AppColors.appGreyColor,
+                        size: 24.r,
+                      ),
+                    ),
                   );
+                },
+              ),
+
+              SizedBox(width: 10.w),
+
+              GetBuilder<ChatController>(
+                builder: (controller) {
+                  // রেকর্ডিং চলাকালীন Send বাটন Hide করুন
+                  if (controller.isRecording) {
+                    return CustomContainer(
+                      onTap: () {
+                        // রেকর্ডিং ক্যান্সেল বাটন
+                        controller.cancelRecording();
+                      },
+                      paddingVertical: 12.r,
+                      paddingHorizontal: 12.r,
+                      shape: BoxShape.circle,
+                      color: AppColors.appGreyColor,
+                      child: Icon(Icons.close, color: Colors.white),
+                    );
+                  } else {
+                    return CustomContainer(
+                      onTap: () {
+                        if (controller.messageController.text.isNotEmpty) {
+                          controller.sendMessage(chatID);
+                          controller.messageController.clear();
+                        }
+                      },
+                      paddingVertical: 12.r,
+                      paddingHorizontal: 12.r,
+                      shape: BoxShape.circle,
+                      color: AppColors.secondaryColor,
+                      child: Assets.icons.massegeSend.svg(),
+                    );
+                  }
                 },
               ),
             ],
@@ -183,7 +249,6 @@ class _InboxScreenState extends State<InboxScreen> {
       },
     );
   }
-
   @override
   dispose() {
     _socketChatController.removeListeners(chatID);

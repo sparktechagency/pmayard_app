@@ -39,8 +39,8 @@ class ApiUrls {
   //Message Related work
   static String conversations(String type) => '/conversations/?type=$type';
   static String inbox(String chatID) => '/messages/$chatID';
-  static String sendMessage(String conversationID) =>
-      '/messages/$conversationID/send-message';
+  static String sendMessage(String conversationID) => '/messages/$conversationID/send-message';
+  static String sendAttachments(String conversationID) => '/attachments/$conversationID/send-attachment';
 
   // Resource
 
