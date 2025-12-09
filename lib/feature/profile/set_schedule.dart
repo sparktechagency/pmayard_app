@@ -11,43 +11,47 @@ import 'package:pmayard_app/widgets/custom_loader.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
+import '../../models/assigned/assign_view_profile_model.dart';
 
-class SetScheduleScreen extends StatefulWidget {
-  const SetScheduleScreen({super.key});
+class SetScheduleScreen extends StatelessWidget {
+  SetScheduleScreen({super.key});
 
-  @override
-  State<SetScheduleScreen> createState() => _SetScheduleScreenState();
-}
-
-class _SetScheduleScreenState extends State<SetScheduleScreen> {
+  final AssignViewProfileModel? profileData = Get.arguments as AssignViewProfileModel?;
   final controller = Get.find<AssignedController>();
-  final userController = Get.find<UserController>();
+  final String role = Get.find<UserController>().user?.role ?? '';
 
   @override
   Widget build(BuildContext context) {
+    controller.initScheduleScreen();
+
     return CustomScaffold(
       appBar: CustomAppBar(
-        title: isParent() ? 'Availability' : 'Set Schedule',
-        backAction: () => Get.back(),
+        title: role == 'parent' ? 'Availability' : 'Set Schedule',
       ),
       body: GetBuilder<AssignedController>(
         builder: (ctrl) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: CustomText(
-                  text: isParent() ? 'View Availability' : 'Set Your Schedule',
-                  color: Color(0XFF0D0D0D),
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w600,
+                child: Text(
+                  role == 'parent' ? 'View Availability' : 'Set Your Schedule',
+                  style: TextStyle(
+                    color: Color(0XFF0D0D0D),
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               SizedBox(height: 13.h),
-
-              // Calendar শুধু ডেট সিলেক্ট করার জন্য
               CustomContainer(
                 color: Colors.white,
                 child: TableCalendar(
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: ctrl.focusedDay,
+                  selectedDayPredicate: (day) => isSameDay(ctrl.selectedDay, day),
                   headerStyle: HeaderStyle(
                     formatButtonVisible: false,
                     titleCentered: false,
@@ -58,17 +62,11 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  focusedDay: DateTime.now(),
-                  firstDay: DateTime.utc(2022, 1, 1),
-                  lastDay: DateTime.utc(2030, 1, 1),
-                  onDaySelected: (selectedDay, focusedDay) {
-                    // শুধু ডেট সেট করো, স্লট ফিল্টার করো না
-                    ctrl.setSelectedDate(selectedDay);
+                  onDaySelected: (selected, focused) {
+                    ctrl.onDaySelected(selected, focused);
                   },
                   calendarFormat: CalendarFormat.week,
-                  selectedDayPredicate: (day) {
-                    return ctrl.selectedDate != null && isSameDay(ctrl.selectedDate, day);
-                  },
+                  availableGestures: AvailableGestures.all,
                   calendarStyle: CalendarStyle(
                     selectedDecoration: BoxDecoration(
                       color: AppColors.primaryColor,
@@ -78,198 +76,156 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15.h),
-
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Text(
-                  'Available Time Slots',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18.sp,
-                    color: Color(0XFF0D0D0D),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15.h),
-
-              // Legend
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Row(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 10.w,
-                          height: 10.h,
-                          decoration: BoxDecoration(color: Color(0XFF305CDE)),
-                        ),
-                        SizedBox(width: 5.w),
-                        Text('Available'),
-                      ],
+                    todayDecoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.5),
+                      shape: BoxShape.circle,
                     ),
-                    if (isParent()) ...[
-                      SizedBox(width: 24.w),
-                      Row(
-                        children: [
-                          Container(
-                            width: 10.w,
-                            height: 10.h,
-                            decoration: BoxDecoration(color: Color(0XFFC2B067)),
-                          ),
-                          SizedBox(width: 5.w),
-                          Text('Booked'),
-                        ],
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-
-              SizedBox(height: 15.h),
-
-              // সব টাইম স্লট একসাথে দেখাবে
+              SizedBox(height: 20.h),
+              CustomText(
+                text: "Set Time Slot",
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+              ),
+              SizedBox(height: 16.h),
               Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: _buildAllTimeSlots(ctrl),
-                ),
+                child: _buildTimeSlotGrid(ctrl, profileData),
               ),
             ],
           );
         },
       ),
-
-      bottomNavigationBar: isProfessional() ? _buildBottomButton() : SizedBox.shrink(),
+      bottomNavigationBar: role == 'parent'
+          ? SizedBox.shrink()
+          : SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          child: GetBuilder<AssignedController>(
+            builder: (ctrl) {
+              return ctrl.isConfirmScheduleLoading
+                  ? CustomLoader()
+                  : CustomButton(
+                onPressed: () {
+                  if (ctrl.selectedTimeSlot != null) {
+                    ctrl.confirmSchedule(
+                      sessionID: profileData?.sId ?? '',
+                    );
+                  } else {
+                    Get.snackbar(
+                      'Error',
+                      'Please select a time slot',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+                label: 'Confirm',
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildAllTimeSlots(AssignedController ctrl) {
-    if (ctrl.allTimeSlots.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.event_busy_outlined, size: 60.sp, color: Colors.grey.shade400),
-            SizedBox(height: 16.h),
-            CustomText(
-              text: 'No time slots available',
-              fontSize: 16.sp,
-              color: Colors.grey.shade600,
-            ),
-          ],
-        ),
-      );
-    }
+  Widget _buildTimeSlotGrid(AssignedController ctrl, AssignViewProfileModel? profileData) {
+    final dayName = ctrl.getCurrentDayName();
+    final timeSlots = ctrl.getTimeSlotsForDay(dayName, profileData);
 
-    // Professional হলে শুধু available স্লট দেখাবে, parent হলে সব দেখাবে
-    final displaySlots = isProfessional()
-        ? ctrl.allTimeSlots.where((slot) => slot.status?.toLowerCase() == 'available').toList()
-        : ctrl.allTimeSlots.where((slot) => slot.status?.toLowerCase() == 'available' ||
-        slot.status?.toLowerCase() == 'booked').toList();
-
-    if (displaySlots.isEmpty) {
+    if (timeSlots.isEmpty) {
       return Center(
-        child: CustomText(
-          text: isProfessional() ? 'No available slots' : 'No slots',
-          fontSize: 16.sp,
-          color: Colors.grey.shade600,
+        child: Text(
+          'No slots available for $dayName',
+          style: TextStyle(
+            fontSize: 16.sp,
+            color: Colors.grey,
+          ),
         ),
       );
     }
 
     return GridView.builder(
-      itemCount: displaySlots.length,
+      itemCount: timeSlots.length,
       padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 109.w / 38.h,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: 8.w,
+        mainAxisSpacing: 8.h,
       ),
       itemBuilder: (context, index) {
-        final slot = displaySlots[index];
-        final start = slot.startTime ?? '';
-        final end = slot.endTime ?? '';
-        final status = slot.status?.toLowerCase() ?? '';
+        final slot = timeSlots[index];
+        final isBooked = slot.status == 'booked';
+        final isSelected = ctrl.selectedTimeSlot?.sId == slot.sId;
 
-        final isSelected = isProfessional() && ctrl.isTimeSlotSelected(start, end);
+        Color backgroundColor;
+        Color borderColor;
+        Color textColor;
 
-        Color bgColor;
-        Color txtColor;
-        Color borderColor = Colors.transparent;
-
-        if (status == 'available') {
-          bgColor = AppColors.secondaryColor;
-          txtColor = isSelected ? AppColors.primaryColor : Colors.white;
-          borderColor = isSelected ? AppColors.primaryColor : Colors.transparent;
-        } else if (status == 'booked') {
-          bgColor = Color(0XFFC2B067);
-          txtColor = Colors.white;
+        if (isBooked) {
+          backgroundColor = Colors.grey.withOpacity(0.15);
+          borderColor = Colors.transparent;
+          textColor = Colors.grey.shade600;
+        } else if (isSelected) {
+          backgroundColor = AppColors.primaryColor.withOpacity(0.1);
+          borderColor = AppColors.primaryColor;
+          textColor = AppColors.primaryColor;
         } else {
-          bgColor = Colors.grey.shade400;
-          txtColor = Colors.grey.shade300;
+          backgroundColor = Colors.white;
+          borderColor = Colors.black.withOpacity(0.06);
+          textColor = Colors.black87;
         }
 
         return GestureDetector(
-          onTap: status == 'available' && isProfessional()
-              ? () => ctrl.selectTimeSlot(start, end)
-              : null,
-          child: Container(
+          onTap: () {
+            if (role != 'parent' && !isBooked) {
+              ctrl.onTimeSlotSelected(slot);
+            }
+          },
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
             decoration: BoxDecoration(
-              color: bgColor,
-              border: Border.all(color: borderColor, width: 1),
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(
+                color: borderColor,
+                width: (isSelected || isBooked) ? 2 : 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  offset: Offset(0, 0),
+                  blurRadius: 3,
+                ),
+              ],
             ),
             alignment: Alignment.center,
-            child: CustomText(
-              text: '$start - $end',
-              color: txtColor,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomText(
+                  text: '${slot.startTime ?? ''} - ${slot.endTime ?? ''}',
+                  fontSize: 12.sp,
+                  color: textColor,
+                  fontWeight: (isSelected || isBooked) ? FontWeight.w600 : FontWeight.w400,
+                ),
+                if (isBooked) ...[
+                  SizedBox(height: 2.h),
+                  CustomText(
+                    text: 'Booked',
+                    fontSize: 9.sp,
+                    color: Colors.orange.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ],
+              ],
             ),
           ),
         );
       },
     );
-  }
-
-  Widget _buildBottomButton() {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        child: GetBuilder<AssignedController>(
-          builder: (ctrl) {
-            if (ctrl.isConfirmScheduleLoading) return CustomLoader();
-
-            return CustomButton(
-              onPressed: ctrl.hasSelectedDate && ctrl.hasSelectedTimeSlot
-                  ? () {
-                final sessionId = ctrl.profileData?.sId ?? '';
-                ctrl.confirmSchedule(sessionID: sessionId);
-              }
-                  : null,
-              label: 'Confirm Schedule',
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  bool isProfessional() {
-    final role = userController.user?.role?.toLowerCase() ?? '';
-    return role == 'professional';
-  }
-
-  bool isParent() {
-    final role = userController.user?.role?.toLowerCase() ?? '';
-    return role == 'parent';
   }
 }
