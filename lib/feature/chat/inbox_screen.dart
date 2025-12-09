@@ -150,14 +150,6 @@ class _InboxScreenState extends State<InboxScreen> {
               ),
 
               SizedBox(width: 6.w),
-              InkWell(
-                child: Icon(Icons.keyboard_voice_outlined),
-                onLongPress: (){
-
-                }
-              ),
-              SizedBox(width: 6.w),
-
               GetBuilder<ChatController>(
                 builder: (controller) {
                   return GestureDetector(
@@ -209,15 +201,13 @@ class _InboxScreenState extends State<InboxScreen> {
                 },
               ),
 
-              SizedBox(width: 10.w),
+              SizedBox(width: 6.w),
 
               GetBuilder<ChatController>(
                 builder: (controller) {
-                  // রেকর্ডিং চলাকালীন Send বাটন Hide করুন
                   if (controller.isRecording) {
                     return CustomContainer(
                       onTap: () {
-                        // রেকর্ডিং ক্যান্সেল বাটন
                         controller.cancelRecording();
                       },
                       paddingVertical: 12.r,
