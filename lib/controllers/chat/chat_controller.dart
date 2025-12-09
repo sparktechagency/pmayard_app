@@ -112,6 +112,8 @@ class ChatController extends GetxController {
 
   File? selectedImage;
 
+  bool isLoadingImage = false;
+
   void onTapImageShow(context,String conversationID) {
     PhotoPickerHelper.showPicker(
       context: context,
@@ -127,7 +129,8 @@ class ChatController extends GetxController {
   }
 
   Future<void> sendAttachments(String conversationID,String type) async {
-
+    isLoadingImage = true;
+    update();
 
     List<MultipartBody>? multipartBody;
     if (selectedImage != null) {
@@ -144,6 +147,8 @@ class ChatController extends GetxController {
     );
     if (response.statusCode == 200) {}
 
+    isLoadingImage = false;
+    update();
   }
 
 
@@ -293,7 +298,13 @@ class ChatController extends GetxController {
     }
   }
 
+
+  bool isLoadingAudio = false;
+
   Future<void> sendAudioFile(String conversationID, File audioFile) async {
+
+    isLoadingAudio = true;
+    update();
     try {
       print('Sending audio file: ${audioFile.path}');
 
@@ -307,8 +318,6 @@ class ChatController extends GetxController {
         {
           "data": jsonEncode({
             "message_type": "audio",
-            //"duration": recordingDuration.inSeconds.toString(),
-            //"format": "m4a", // Backend এ বলছি এটা M4A format
           })
         },
       );
@@ -329,6 +338,9 @@ class ChatController extends GetxController {
     } catch (e) {
       print('Send audio error: $e');
     }
+
+    isLoadingAudio = false;
+    update();
   }
 
   Future<void> cancelRecording() async {

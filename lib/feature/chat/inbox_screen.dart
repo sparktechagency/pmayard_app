@@ -118,13 +118,53 @@ class _InboxScreenState extends State<InboxScreen> {
   Widget _buildMessageSender() {
     return GetBuilder<ChatController>(
       builder: (controller) {
-        if (_chatController.isLoadingInbox) {
-          return SizedBox.shrink();
-        }
-        if (_chatController.inboxData?.messages?.first.senderId?.role == 'admin') {
-          return CustomText(text: 'Only admin can send messages');
+        // 🔥 If uploading audio or image → show progress bubble
+        if (controller.isLoadingAudio || controller.isLoadingImage) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(14.r),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 20.w,
+                          height: 20.w,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation(AppColors.secondaryColor),
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            controller.isLoadingAudio
+                                ? "Uploading audio..."
+                                : "Uploading image...",
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
         }
 
+        // 🔥 DEFAULT SENDER UI
         return Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -132,6 +172,7 @@ class _InboxScreenState extends State<InboxScreen> {
             children: [
               Expanded(
                 child: CustomTextField(
+                  enabled: !controller.isRecording,
                   validator: (_) => null,
                   controller: _chatController.messageController,
                   hintText: controller.isRecording
@@ -139,7 +180,9 @@ class _InboxScreenState extends State<InboxScreen> {
                       : 'Type message...',
                   suffixIcon: IconButton(
                     onPressed: () {
-                      controller.onTapImageShow(context, chatID);
+                      if (!controller.isRecording) {
+                        controller.onTapImageShow(context, chatID);
+                      }
                     },
                     icon: Icon(
                       Icons.attachment_outlined,
@@ -150,88 +193,73 @@ class _InboxScreenState extends State<InboxScreen> {
               ),
 
               SizedBox(width: 6.w),
-              GetBuilder<ChatController>(
-                builder: (controller) {
-                  return GestureDetector(
-                    onTapDown: (_) {
-                      if (!controller.isRecording) {
-                        controller.startRecording();
-                      }
-                    },
-                    onTapUp: (_) {
-                      if (controller.isRecording) {
-                        controller.stopRecording(chatID);
-                      }
-                    },
-                    onLongPressMoveUpdate: (_) {
-                    },
-                    onLongPressEnd: (_) {
-                      if (controller.isRecording) {
-                        controller.cancelRecording();
-                      }
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10.r),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: controller.isRecording
-                            ? AppColors.errorColor.withOpacity(0.1)
-                            : Colors.transparent,
-                        boxShadow: controller.showGlowEffect
-                            ? [
-                          BoxShadow(
-                            color: AppColors.errorColor.withOpacity(0.1),
-                            blurRadius: 15,
-                            spreadRadius: 5,
-                          ),
-                        ]
-                            : [],
-                      ),
-                      child: Icon(
-                        controller.isRecording
-                            ? Icons.mic
-                            : Icons.keyboard_voice_rounded,
-                        color: controller.isRecording
-                            ? AppColors.errorColor.withOpacity(0.5)
-                            : AppColors.appGreyColor,
-                        size: 24.r,
-                      ),
-                    ),
-                  );
+
+              // 🎤 RECORD BUTTON
+              GestureDetector(
+                onTapDown: (_) {
+                  if (!controller.isRecording) controller.startRecording();
                 },
+                onTapUp: (_) {
+                  if (controller.isRecording) controller.stopRecording(chatID);
+                },
+                onLongPressEnd: (_) {
+                  if (controller.isRecording) controller.cancelRecording();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10.r),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: controller.isRecording
+                        ? AppColors.errorColor.withOpacity(0.1)
+                        : Colors.transparent,
+                    boxShadow: controller.showGlowEffect
+                        ? [
+                      BoxShadow(
+                        color: AppColors.errorColor.withOpacity(0.1),
+                        blurRadius: 15,
+                        spreadRadius: 5,
+                      ),
+                    ]
+                        : [],
+                  ),
+                  child: Icon(
+                    controller.isRecording
+                        ? Icons.mic
+                        : Icons.keyboard_voice_rounded,
+                    color: controller.isRecording
+                        ? AppColors.errorColor.withOpacity(0.5)
+                        : AppColors.appGreyColor,
+                    size: 24.r,
+                  ),
+                ),
               ),
 
               SizedBox(width: 6.w),
 
-              GetBuilder<ChatController>(
-                builder: (controller) {
-                  if (controller.isRecording) {
-                    return CustomContainer(
-                      onTap: () {
-                        controller.cancelRecording();
-                      },
-                      paddingVertical: 12.r,
-                      paddingHorizontal: 12.r,
-                      shape: BoxShape.circle,
-                      color: AppColors.appGreyColor,
-                      child: Icon(Icons.close, color: Colors.white),
-                    );
-                  } else {
-                    return CustomContainer(
-                      onTap: () {
-                        if (controller.messageController.text.isNotEmpty) {
-                          controller.sendMessage(chatID);
-                          controller.messageController.clear();
-                        }
-                      },
-                      paddingVertical: 12.r,
-                      paddingHorizontal: 12.r,
-                      shape: BoxShape.circle,
-                      color: AppColors.secondaryColor,
-                      child: Assets.icons.massegeSend.svg(),
-                    );
+              // 📤 SEND / CANCEL BUTTON
+              controller.isRecording
+                  ? CustomContainer(
+                onTap: () {
+                  controller.cancelRecording();
+                },
+                paddingVertical: 12.r,
+                paddingHorizontal: 12.r,
+                shape: BoxShape.circle,
+                color: AppColors.appGreyColor,
+                child: Icon(Icons.close, color: Colors.white),
+              )
+                  : CustomContainer(
+                onTap: () {
+                  if (controller.messageController.text.isNotEmpty) {
+                    controller.sendMessage(chatID);
+                    controller.messageController.clear();
                   }
                 },
+                paddingVertical: 12.r,
+                paddingHorizontal: 12.r,
+                shape: BoxShape.circle,
+                color: AppColors.secondaryColor,
+                child: Assets.icons.massegeSend.svg(),
               ),
             ],
           ),
