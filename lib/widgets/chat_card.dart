@@ -125,7 +125,6 @@ class ChatBubbleMessage extends StatelessWidget {
   }
 }
 
-// অডিও প্লেয়ার উইজেট (একাধিক অডিওর জন্য আপডেটেড)
 class AudioPlayerWidget extends StatefulWidget {
   final List<String> audioUrls;
   final bool isMe;
@@ -140,151 +139,136 @@ class AudioPlayerWidget extends StatefulWidget {
   State<AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
 }
 
-class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
+class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
+    with SingleTickerProviderStateMixin {
+  final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  int _currentAudioIndex = 0;
+
+  late AnimationController _eqController;
 
   @override
   void initState() {
     super.initState();
-    _setupAudioPlayer();
-  }
 
-  void _setupAudioPlayer() async {
-    _audioPlayer.onDurationChanged.listen((duration) {
-      setState(() {
-        _duration = duration;
-      });
+    _eqController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _player.onDurationChanged.listen((d) {
+      setState(() => _duration = d);
     });
 
-    _audioPlayer.onPositionChanged.listen((position) {
-      setState(() {
-        _position = position;
-      });
+    _player.onPositionChanged.listen((p) {
+      setState(() => _position = p);
     });
 
-    _audioPlayer.onPlayerComplete.listen((event) {
+    _player.onPlayerComplete.listen((_) {
       setState(() {
         _isPlaying = false;
         _position = Duration.zero;
-
-        // পরবর্তী অডিওতে যান যদি থাকে
-        if (_currentAudioIndex < widget.audioUrls.length - 1) {
-          _currentAudioIndex++;
-          _playAudio();
-        }
       });
+      _eqController.stop();
     });
   }
 
-  Future<void> _playAudio() async {
-    if (widget.audioUrls.isNotEmpty && _currentAudioIndex < widget.audioUrls.length) {
-      await _audioPlayer.play(UrlSource(widget.audioUrls[_currentAudioIndex]));
-    }
-  }
-
-  Future<void> _playPauseAudio() async {
+  Future<void> _playPause() async {
     if (_isPlaying) {
-      await _audioPlayer.pause();
+      await _player.pause();
+      _eqController.stop();
     } else {
-      if (_position.inSeconds == 0) {
-        await _playAudio();
-      } else {
-        await _audioPlayer.resume();
-      }
+      await _player.play(
+        UrlSource(widget.audioUrls.first),
+      );
+      _eqController.repeat();
     }
+
     setState(() {
       _isPlaying = !_isPlaying;
     });
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
+  String _fmt(Duration d) {
+    return "${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}";
   }
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
+    _player.dispose();
+    _eqController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200.w,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      constraints: BoxConstraints(maxWidth: 250.w),
+      decoration: BoxDecoration(
+        color: widget.isMe ? const Color(0xff666978) : const Color(0xffE8E9EB),
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // প্লে/পজ বাটন
-              GestureDetector(
-                onTap: _playPauseAudio,
-                child: Container(
-                  padding: EdgeInsets.all(8.r),
-                  decoration: BoxDecoration(
-                    color: widget.isMe ? Colors.white.withOpacity(0.2) : Colors.grey.shade300,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _isPlaying ? Icons.pause : Icons.play_arrow,
-                    color: widget.isMe ? Colors.white : Colors.grey.shade800,
-                    size: 18.r,
-                  ),
-                ),
+          // PLAY BUTTON
+          GestureDetector(
+            onTap: _playPause,
+            child: Container(
+              padding: EdgeInsets.all(6.r),
+              decoration: BoxDecoration(
+                color: widget.isMe
+                    ? Colors.white.withOpacity(0.25)
+                    : Colors.grey.shade300,
+                shape: BoxShape.circle,
               ),
-
-              // অডিও সংখ্যা (যদি একাধিক হয়)
-              if (widget.audioUrls.length > 1)
-                Padding(
-                  padding: EdgeInsets.only(right: 8.w),
-                  child: CustomText(
-                    text: '${_currentAudioIndex + 1}/${widget.audioUrls.length}',
-                    fontSize: 10.sp,
-                    color: widget.isMe ? Colors.white.withOpacity(0.7) : Colors.grey.shade600,
-                  ),
-                ),
-
-              // অডিও ডুরেশন
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: CustomText(
-                    text: '${_formatDuration(_position)} / ${_formatDuration(_duration)}',
-                    fontSize: 10.sp,
-                    color: widget.isMe ? Colors.white.withOpacity(0.7) : Colors.grey.shade600,
-                  ),
-                ),
+              child: Icon(
+                _isPlaying ? Icons.pause : Icons.play_arrow,
+                color: widget.isMe ? Colors.white : Colors.black87,
+                size: 18.r,
               ),
-            ],
+            ),
           ),
 
-          // প্রোগ্রেস বার
-          SizedBox(height: 8.h),
-          SliderTheme(
-            data: SliderThemeData(
-              trackHeight: 2.h,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 10.r),
-            ),
-            child: Slider(
-              min: 0,
-              max: _duration.inSeconds.toDouble(),
-              value: _position.inSeconds.toDouble(),
-              onChanged: (value) async {
-                final position = Duration(seconds: value.toInt());
-                await _audioPlayer.seek(position);
-              },
-              activeColor: widget.isMe ? Colors.white : Colors.grey.shade600,
-              inactiveColor: widget.isMe ? Colors.white.withOpacity(0.3) : Colors.grey.shade400,
+          SizedBox(width: 10.w),
+
+          // EQUALIZER BARS
+          AnimatedBuilder(
+            animation: _eqController,
+            builder: (_, __) {
+              return Row(
+                children: List.generate(6, (i) {
+                  double height = 6 + (10 * (i % 2 == 0 ? _eqController.value : (1 - _eqController.value)));
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 2.w),
+                    child: Container(
+                      width: 3.w,
+                      height: height.h,
+                      decoration: BoxDecoration(
+                        color: widget.isMe
+                            ? Colors.white
+                            : Colors.black87,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                    ),
+                  );
+                }),
+              );
+            },
+          ),
+
+          Spacer(),
+
+          // TIME TEXT
+          Text(
+            _fmt(_position),
+            style: TextStyle(
+              fontSize: 10.sp,
+              color: widget.isMe
+                  ? Colors.white.withOpacity(0.7)
+                  : Colors.grey.shade700,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
