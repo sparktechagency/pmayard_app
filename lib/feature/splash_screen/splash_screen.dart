@@ -20,9 +20,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   void _goNextScreen() async {
+    final user = Get.find<UserController>().user;
     final accessToken = await PrefsHelper.getString(AppConstants.bearerToken);
-    final role = await PrefsHelper.getString(AppConstants.role);
-    final completed = await PrefsHelper.getBool(AppConstants.completed);
 
     Future.delayed(const Duration(seconds: 2), () {
       if (accessToken.isEmpty) {
@@ -30,8 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      if (completed == false) {
-        if (role == 'parent') {
+      if (user?.isActive == false) {
+        if (user?.role == 'parent') {
           Get.offAllNamed(AppRoutes.completeProfileParent);
         } else {
           Get.offAllNamed(AppRoutes.completeProfileProfessional);

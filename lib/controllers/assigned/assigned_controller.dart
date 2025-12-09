@@ -35,6 +35,27 @@ class AssignedController extends GetxController {
     update();
   }
 
+
+  bool isLoadingVerify = false;
+
+  final TextEditingController professionalAssignController =
+  TextEditingController();
+
+  Future<void> sessionVerify() async {
+    isLoadingVerify = true;
+    update();
+
+    final response = await ApiClient.postData(ApiUrls.verifySession,{
+      "code": professionalAssignController.text.trim()
+    });
+
+    if (response.statusCode == 200) {
+      Get.back();
+    }
+    isLoadingVerify = false;
+    update();
+  }
+
   // Schedule Are fetch here
   final RxBool isScheduleLoading = false.obs;
   final RxList<AvailabilityModel> availabilityData = <AvailabilityModel>[].obs;
