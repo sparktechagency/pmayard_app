@@ -4,7 +4,6 @@ import 'package:pmayard_app/models/legal/privacy_policy_model.dart';
 import 'package:pmayard_app/models/legal/terms_and_condition_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
-import 'package:pmayard_app/widgets/widgets.dart';
 
 class LegalController extends GetxController {
   @override
@@ -15,7 +14,7 @@ class LegalController extends GetxController {
     fetchPrivacyPolicy();
   }
 
-  // ------------------------ About Related Work are here ------------------------
+  /// ------------------------ About Related Work are here ------------------------
 
   bool isAboutLoading = false;
   AboutUsDataModel? aboutUs;
@@ -42,7 +41,7 @@ class LegalController extends GetxController {
     }
   }
 
-  // ----------------------- Terms And Condition Related Work are here
+  /// ----------------------- Terms And Condition Related Work are here
   bool isTermsLoading = false;
   TermsAndConditionDataModel? termsAndCondition;
 
@@ -68,7 +67,7 @@ class LegalController extends GetxController {
     }
   }
 
-  // ----------------------------- Privacy Policy Related work are here ------------------------
+  /// ----------------------------- Privacy Policy Related work are here ------------------------
   bool isPrivacyPolicyLoading = false;
   PrivacyPolicyDataModel? privacyPolicyDataModel;
 

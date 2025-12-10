@@ -77,6 +77,7 @@ class ApiClient extends GetxService {
     }
   }
 
+
   //==========================================> Patch Data <======================================
   static Future<Response> patch(String uri, dynamic body,
       {Map<String, String>? headers}) async {

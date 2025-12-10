@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:pmayard_app/models/notification/notification_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
-import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class NotificationController extends GetxController{
   @override

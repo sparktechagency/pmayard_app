@@ -15,7 +15,7 @@ class AppColors {
   static const Color darkColor = Color(0xff000000);
   static const Color successColor = Color(0xff00A213);
   static const Color errorColor = Color(0xffF40000);
-
+  static const Color termsPrivacyColor = Color(0xff0D0D0D);
   static List<Color> splashLinearColors = [
     Color(0xffFFFFFF),
     Color(0xffEAC75C).withOpacity(0.20),

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,6 @@ import '../../../app/utils/app_colors.dart';
 import '../../../controllers/auth/auth_controller.dart';
 import '../../../widgets/widgets.dart';
 import '../widgets/app_logo.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,17 +18,12 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
-
-
   final AuthController _registerController = Get.find<AuthController>();
-
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: CustomAppBar(
-        title: 'Sign Up',
-      ),
+      appBar: CustomAppBar(title: 'Sign Up'),
       body: SingleChildScrollView(
         child: Form(
           key: _globalKey,
@@ -60,22 +55,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               duration: const Duration(milliseconds: 250),
                               curve: Curves.easeInOut,
                               decoration: BoxDecoration(
-                                color: isSelected ? AppColors.goldColor : Colors.transparent,
+                                color: isSelected
+                                    ? AppColors.goldColor
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(16.r),
                               ),
                               alignment: Alignment.center,
                               child: CustomText(
-                                text: type == "professional" ? "Professional" : "Parent",
+                                text: type == "professional"
+                                    ? "Professional"
+                                    : "Parent",
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
-                                color: isSelected ? Colors.white : AppColors.goldColor,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.goldColor,
                               ),
                             ),
                           ),
                         );
                       }).toList(),
                     );
-                  }
+                  },
                 ),
               ),
               SizedBox(height: 16.h),
@@ -94,7 +95,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Password is required';
-                  } else if (_registerController.passwordController.text.length < 8) {
+                  } else if (_registerController
+                          .passwordController
+                          .text
+                          .length <
+                      8) {
                     return 'Password must be 8+ chars';
                   }
                   return null;
@@ -108,13 +113,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm password is required';
-                  } else if (value != _registerController.passwordController.text) {
+                  } else if (value !=
+                      _registerController.passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
                 },
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   GetBuilder<AuthController>(
                     builder: (controller) {
@@ -123,20 +130,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         onChanged: (value) => controller.onChanged(value),
                         activeColor: AppColors.secondaryColor,
                       );
-                    }
+                    },
                   ),
-                  CustomText(
-                    text: "I accept the Terms & Conditions & Privacy Policy",
-                    fontSize: 11.sp,
-                   // color: AppColors.textColor4D4D4D,
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColors.bgColor,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'I agree with ',
+                              style: TextStyle(color: Color(0xff474747)),
+                            ),
+                            TextSpan(
+                              text: 'Terms & Conditions',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: AppColors.termsPrivacyColor,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => Get.toNamed(AppRoutes.termsScreen),
+                            ),
+                            TextSpan(
+                              text: ' & ',
+                              style: TextStyle(color: Color(0xff474747)),
+                            ),
+                            TextSpan(
+                              text: 'Privacy Policy.',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.termsPrivacyColor,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => Get.toNamed(AppRoutes.policyScreen),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
+                  // CustomText(
+                  //   text: "I accept the Terms & Conditions & Privacy Policy",
+                  //   fontSize: 11.sp,
+                  //   // color: AppColors.textColor4D4D4D,
+                  // ),
                 ],
               ),
               SizedBox(height: 16.h),
               GetBuilder<AuthController>(
                 builder: (controller) {
-                  return controller.isLoadingRegister ? CustomLoader() : CustomButton(label: "Sign Up", onPressed: _onSignUp);
-                }
+                  return controller.isLoadingRegister
+                      ? CustomLoader()
+                      : CustomButton(label: "Sign Up", onPressed: _onSignUp);
+                },
               ),
               SizedBox(height: 24.h),
               Row(
@@ -149,7 +201,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   CustomText(
                     onTap: () {
-                     Get.offAllNamed(AppRoutes.loginScreen);
+                      Get.offAllNamed(AppRoutes.loginScreen);
                     },
                     text: "Sign In",
                     fontSize: 14.sp,
@@ -165,6 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
   void _onSignUp() {
     if (!_globalKey.currentState!.validate()) return;
     if (!_registerController.isChecked) {

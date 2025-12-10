@@ -15,7 +15,7 @@ class ApiUrls {
   static const String resendOtp = '/auth/resend-otp';
   static const String resetPassword = '/auth/reset-password';
   static String resendVerifyOtp(String userEmail) =>
-      'auth/resend-otp/$userEmail';
+      '/auth/resend-otp/$userEmail';
 
   // Legal
   static const String terms = '/rules/terms';

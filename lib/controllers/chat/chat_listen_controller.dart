@@ -10,14 +10,10 @@ class SocketChatController extends GetxController {
   final ChatController _chatController = Get.find<ChatController>();
   ScrollController scrollController = ScrollController();
 
-
-  // ScrollController scrollController = ScrollController();
-
    /// ===============> Listen for new messages via socket.
   void listenMessage(String conversationID) {
     SocketServices.socket?.on("new_message-$conversationID", (data) {
       if (data != null) {
-        debugPrint("New message received: $data");
 
         final socketData = SocketModelData.fromJson(data);
 
@@ -71,16 +67,6 @@ class SocketChatController extends GetxController {
   void removeListeners(String conversationId) {
     SocketServices.socket?.off("new_message-$conversationId");
   }
-
-  // void scrollToBottom() {
-  //   if (scrollController.hasClients) {
-  //     scrollController.animateTo(
-  //       0,
-  //       duration: const Duration(milliseconds: 400),
-  //       curve: Curves.easeOut,
-  //     );
-  //   }
-  // }
 
 }
 

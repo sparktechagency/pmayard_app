@@ -29,8 +29,6 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
   final String role = Get.find<UserController>().user?.role ?? '';
 
-
-
   @override
   void initState() {
     controller.initScheduleScreen();
@@ -255,7 +253,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                     );
                   }
                 },
-                label: ctrl.isConfirmScheduleLoading ? "Please wait.." :'Confirm',
+                label: ctrl.isConfirmScheduleLoading ? "Please wait.." :'Confirm maruf',
               );
             },
           ),

@@ -5,7 +5,6 @@ import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
-
 import '../../app/helpers/prefs_helper.dart';
 import '../../app/utils/app_constants.dart';
 import '../../routes/app_routes.dart';
@@ -32,7 +31,7 @@ class AuthController extends GetxController {
   void roleChange(type) {
     selectedValueType = type;
     update();
-    debugPrint('======================? #### $selectedValueType');
+    // debugPrint('======================? #### $selectedValueType');
   }
 
   void cleanFieldRegister() {
@@ -90,63 +89,68 @@ class AuthController extends GetxController {
 
     final String email = await PrefsHelper.getString(AppConstants.email);
 
-    bool success = false;
-
-    final requestBody = {'email': email, 'otp': otpController.text.trim()};
+    final requestBody = {
+      'email': email,
+      'otp': otpController.text.trim(),
+    };
 
     final response = await ApiClient.postData(ApiUrls.verifyOtp, requestBody);
-
     final responseBody = response.body;
+
+    bool success = false;
 
     if (response.statusCode == 200) {
       success = true;
-      await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']?['accessToken'] ?? '');
+
+      final String? token = responseBody['data']?['accessToken'];
+
+      // ✔ Save token ONLY if verify success
+      if (token != null && token.isNotEmpty) {
+        await PrefsHelper.setString(AppConstants.bearerToken, token);
+      }
+
       showToast(responseBody['message']);
-      otpController.clear();
-      Get.toNamed(AppRoutes.loginScreen);
     } else {
       showToast(responseBody['message']);
     }
 
+    otpController.clear();
     isLoadingOtp = false;
     update();
     return success;
   }
 
   /// <================== Resend Otp ==========================>
-  Future<bool> resentVerifyOTP() async {
+  Future<void> resentVerifyOTP() async {
     isLoadingOtp = true;
     update();
 
     final String email = await PrefsHelper.getString(AppConstants.email);
 
-    bool success = false;
-
-    final requestBody = {'email': email, 'otp': otpController.text.trim()};
-
     final response = await ApiClient.postData(
       ApiUrls.resendVerifyOtp(email),
-      requestBody,
-      headers: {'Content-Type': 'application/json'},
+      {},
     );
+
+
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-      success = true;
-      await PrefsHelper.setString(
-        AppConstants.bearerToken,
-        responseBody['data']?['token'] ?? '',
-      );
+
+      // await PrefsHelper.setString(
+      //   AppConstants.bearerToken,
+      //   responseBody['data']?['token'] ?? '',
+      // );
+
       showToast(responseBody['message']);
       otpController.clear();
-      Get.toNamed(AppRoutes.loginScreen);
+      // Get.toNamed(AppRoutes.loginScreen);
     } else {
       showToast(responseBody['message']);
     }
 
     isLoadingOtp = false;
     update();
-    return success;
   }
 
   /// <======================= login ===========================>
@@ -172,33 +176,78 @@ class AuthController extends GetxController {
       'password': loginPasswordController.text,
     };
 
-    final response = await ApiClient.postData(ApiUrls.login, requestBody);
+    try {
+      final response = await ApiClient.postData(ApiUrls.login, requestBody);
+      final responseBody = response.body;
 
-    final responseBody = response.body;
+      if (response.statusCode != 200) {
+        showToast(responseBody?['message'] ?? 'Something went wrong');
+        return;
+      }
 
-    if (response.statusCode == 200) {
-      await PrefsHelper.setString(AppConstants.bearerToken, responseBody['data']['accessToken']);
-      if (responseBody['data']['user']['isVerified'] == false) {
-        Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
-      } else if (responseBody['data']['user']['isActive'] == true) {
+      final data = responseBody['data'] as Map<String, dynamic>?;
+
+      if (data == null) {
+        showToast('Invalid response from server');
+        return;
+      }
+
+
+      final user = data['user'] as Map<String, dynamic>? ?? {};
+
+
+      final dynamic rawToken = data['accessToken'];
+      final String? accessToken = (rawToken is String && rawToken.isNotEmpty) ? rawToken : null;
+
+      final bool isVerified = (user['isVerified'] is bool) ? user['isVerified'] : false;
+      final bool isActive = (user['isActive'] is bool) ? user['isActive'] : false;
+      final String role = (user['role'] is String) ? user['role'] : (data['role'] ?? '');
+
+
+      if (accessToken != null && isVerified) {
+        await PrefsHelper.setString(AppConstants.bearerToken, accessToken);
+      }
+
+
+      if (accessToken == null || !isVerified) {
+        Get.toNamed(
+          AppRoutes.otpScreen,
+          arguments: {
+            'email': user['email'] ?? loginEmailController.text.trim(),
+            'userId': user['_id'],
+            'role': role,
+          },
+        );
+        return;
+      }
+
+
+      if (isActive) {
         Get.offAllNamed(AppRoutes.customBottomNavBar);
         Get.find<CustomBottomNavBarController>().onChange(0);
-      }else{
-        if(responseBody['data']['role'] == 'professional'){
+      } else {
+        if (role == 'professional') {
           Get.toNamed(AppRoutes.completeProfileProfessional);
-        }else{
+        } else {
           Get.toNamed(AppRoutes.completeProfileParent);
         }
       }
-      Get.find<UserController>().userData();
-      //cleanFieldLogin();
-    } else {
-      showToast(responseBody['message']);
-    }
 
-    isLoadingLogin = false;
-    update();
+
+      Get.find<UserController>().userData();
+      cleanFieldLogin();
+
+    } catch (e, st) {
+
+      debugPrint('Login error: $e\n$st');
+      showToast('Something went wrong. Please try again.');
+    } finally {
+      isLoadingLogin = false;
+      update();
+    }
   }
+
+
 
   /// <======================= forgot ===========================>
   bool isLoadingForgot = false;
@@ -235,7 +284,6 @@ class AuthController extends GetxController {
     isLoadingForgot = false;
     update();
   }
-
 
   /// <======================= reset Password ===========================>
   bool isLoadingReset = false;
@@ -279,9 +327,11 @@ class AuthController extends GetxController {
 
   /// <=============== Change passport related work are here ========================
   bool isChangePassword = false;
-  final TextEditingController currentPasswordTEController = TextEditingController();
+  final TextEditingController currentPasswordTEController =
+      TextEditingController();
   final TextEditingController newPasswordTEController = TextEditingController();
-  final TextEditingController confirmPasswordTEController = TextEditingController();
+  final TextEditingController confirmPasswordTEController =
+      TextEditingController();
 
   void changePassword() async {
     isChangePassword = true;
@@ -295,7 +345,9 @@ class AuthController extends GetxController {
     final response = await ApiClient.postData(ApiUrls.changePassword, request);
     if (response.statusCode == 200) {
       await PrefsHelper.setString(
-          AppConstants.bearerToken, response.body['accessToken']);
+        AppConstants.bearerToken,
+        response.body['accessToken'],
+      );
       UserController().userData();
       showToast(response.body['message']);
       clearChangePasswordField();
@@ -306,12 +358,13 @@ class AuthController extends GetxController {
     isChangePassword = false;
     update();
   }
+
   void clearChangePasswordField() {
     confirmPasswordTEController.clear();
     newPasswordTEController.clear();
     currentPasswordTEController.clear();
   }
-  
+
   /// <======================= Log out related work are here  ===========================>
 
   void logOut() async {
@@ -326,10 +379,10 @@ class AuthController extends GetxController {
 
   /// <======================= Delete user Related work are here ===========================>
 
-  Future<bool>deleteUser(String userID ) async {
+  Future<bool> deleteUser(String userID) async {
     bool flag = false;
     final response = await ApiClient.deleteData(ApiUrls.deleteUser(userID));
-    if( response.statusCode == 200 ){
+    if (response.statusCode == 200) {
       flag = true;
       PrefsHelper.remove(AppConstants.bearerToken);
       Get.offAllNamed(AppRoutes.signUpScreen);
