@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -83,6 +84,36 @@ class AuthController extends GetxController {
   bool isLoadingOtp = false;
   final TextEditingController otpController = TextEditingController();
 
+  int myTime = 180;
+  bool flag = true;
+  Timer? timer;
+
+  String formatTime(int second) {
+    final minutes = second ~/ 60;
+    final remainingSeconds = second - minutes * 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  void timerStart() {
+    timer?.cancel();
+    myTime = 180;
+    flag = true;
+    update();
+
+    timer = Timer.periodic(
+      const Duration(seconds: 1),
+          (Timer time) {
+            formatTime(myTime--);
+            myTime--;
+        if (myTime == 0) {
+          flag = false;
+          time.cancel();
+        }
+        update();
+      },
+    );
+  }
+
   Future<bool> verifyOTP() async {
     isLoadingOtp = true;
     update();
@@ -96,7 +127,6 @@ class AuthController extends GetxController {
 
     final response = await ApiClient.postData(ApiUrls.verifyOtp, requestBody);
     final responseBody = response.body;
-
     bool success = false;
 
     if (response.statusCode == 200) {
@@ -104,11 +134,9 @@ class AuthController extends GetxController {
 
       final String? token = responseBody['data']?['accessToken'];
 
-      // ✔ Save token ONLY if verify success
       if (token != null && token.isNotEmpty) {
         await PrefsHelper.setString(AppConstants.bearerToken, token);
       }
-
       showToast(responseBody['message']);
     } else {
       showToast(responseBody['message']);

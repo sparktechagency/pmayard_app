@@ -90,7 +90,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   date.month == selectedDate.month &&
                   date.year == selectedDate.year;
 
-              // show dot if slot already selected for that day
               bool hasSlotSelected = selectedSlots.containsKey(date);
 
               return GestureDetector(
@@ -200,7 +199,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
           GetBuilder<ProfileConfirmController>(
             builder: (controller) {
-              return controller.isLoadingParent
+              return controller.isLoading
                   ? CustomLoader()
                   : CustomButton(
                       onPressed: controller.profileConfirm,
@@ -208,23 +207,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     );
             },
           ),
-
-          // GetBuilder<ProfileConfirmController>(
-          //   builder: (controller) {
-          //     return controller.isLoadingParent ? CustomLoader() :  CustomButton(
-          //       onPressed: () {
-          //         if(allSlotsSelected){
-          //           debugPrint("Weekly Schedule:");
-          //           selectedSlots.forEach((date, slot) {
-          //             debugPrint("${DateFormat.E().format(date)}: $slot");
-          //           });
-          //           Get.offAllNamed(AppRoutes.customBottomNavBar);
-          //         }
-          //       },
-          //       label: "Confirm",
-          //     );
-          //   },
-          // ),
         ],
       ),
     );

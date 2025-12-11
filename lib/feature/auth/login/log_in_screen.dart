@@ -107,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onSingUp() {
     if (!_globalKey.currentState!.validate()) return;
-    //Get.toNamed(AppRoutes.completeProfileFirstPage);
     _authController.login();
   }
 

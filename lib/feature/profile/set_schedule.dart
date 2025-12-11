@@ -253,7 +253,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                     );
                   }
                 },
-                label: ctrl.isConfirmScheduleLoading ? "Please wait.." :'Confirm maruf',
+                label: ctrl.isConfirmScheduleLoading ? "Please wait.." :'Confirm',
               );
             },
           ),
