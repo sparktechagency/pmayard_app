@@ -59,9 +59,6 @@ class ApiUrls {
     return date.isNotEmpty ? '/events/?eventDate=$date' : '/events/';
   }
   static String sessionSearch(String date){
-    print('=============== 59 this is with data related >/sessions/my-sessions?date=$date');
-    print('===============60 this is without data related >/sessions/my-sessions');
-
     return  date.isNotEmpty ? '/sessions/my-sessions?date=$date' :  '/sessions/my-sessions';
   }
 }

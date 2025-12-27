@@ -21,7 +21,7 @@ class CompleteProfileProfessional extends StatefulWidget {
 class _CompleteProfileProfessionalState
     extends State<CompleteProfileProfessional> {
   final ProfileConfirmController profileController =
-      Get.find<ProfileConfirmController>();
+  Get.find<ProfileConfirmController>();
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -49,8 +49,9 @@ class _CompleteProfileProfessionalState
                       bottom: 12.h,
                       right: 6.w,
                       child: GestureDetector(
-                        onTap: () => controller
-                            .onTapProfileProfessionalSelected(context),
+                        onTap: () =>
+                            controller
+                                .onTapProfileProfessionalSelected(context),
                         child: Assets.icons.profileCamera.svg(),
                       ),
                     ),
@@ -88,37 +89,42 @@ class _CompleteProfileProfessionalState
                   ),
 
                   InternationalPhoneNumberInput(
-                    selectorTextStyle: TextStyle(fontSize: 12.sp),
                     onInputChanged: (PhoneNumber num) {},
+                    textStyle: TextStyle(
+                      color: AppColors.appGreyColor,
+                      fontSize: 12.sp,
+                    ),
+                    selectorTextStyle: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.appGreyColor
+                    ),
                     selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.DROPDOWN,
                       setSelectorButtonAsPrefixIcon: true,
                       leadingPadding: 0,
                       trailingSpace: false,
                     ),
-                    cursorColor: Colors.black,
+                    cursorColor: AppColors.appGreyColor,
                     textFieldController: profileController.numberController,
                     initialValue: number,
                     formatInput: true,
                     inputDecoration: InputDecoration(
                       hintStyle: TextStyle(
-                        color: AppColors.appGreyColor,
+                        color: AppColors.grayShade100,
                         fontSize: 12.sp,
                         fontFamily: FontFamily.inter,
                       ),
-                      hintText: "enter your phone no.",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide(
-                          color: AppColors.grayShade100.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
+                      hintText: "Enter your phone no.",
+                      focusedBorder: focusedBorder(),
+                      enabledBorder: enabledBorder(),
+                      errorBorder: errorBorder(),
+                      border: focusedBorder(),
                       contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
                     selectorButtonOnErrorPadding: 0,
                     spaceBetweenSelectorAndTextField: 0,
                   ),
+
                   SizedBox(height: 8.h),
 
                   CustomTextField(
@@ -144,12 +150,12 @@ class _CompleteProfileProfessionalState
 
                           .toList();
                       final selectedList =
-                          await MenuShowHelper.showMultiSelectMenu(
-                            context: context,
-                            details: details,
-                            options: MenuShowHelper.subjects,
-                            preSelectedItems: currentSubjects,
-                          );
+                      await MenuShowHelper.showMultiSelectMenu(
+                        context: context,
+                        details: details,
+                        options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
+                      );
 
                       if (selectedList != null) {
                         profileController.subjectsController.text = selectedList
@@ -188,4 +194,32 @@ class _CompleteProfileProfessionalState
       ),
     );
   }
+
+  OutlineInputBorder focusedBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(
+        width: 0.8,
+        color: AppColors.grayShade100,
+      ),
+    );
+  }
+
+  OutlineInputBorder enabledBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(
+        width: 1,
+        color: AppColors.grayShade100,
+      ),
+    );
+  }
+
+  OutlineInputBorder errorBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular( 8.r),
+      borderSide: BorderSide(color:Colors.red, width: 1),
+    );
+  }
+
 }

@@ -60,8 +60,4 @@ class HelperData {
       'status': 'delivered',
     },
   ];
-
-
-
-
 }

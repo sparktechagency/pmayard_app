@@ -32,7 +32,6 @@ class AuthController extends GetxController {
   void roleChange(type) {
     selectedValueType = type;
     update();
-    // debugPrint('======================? #### $selectedValueType');
   }
 
   void cleanFieldRegister() {
@@ -100,18 +99,14 @@ class AuthController extends GetxController {
     flag = true;
     update();
 
-    timer = Timer.periodic(
-      const Duration(seconds: 1),
-          (Timer time) {
-            formatTime(myTime--);
-            myTime--;
-        if (myTime == 0) {
-          flag = false;
-          time.cancel();
-        }
-        update();
-      },
-    );
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer time) {
+      myTime--;
+      if (myTime == 0) {
+        flag = false;
+        time.cancel();
+      }
+      update();
+    });
   }
 
   Future<bool> verifyOTP() async {
@@ -120,10 +115,7 @@ class AuthController extends GetxController {
 
     final String email = await PrefsHelper.getString(AppConstants.email);
 
-    final requestBody = {
-      'email': email,
-      'otp': otpController.text.trim(),
-    };
+    final requestBody = {'email': email, 'otp': otpController.text.trim()};
 
     final response = await ApiClient.postData(ApiUrls.verifyOtp, requestBody);
     final responseBody = response.body;
@@ -160,19 +152,11 @@ class AuthController extends GetxController {
       {},
     );
 
-
     final responseBody = response.body;
 
     if (response.statusCode == 200) {
-
-      // await PrefsHelper.setString(
-      //   AppConstants.bearerToken,
-      //   responseBody['data']?['token'] ?? '',
-      // );
-
       showToast(responseBody['message']);
       otpController.clear();
-      // Get.toNamed(AppRoutes.loginScreen);
     } else {
       showToast(responseBody['message']);
     }
@@ -220,53 +204,58 @@ class AuthController extends GetxController {
         return;
       }
 
-
       final user = data['user'] as Map<String, dynamic>? ?? {};
-
-
       final dynamic rawToken = data['accessToken'];
-      final String? accessToken = (rawToken is String && rawToken.isNotEmpty) ? rawToken : null;
+      final String? accessToken = (rawToken is String && rawToken.isNotEmpty)
+          ? rawToken
+          : null;
 
-      final bool isVerified = (user['isVerified'] is bool) ? user['isVerified'] : false;
-      final bool isActive = (user['isActive'] is bool) ? user['isActive'] : false;
-      final String role = (user['role'] is String) ? user['role'] : (data['role'] ?? '');
+      final bool isVerified = (user['isVerified'] is bool)
+          ? user['isVerified']
+          : false;
+      final bool isActive = (user['isActive'] is bool)
+          ? user['isActive']
+          : false;
+      final String role = (user['role'] is String)
+          ? user['role']
+          : (data['role'] ?? '');
+      final String? roleId = (user['roleId'] is String) ? user['roleId'] : null;
 
+      await PrefsHelper.setString(
+        AppConstants.email,
+        loginEmailController.text.trim(),
+      );
 
-      if (accessToken != null && isVerified) {
-        await PrefsHelper.setString(AppConstants.bearerToken, accessToken);
-      }
-
-
-      if (accessToken == null || !isVerified) {
+      if (!isVerified || accessToken == null) {
         Get.toNamed(
           AppRoutes.otpScreen,
           arguments: {
             'email': user['email'] ?? loginEmailController.text.trim(),
             'userId': user['_id'],
-            'role': role,
+            'role': 'sign_up',
           },
         );
         return;
       }
 
+      // Save token only after verification check
+      await PrefsHelper.setString(AppConstants.bearerToken, accessToken);
 
-      if (isActive) {
+      await Get.find<UserController>().userData();
+
+      if (!isActive && (roleId == null || roleId.isEmpty)) {
+        if (role == 'professional') {
+          Get.offAllNamed(AppRoutes.completeProfileProfessional);
+        } else if (role == 'parent') {
+          Get.offAllNamed(AppRoutes.completeProfileParent);
+        }
+      } else if (isActive && roleId != null && roleId.isNotEmpty) {
         Get.offAllNamed(AppRoutes.customBottomNavBar);
         Get.find<CustomBottomNavBarController>().onChange(0);
-      } else {
-        if (role == 'professional') {
-          Get.toNamed(AppRoutes.completeProfileProfessional);
-        } else {
-          Get.toNamed(AppRoutes.completeProfileParent);
-        }
       }
 
-
-      Get.find<UserController>().userData();
       cleanFieldLogin();
-
     } catch (e, st) {
-
       debugPrint('Login error: $e\n$st');
       showToast('Something went wrong. Please try again.');
     } finally {
@@ -274,8 +263,6 @@ class AuthController extends GetxController {
       update();
     }
   }
-
-
 
   /// <======================= forgot ===========================>
   bool isLoadingForgot = false;
@@ -394,7 +381,6 @@ class AuthController extends GetxController {
   }
 
   /// <======================= Log out related work are here  ===========================>
-
   void logOut() async {
     await PrefsHelper.remove(AppConstants.bearerToken);
     await PrefsHelper.remove(AppConstants.role);
@@ -406,7 +392,6 @@ class AuthController extends GetxController {
   }
 
   /// <======================= Delete user Related work are here ===========================>
-
   Future<bool> deleteUser(String userID) async {
     bool flag = false;
     final response = await ApiClient.deleteData(ApiUrls.deleteUser(userID));

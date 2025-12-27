@@ -1,5 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +5,6 @@ import '../app/utils/app_colors.dart';
 import '../app/utils/app_constants.dart';
 import '../custom_assets/fonts.gen.dart';
 import '../widgets/widgets.dart';
-
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -43,39 +40,41 @@ class CustomTextField extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatter;
   final int? minLines;
 
-  const CustomTextField(
-      {super.key,
-      this.contentPaddingHorizontal,
-      this.contentPaddingVertical,
-      this.hintText,
-      this.prefixIcon,
-      this.suffixIcon,
-      this.validator,
-      this.hintextColor,
-      this.borderColor,
-      this.isEmail = false,
-      required this.controller,
-      this.keyboardType = TextInputType.text,
-      this.isObscureText = false,
-      this.obscure = '*',
-      this.filColor,
-      this.hintextSize,
-      this.labelText,
-      this.isPassword = false,
-      this.readOnly = false,
-      this.borderRadio,
-      this.onTap,
-      this.onChanged,
-      this.cursorColor,
-      this.maxLength,
-      this.enabled,
-      this.focusNode,
-      this.autofocus = false,
-      this.isDatePicker = false,
-      this.fontFamily,
-      this.textInputAction,
-      this.inputFormatter,
-      this.minLines, this.maxLines});
+  const CustomTextField({
+    super.key,
+    this.contentPaddingHorizontal,
+    this.contentPaddingVertical,
+    this.hintText,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.validator,
+    this.hintextColor,
+    this.borderColor,
+    this.isEmail = false,
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.isObscureText = false,
+    this.obscure = '*',
+    this.filColor,
+    this.hintextSize,
+    this.labelText,
+    this.isPassword = false,
+    this.readOnly = false,
+    this.borderRadio,
+    this.onTap,
+    this.onChanged,
+    this.cursorColor,
+    this.maxLength,
+    this.enabled,
+    this.focusNode,
+    this.autofocus = false,
+    this.isDatePicker = false,
+    this.fontFamily,
+    this.textInputAction,
+    this.inputFormatter,
+    this.minLines,
+    this.maxLines,
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -90,11 +89,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
-
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.labelText != null)
@@ -106,9 +103,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
           ),
-        SizedBox(
-          height: 4.h,
-        ),
+        SizedBox(height: 4.h),
         TextFormField(
           autofocus: widget.autofocus,
           enabled: widget.enabled,
@@ -116,13 +111,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           onChanged: widget.onChanged,
           onTap: () {
             if (widget.isDatePicker) {
-             // _selectDate(context);
+              // _selectDate(context);
             } else {
               widget.onTap?.call();
             }
           },
           readOnly: widget.readOnly!,
-          controller: widget.controller ?? TextEditingController(),
+          controller: widget.controller,
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatter,
           textInputAction: widget.textInputAction,
@@ -131,8 +126,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           minLines: widget.isPassword ? 1 : (widget.minLines ?? 1),
           maxLines: widget.isPassword ? 1 : (widget.maxLines ?? 8),
 
-
-          validator: widget.validator ??
+          validator:
+              widget.validator ??
               (value) {
                 if (widget.isEmail == false) {
                   if (value!.isEmpty) {
@@ -158,41 +153,50 @@ class _CustomTextFieldState extends State<CustomTextField> {
           cursorColor: widget.cursorColor ?? AppColors.appGreyColor,
           obscureText: widget.isPassword ? obscureText : false,
           style: TextStyle(
-              color: widget.hintextColor ?? AppColors.appGreyColor,
-              fontSize: widget.hintextSize ?? 12.h,
-              fontFamily: widget.fontFamily),
+            color: widget.hintextColor ?? AppColors.appGreyColor,
+            fontSize: widget.hintextSize ?? 12.h,
+            fontFamily: widget.fontFamily,
+          ),
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                  horizontal: widget.contentPaddingHorizontal ?? 20.w,
-                  vertical: widget.contentPaddingVertical ?? 12.h),
-              fillColor: widget.filColor ?? Colors.transparent,
-              filled: true,
-              prefixIcon: widget.prefixIcon != null ? Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 16.w),
-                child: widget.prefixIcon,
-              ) : null,
-              suffixIcon: widget.isPassword
-                  ? GestureDetector(
-                      onTap: toggle,
-                      child: _suffixIcon(obscureText
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: widget.contentPaddingHorizontal ?? 20.w,
+              vertical: widget.contentPaddingVertical ?? 12.h,
+            ),
+            fillColor: widget.filColor ?? Colors.transparent,
+            filled: true,
+            prefixIcon: widget.prefixIcon != null
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: widget.prefixIcon,
+                  )
+                : null,
+            suffixIcon: widget.isPassword
+                ? GestureDetector(
+                    onTap: toggle,
+                    child: _suffixIcon(
+                      obscureText
                           ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined),
-                    )
-                  : widget.suffixIcon,
-              prefixIconConstraints:
-                  BoxConstraints(minHeight: 24.w, minWidth: 24.w),
-              hintText: widget.hintText,
-              hintStyle: TextStyle(
-                  color: widget.hintextColor ?? AppColors.appGreyColor,
-                  fontSize: widget.hintextSize ?? 12.h,
-                  fontWeight: FontWeight.w400),
-              focusedBorder: focusedBorder(),
-              enabledBorder: enabledBorder(),
-              errorBorder: errorBorder(),
-              border: focusedBorder(),
-              focusedErrorBorder: errorBorder(),
-              errorStyle:
-                  TextStyle(fontSize: 12.h, fontWeight: FontWeight.w400)),
+                          : Icons.visibility_outlined,
+                    ),
+                  )
+                : widget.suffixIcon,
+            prefixIconConstraints: BoxConstraints(
+              minHeight: 24.w,
+              minWidth: 24.w,
+            ),
+            hintText: widget.hintText,
+            hintStyle: TextStyle(
+              color: widget.hintextColor ?? AppColors.grayShade100,
+              fontSize: widget.hintextSize ?? 12.h,
+              fontWeight: FontWeight.w400,
+            ),
+            focusedBorder: focusedBorder(),
+            enabledBorder: enabledBorder(),
+            errorBorder: errorBorder(),
+            border: focusedBorder(),
+            focusedErrorBorder: errorBorder(),
+            errorStyle: TextStyle(fontSize: 12.h, fontWeight: FontWeight.w400),
+          ),
         ),
         SizedBox(height: 8.h),
       ],
@@ -201,15 +205,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   _suffixIcon(IconData icon) {
     return Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Icon(icon, color: AppColors.appGreyColor));
+      padding: const EdgeInsets.all(12.0),
+      child: Icon(icon, color: AppColors.appGreyColor),
+    );
   }
 
   OutlineInputBorder focusedBorder() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
       borderSide: BorderSide(
-          width: 0.8, color: widget.borderColor ?? AppColors.grayShade100),
+        width: 0.8,
+        color: widget.borderColor ?? AppColors.grayShade100,
+      ),
     );
   }
 
@@ -217,15 +224,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
       borderSide: BorderSide(
-          width: 1, color: widget.borderColor ?? AppColors.grayShade100),
+        width: 1,
+        color: widget.borderColor ?? AppColors.grayShade100,
+      ),
     );
   }
 
   OutlineInputBorder errorBorder() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 8.r),
-      borderSide:
-          BorderSide(color: widget.borderColor ?? Colors.red, width: 1),
+      borderSide: BorderSide(color: widget.borderColor ?? Colors.red, width: 1),
     );
   }
 }

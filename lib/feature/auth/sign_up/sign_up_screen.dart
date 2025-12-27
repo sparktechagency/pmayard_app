@@ -151,7 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: AppColors.termsPrivacyColor,
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.w600,
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () => Get.toNamed(AppRoutes.termsScreen),
@@ -164,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               text: 'Privacy Policy.',
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.w600,
                                 color: AppColors.termsPrivacyColor,
                               ),
                               recognizer: TapGestureRecognizer()

@@ -5,6 +5,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/menu_show_helper.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/profile_confirm/profile_confirm_controller.dart';
+import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
 import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
@@ -85,7 +86,14 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                   ),
 
                   InternationalPhoneNumberInput(
-                    selectorTextStyle: TextStyle(fontSize: 12.sp),
+                    textStyle: TextStyle(
+                      color: AppColors.appGreyColor,
+                      fontSize: 12.sp,
+                    ),
+                    selectorTextStyle: TextStyle(
+                        fontSize: 12.sp,
+                      color: AppColors.appGreyColor
+                    ),
                     selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.DROPDOWN,
                       setSelectorButtonAsPrefixIcon: true,
@@ -93,25 +101,24 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                       trailingSpace: false,
                     ),
                     onInputChanged: (PhoneNumber num) {},
-                    cursorColor: Colors.black,
+                    cursorColor: AppColors.appGreyColor,
                     textFieldController:
                         profileController.numberParentController,
                     initialValue: number,
                     formatInput: true,
                     inputDecoration: InputDecoration(
+
                       hintStyle: TextStyle(
-                        color: AppColors.appGreyColor,
+                        color: AppColors.grayShade100,
                         fontSize: 12.sp,
                         fontFamily: FontFamily.inter,
                       ),
-                      hintText: "enter your phone no.",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.r),
-                        borderSide: BorderSide(
-                          color: AppColors.grayShade100.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
+                      hintText: "Enter your phone no.",
+                      focusedBorder: focusedBorder(),
+                      enabledBorder: enabledBorder(),
+                      errorBorder: errorBorder(),
+                      border: focusedBorder(),
+                      focusedErrorBorder: errorBorder(),
                       contentPadding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
                     selectorButtonOnErrorPadding: 0,
@@ -174,7 +181,11 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                       return controller.isLoadingParent
                           ? CustomLoader()
                           : CustomButton(
-                              label: "Next",
+                              label:
+                                  Get.find<UserController>().user?.role ==
+                                      'parent'
+                                  ? 'Save & Continue'
+                                  : "Next",
                               onPressed: () {
                                 if (!_globalKey.currentState!.validate())
                                   return;
@@ -190,6 +201,27 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
           ],
         ),
       ),
+    );
+  }
+
+  OutlineInputBorder focusedBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(width: 0.8, color: AppColors.grayShade100),
+    );
+  }
+
+  OutlineInputBorder enabledBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(width: 1, color: AppColors.grayShade100),
+    );
+  }
+
+  OutlineInputBorder errorBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.r),
+      borderSide: BorderSide(color: Colors.red, width: 1),
     );
   }
 }

@@ -24,7 +24,6 @@ class NotificationController extends GetxController{
         final data = response.body['data']['result'] ?? [];
         final items = data.map((e) => NotificationModel.fromJson(e)).toList();
         notificationModelData.addAll(items);
-        print('==============================>>>>>>>>>>>>>>>>>>>>> $items');
 
       }else{
        // showToast('Something went wrong');
