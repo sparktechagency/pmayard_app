@@ -97,10 +97,6 @@ class $AssetsIconsGen {
   /// File path: assets/icons/number.svg
   SvgGenImage get number => const SvgGenImage('assets/icons/number.svg');
 
-  /// File path: assets/icons/parent-profile-blue-camera.svg
-  SvgGenImage get parentProfileBlueCamera =>
-      const SvgGenImage('assets/icons/parent-profile-blue-camera.svg');
-
   /// File path: assets/icons/password.svg
   SvgGenImage get password => const SvgGenImage('assets/icons/password.svg');
 
@@ -170,7 +166,6 @@ class $AssetsIconsGen {
     notFound,
     notification,
     number,
-    parentProfileBlueCamera,
     password,
     person,
     policy,

@@ -111,5 +111,4 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_globalKey.currentState!.validate()) return;
     _authController.login();
   }
-
 }

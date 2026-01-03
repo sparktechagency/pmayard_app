@@ -45,6 +45,9 @@ class _CompleteProfileProfessionalState
                       radius: 60.r,
                     ),
 
+                    if(profileController.profileProfessional == null)
+                    CustomText(text: 'Please select your profile'),
+
                     Positioned(
                       bottom: 12.h,
                       right: 6.w,
@@ -181,7 +184,7 @@ class _CompleteProfileProfessionalState
                   CustomButton(
                     label: "Next",
                     onPressed: () {
-                      if (!_globalKey.currentState!.validate()) return;
+                      if (!_globalKey.currentState!.validate() && profileController.profileProfessional != null) return;
                       Get.toNamed(AppRoutes.scheduleScreen);
                     },
                   ),

@@ -6,6 +6,7 @@ import 'package:pmayard_app/controllers/assigned/assigned_controller.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/controller/custom_bottom_nav_bar_controller.dart';
+import 'package:pmayard_app/services/get_fcm_token.dart';
 import '../../app/helpers/prefs_helper.dart';
 import '../../app/utils/app_constants.dart';
 import '../../routes/app_routes.dart';
@@ -167,12 +168,9 @@ class AuthController extends GetxController {
 
   /// <======================= login ===========================>
   bool isLoadingLogin = false;
-  final TextEditingController loginEmailController = TextEditingController(
-    text: kDebugMode ? 'ahmedmihad962@gmail.com' : '',
-  );
-  final TextEditingController loginPasswordController = TextEditingController(
-    text: kDebugMode ? '123456' : '',
-  );
+
+  final TextEditingController loginEmailController = TextEditingController();
+  final TextEditingController loginPasswordController = TextEditingController();
 
   void cleanFieldLogin() {
     loginEmailController.clear();
@@ -180,12 +178,14 @@ class AuthController extends GetxController {
   }
 
   Future<void> login() async {
+    String? fcmToken = await FirebaseNotificationService.getFCMToken();
     isLoadingLogin = true;
     update();
 
     final requestBody = {
       'email': loginEmailController.text.trim(),
       'password': loginPasswordController.text,
+      'fcmToken' : fcmToken
     };
 
     try {

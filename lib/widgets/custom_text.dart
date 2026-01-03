@@ -4,24 +4,27 @@ import 'package:pmayard_app/custom_assets/fonts.gen.dart';
 
 import '../app/utils/app_colors.dart';
 
-
 class CustomText extends StatelessWidget {
-  const CustomText(
-      {super.key,
-      this.maxline,
-      this.textOverflow,
-      this.fontName,
-      this.textAlign = TextAlign.center,
-      this.left = 0,
-      this.right = 0,
-      this.top = 0,
-      this.bottom = 0,
-      this.fontSize,
-      this.textHeight,
-      this.fontWeight = FontWeight.w400,
-      this.color,
-      required this.text,
-      this.onTap, this.decorationColor, this.decoration});
+  const CustomText({
+    super.key,
+    this.maxline,
+    this.textOverflow,
+    this.fontName,
+    this.textAlign = TextAlign.center,
+    this.left = 0,
+    this.right = 0,
+    this.top = 0,
+    this.bottom = 0,
+    this.fontSize,
+    this.textHeight,
+    this.fontWeight = FontWeight.w400,
+    this.color,
+    required this.text,
+    this.onTap,
+    this.decorationColor,
+    this.decoration,
+    double? fontsize,
+  });
 
   final double left;
   final TextOverflow? textOverflow;
@@ -45,8 +48,12 @@ class CustomText extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding:
-            EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+        padding: EdgeInsets.only(
+          left: left,
+          right: right,
+          top: top,
+          bottom: bottom,
+        ),
         child: Text(
           textAlign: textAlign,
           text,
@@ -55,10 +62,11 @@ class CustomText extends StatelessWidget {
           style: TextStyle(
             decoration: decoration,
             decorationColor: decorationColor,
-              fontSize: fontSize ?? 14.sp,
-              fontFamily: fontName ?? FontFamily.inter,
-              fontWeight: fontWeight,
-              color: color ?? AppColors.darkColor),
+            fontSize: fontSize ?? 14.sp,
+            fontFamily: fontName ?? FontFamily.inter,
+            fontWeight: fontWeight,
+            color: color ?? AppColors.darkColor,
+          ),
         ),
       ),
     );

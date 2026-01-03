@@ -51,6 +51,42 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   bool get allSlotsSelected => selectedSlots.length == 7;
 
+  // Build availability data for backend
+  List<Map<String, dynamic>> buildAvailability() {
+    List<Map<String, dynamic>> availability = [];
+
+    selectedSlots.forEach((date, slot) {
+      String dayName = DateFormat.EEEE().format(date); // "Monday", "Tuesday", etc.
+
+      // Parse the time slot (e.g., "10:00 - 10:30")
+      List<String> times = slot.split(' - ');
+      String startTime = times[0];
+      String endTime = times[1];
+
+      // Check if this day already exists in availability
+      int existingIndex = availability.indexWhere((item) => item['day'] == dayName);
+
+      Map<String, dynamic> timeSlotData = {
+        "startTime": startTime,
+        "endTime": endTime,
+        "status": "available"
+      };
+
+      if (existingIndex != -1) {
+        // Day exists, add time slot to existing day
+        availability[existingIndex]['timeSlots'].add(timeSlotData);
+      } else {
+        // Day doesn't exist, create new entry
+        availability.add({
+          "day": dayName,
+          "timeSlots": [timeSlotData]
+        });
+      }
+    });
+
+    return availability;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,20 +111,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
           ),
 
-          CustomText(
-            bottom: 16.h,
-            text: TimeFormatHelper.formatMonthOrDate(DateTime.now()),
-            fontSize: 12.sp,
-          ),
-
           // Week Calendar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: weekDays.map((date) {
               bool isSelected =
                   date.day == selectedDate.day &&
-                  date.month == selectedDate.month &&
-                  date.year == selectedDate.year;
+                      date.month == selectedDate.month &&
+                      date.year == selectedDate.year;
 
               bool hasSlotSelected = selectedSlots.containsKey(date);
 
@@ -101,45 +131,40 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 },
                 child: Column(
                   children: [
-                    CustomText(
-                      text: DateFormat.E().format(date),
-                      bottom: 6.h,
-                      color: isSelected ? null : AppColors.appGreyColor,
-                    ),
-                    CircleAvatar(
-                      radius: 18.r,
-                      backgroundColor: isSelected
+                    CustomContainer(
+                      paddingHorizontal: 10.w,
+                      paddingVertical: 6.h,
+                      radiusAll: 8.r,
+                      color: isSelected
                           ? AppColors.primaryColor
+                          : hasSlotSelected
+                          ? AppColors.secondaryColor.withOpacity(0.2)
                           : Colors.transparent,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CustomText(
-                            text: "${date.day}",
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.appGreyColor,
-                          ),
-                          Positioned(
-                            bottom: 2.h,
-                            child: hasSlotSelected
-                                ? CustomContainer(
-                                    height: 5.h,
-                                    width: 5.w,
-                                    color: AppColors.secondaryColor,
-                                    shape: BoxShape.circle,
-                                  )
-                                : SizedBox.shrink(),
-                          ),
-                        ],
+                      child: CustomText(
+                        text: DateFormat.E().format(date), // Shows "Mon", "Tue", "Wed"
+                        color: isSelected
+                            ? Colors.white
+                            : hasSlotSelected
+                            ? AppColors.secondaryColor
+                            : AppColors.appGreyColor,
+                        fontSize: 12.sp,
                       ),
                     ),
+                    if (hasSlotSelected)
+                      Container(
+                        margin: EdgeInsets.only(top: 4.h),
+                        height: 5.h,
+                        width: 5.w,
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                   ],
                 ),
               );
             }).toList(),
           ),
-
           CustomText(
             text: "Set Time Slot",
             fontSize: 18.sp,
@@ -202,9 +227,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               return controller.isLoading
                   ? CustomLoader()
                   : CustomButton(
-                      onPressed: controller.profileConfirm,
-                      label: "Confirm",
-                    );
+                onPressed: () {
+                  // Build availability and pass to controller
+                  List<Map<String, dynamic>> availability = buildAvailability();
+                  controller.availability = availability;
+                  controller.profileConfirm();
+                },
+                label: "Confirm",
+              );
             },
           ),
         ],

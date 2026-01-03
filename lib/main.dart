@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pmayard_app/no_internate_screen.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/get_fcm_token.dart';
 import 'package:pmayard_app/services/internet/connectivity.dart';
@@ -44,7 +45,7 @@ class PmayardApp extends StatelessWidget {
         themeMode: ThemeMode.light,
         initialBinding: DependencyInjection(),
         routes: AppRoutes.routes,
-        // builder: (context, child) => Scaffold(body: NoInternetWrapper(child: child!)),
+        builder: (context, child) => Scaffold(body: NoInterNetScreen(child: child!)),
       ),
     );
   }

@@ -3,9 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pmayard_app/app/helpers/prefs_helper.dart';
 import 'package:pmayard_app/app/utils/app_constants.dart';
-// import 'package:maignanka_app/app/helpers/prefs_helper.dart';
-// import 'package:maignanka_app/app/utils/app_constants.dart';
-
 class FirebaseNotificationService {
   static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
