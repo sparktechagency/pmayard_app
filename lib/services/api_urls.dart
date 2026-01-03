@@ -1,9 +1,9 @@
 class ApiUrls {
 
   // Base, Image, Socket
-  static const String baseUrl = "https://mihad4000.merinasib.shop/api/v1";
-  static const String imageBaseUrl = "https://mihad4000.merinasib.shop/";
-  static const String socketUrl = "https://mihad4000.merinasib.shop";
+  static const String baseUrl = "https://mihadhome4000.merinasib.shop/api/v1";
+  static const String imageBaseUrl = "https://mihadhome4000.merinasib.shop/";
+  static const String socketUrl = "https://mihadhome4000.merinasib.shop";
 
   // Authentication
   static const String userData = '/users/me';
