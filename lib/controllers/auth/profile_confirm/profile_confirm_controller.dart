@@ -25,7 +25,12 @@ class ProfileConfirmController extends GetxController {
   final List<String> subjectList = [];
   List<Map<String, dynamic>> availability = [];
   DateTime? selectedDate;
+  RxBool isPhoneValid = false.obs;
 
+  void updatePhoneValidation(bool isValid) {
+    isPhoneValid.value = isValid;
+    update();
+  }
   void onTapProfileProfessionalSelected (BuildContext context){
     PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
       profileProfessional = File(image.path);
