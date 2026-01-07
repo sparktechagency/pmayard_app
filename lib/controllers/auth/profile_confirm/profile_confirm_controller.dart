@@ -10,8 +10,6 @@ import 'package:pmayard_app/widgets/custom_tost_message.dart';
 import '../../../services/api_urls.dart';
 
 class ProfileConfirmController extends GetxController {
-
-
   /// ========================>>> profile confirm for Professional =======================>>>
 
   bool isLoading = false;
@@ -31,13 +29,16 @@ class ProfileConfirmController extends GetxController {
     isPhoneValid.value = isValid;
     update();
   }
-  void onTapProfileProfessionalSelected (BuildContext context){
-    PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
-      profileProfessional = File(image.path);
-      update();
-    });
-  }
 
+  void onTapProfileProfessionalSelected(BuildContext context) {
+    PhotoPickerHelper.showPicker(
+      context: context,
+      onImagePicked: (image) {
+        profileProfessional = File(image.path);
+        update();
+      },
+    );
+  }
 
   Future<void> profileConfirm() async {
     isLoading = true;
@@ -78,10 +79,9 @@ class ProfileConfirmController extends GetxController {
     update();
   }
 
-
   /// ========================>>> profile confirm for Parent =======================>>>
 
-bool isLoadingParent = false;
+  bool isLoadingParent = false;
 
   final TextEditingController nameParentController = TextEditingController();
   final TextEditingController numberParentController = TextEditingController();
@@ -89,20 +89,28 @@ bool isLoadingParent = false;
   final TextEditingController childGradeController = TextEditingController();
   final TextEditingController relationshipController = TextEditingController();
 
-
   File? profileParent;
 
- void onTapImageParentSelected (BuildContext context){
-  PhotoPickerHelper.showPicker(context: context, onImagePicked: (image){
-    profileParent = File(image.path);
+  void onTapImageParentSelected(BuildContext context) {
+    PhotoPickerHelper.showPicker(
+      context: context,
+      onImagePicked: (image) {
+        profileParent = File(image.path);
+        update();
+      },
+    );
+  }
+
+  RxBool isPhoneValidParent = false.obs;
+
+  void updatePhoneValidationParent(bool isValid) {
+    isPhoneValidParent.value = isValid;
     update();
-  });
-}
+  }
 
   Future<void> profileConfirmParent() async {
     isLoadingParent = true;
     update();
-
 
     List<MultipartBody>? multipartBody;
     if (profileParent != null) {
@@ -119,11 +127,10 @@ bool isLoadingParent = false;
       }),
     };
 
-
     final response = await ApiClient.postMultipartData(
       ApiUrls.parentCreate,
       requestBody,
-      multipartBody: multipartBody
+      multipartBody: multipartBody,
     );
     final responseBody = response.body;
 
@@ -138,6 +145,4 @@ bool isLoadingParent = false;
     isLoadingParent = false;
     update();
   }
-
-
 }

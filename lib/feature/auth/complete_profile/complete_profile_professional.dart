@@ -35,6 +35,7 @@ class _CompleteProfileProfessionalState
   @override
   void initState() {
     super.initState();
+
     // Listen to focus changes
     phoneFocusNode.addListener(() {
       if (!phoneFocusNode.hasFocus) {
@@ -42,6 +43,21 @@ class _CompleteProfileProfessionalState
           hasPhoneBlurred = true;
         });
       }
+    });
+    profileController.nameController.addListener(() {
+      profileController.update();
+    });
+
+    profileController.bioController.addListener(() {
+      profileController.update();
+    });
+
+    profileController.qualificationController.addListener(() {
+      profileController.update();
+    });
+
+    profileController.subjectsController.addListener(() {
+      profileController.update();
     });
   }
 
@@ -168,7 +184,9 @@ class _CompleteProfileProfessionalState
                             fontFamily: FontFamily.inter,
                           ),
                           hintText: "Enter your phone no.",
-                          focusedBorder: controller.isPhoneValid.value == true ? focusedBorder() :  errorBorder(),
+                          focusedBorder: controller.isPhoneValid.value == true
+                              ? focusedBorder()
+                              : errorBorder(),
                           enabledBorder:
                               hasPhoneBlurred && !controller.isPhoneValid.value
                               ? errorBorder()
@@ -265,17 +283,15 @@ class _CompleteProfileProfessionalState
                           onPressed: () {
                             // Check profile image first
                             if (controller.profileProfessional == null) {
-                              setState(() {
-                                isProfileEmpty = true;
-                              });
+                              isProfileEmpty = true;
+                              controller.update();
                               return;
                             }
 
                             // Check phone validation
                             if (!controller.isPhoneValid.value) {
-                              setState(() {
-                                hasPhoneBlurred = true;
-                              });
+                              hasPhoneBlurred = true;
+                              controller.update();
                               return;
                             }
 

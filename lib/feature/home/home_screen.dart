@@ -105,15 +105,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
 
                   /// ===================>>>> Assigned Section <<<================== ///
-                  CustomText(
-                    top: 24.h,
-                    bottom: 24.h,
-                    left: 16.w,
-                    right: 16.w,
-                    text:
-                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'}',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
+                  GetBuilder<UserController>(
+                      builder: (controller){
+                        return CustomText(
+                          top: 24.h,
+                          bottom: 24.h,
+                          left: 16.w,
+                          right: 16.w,
+                          text:
+                          'Assigned ${controller.user?.role == 'professional' ? 'Parents' : 'Professionals'}',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.sp,
+                        );
+                      }
                   ),
 
                   // Assign Related Work

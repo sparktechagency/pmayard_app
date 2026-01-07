@@ -128,14 +128,11 @@ class _SessionScreenState extends State<SessionScreen> {
                           String imageUrl = '';
 
                           if (userRole == 'professional') {
-                            // Check if parent is a Map or just an ID string
                             final parentData = session['parent'];
                             if (parentData is Map<String, dynamic>) {
                               name = parentData['name']?.toString() ?? 'Unknown';
                               imageUrl = parentData['profileImage']?.toString() ?? '';
                             } else if (parentData is String) {
-                              // If it's just an ID, you might need to fetch parent details separately
-                              // Or handle it differently based on your data structure
                               name = 'Parent';
                               imageUrl = '';
                             }
