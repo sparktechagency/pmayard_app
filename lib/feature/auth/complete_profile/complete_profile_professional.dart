@@ -21,7 +21,7 @@ class CompleteProfileProfessional extends StatefulWidget {
 class _CompleteProfileProfessionalState
     extends State<CompleteProfileProfessional> {
   final ProfileConfirmController profileController =
-      Get.find<ProfileConfirmController>();
+  Get.find<ProfileConfirmController>();
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -155,7 +155,10 @@ class _CompleteProfileProfessionalState
                     builder: (controller) {
                       return InternationalPhoneNumberInput(
                         focusNode: phoneFocusNode,
-                        onInputChanged: (PhoneNumber num) {},
+                        onInputChanged: (PhoneNumber num) {
+                          // FIX: Store complete phone number with country code
+                          controller.updatePhoneNumber(num);
+                        },
                         onInputValidated: (bool isValid) {
                           controller.updatePhoneValidation(isValid);
                         },
@@ -188,7 +191,7 @@ class _CompleteProfileProfessionalState
                               ? focusedBorder()
                               : errorBorder(),
                           enabledBorder:
-                              hasPhoneBlurred && !controller.isPhoneValid.value
+                          hasPhoneBlurred && !controller.isPhoneValid.value
                               ? errorBorder()
                               : enabledBorder(),
                           errorBorder: errorBorder(),
@@ -233,12 +236,12 @@ class _CompleteProfileProfessionalState
                           .where((s) => s.isNotEmpty)
                           .toList();
                       final selectedList =
-                          await MenuShowHelper.showMultiSelectMenu(
-                            context: context,
-                            details: details,
-                            options: MenuShowHelper.subjects,
-                            preSelectedItems: currentSubjects,
-                          );
+                      await MenuShowHelper.showMultiSelectMenu(
+                        context: context,
+                        details: details,
+                        options: MenuShowHelper.subjects,
+                        preSelectedItems: currentSubjects,
+                      );
 
                       if (selectedList != null) {
                         profileController.subjectsController.text = selectedList
@@ -270,11 +273,11 @@ class _CompleteProfileProfessionalState
                     builder: (controller) {
                       bool canSubmit =
                           controller.profileProfessional != null &&
-                          controller.isPhoneValid.value &&
-                          controller.nameController.text.isNotEmpty &&
-                          controller.bioController.text.isNotEmpty &&
-                          controller.qualificationController.text.isNotEmpty &&
-                          controller.subjectsController.text.isNotEmpty;
+                              controller.isPhoneValid.value &&
+                              controller.nameController.text.isNotEmpty &&
+                              controller.bioController.text.isNotEmpty &&
+                              controller.qualificationController.text.isNotEmpty &&
+                              controller.subjectsController.text.isNotEmpty;
 
                       return Opacity(
                         opacity: canSubmit ? 1.0 : 0.6,

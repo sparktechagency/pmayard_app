@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
@@ -25,8 +26,41 @@ class ProfileConfirmController extends GetxController {
   DateTime? selectedDate;
   RxBool isPhoneValid = false.obs;
 
+  PhoneNumber? phoneNumber;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // FIX 2: Add listeners to trigger instant button updates
+    nameParentController.addListener(() => update());
+    childNameController.addListener(() => update());
+    childGradeController.addListener(() => update());
+    relationshipController.addListener(() => update());
+  }
+
+  @override
+  void onClose() {
+    // Dispose controllers
+    nameController.dispose();
+    numberController.dispose();
+    bioController.dispose();
+    qualificationController.dispose();
+    subjectsController.dispose();
+    nameParentController.dispose();
+    numberParentController.dispose();
+    childNameController.dispose();
+    childGradeController.dispose();
+    relationshipController.dispose();
+    super.onClose();
+  }
+
   void updatePhoneValidation(bool isValid) {
     isPhoneValid.value = isValid;
+    update();
+  }
+
+  void updatePhoneNumber(PhoneNumber num) {
+    phoneNumber = num;
     update();
   }
 
@@ -49,11 +83,13 @@ class ProfileConfirmController extends GetxController {
       multipartBody = [MultipartBody('image', profileProfessional ?? File(''))];
     }
 
+    String fullPhoneNumber = phoneNumber?.phoneNumber ?? numberController.text.trim();
+
     final requestBody = {
       'data': jsonEncode({
         "name": nameController.text.trim(),
         "bio": bioController.text.trim(),
-        "phoneNumber": numberController.text.trim(),
+        "phoneNumber": fullPhoneNumber,
         "qualification": qualificationController.text.trim(),
         "subjects": subjectList.toList(),
         "availability": availability,
@@ -91,6 +127,9 @@ class ProfileConfirmController extends GetxController {
 
   File? profileParent;
 
+
+  PhoneNumber? phoneNumberParent;
+
   void onTapImageParentSelected(BuildContext context) {
     PhotoPickerHelper.showPicker(
       context: context,
@@ -99,6 +138,12 @@ class ProfileConfirmController extends GetxController {
         update();
       },
     );
+  }
+
+
+  void updatePhoneNumberParent(PhoneNumber phoneNumber) {
+    phoneNumberParent = phoneNumber;
+    update();
   }
 
   RxBool isPhoneValidParent = false.obs;
@@ -117,10 +162,13 @@ class ProfileConfirmController extends GetxController {
       multipartBody = [MultipartBody('image', profileParent ?? File(''))];
     }
 
+
+    String fullPhoneNumber = phoneNumberParent?.phoneNumber ?? numberParentController.text.trim();
+
     final requestBody = {
       'data': jsonEncode({
         "name": nameParentController.text.trim(),
-        "phoneNumber": numberParentController.text.trim(),
+        "phoneNumber": fullPhoneNumber,
         "childs_name": childNameController.text.trim(),
         "childs_grade": childGradeController.text.trim(),
         "relationship_with_child": relationshipController.text.trim(),

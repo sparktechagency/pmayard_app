@@ -149,7 +149,9 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                           leadingPadding: 0,
                           trailingSpace: false,
                         ),
-                        onInputChanged: (PhoneNumber num) {},
+                        onInputChanged: (PhoneNumber num) {
+                          controller.updatePhoneNumberParent(num);
+                        },
                         onInputValidated: (bool isValid) {
                           controller.updatePhoneValidationParent(isValid);
                         },
@@ -165,7 +167,9 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                             fontFamily: FontFamily.inter,
                           ),
                           hintText: "Enter your phone no.",
-                          focusedBorder: controller.isPhoneValidParent == true ? focusedBorder() : errorBorder(),
+                          focusedBorder: controller.isPhoneValidParent == true
+                              ? focusedBorder()
+                              : errorBorder(),
                           enabledBorder: hasPhoneBlurred &&
                               !controller.isPhoneValidParent.value
                               ? errorBorder()
@@ -263,7 +267,8 @@ class _CompleteProfileParentState extends State<CompleteProfileParent> {
                       return Opacity(
                         opacity: canSubmit ? 1.0 : 0.6,
                         child: CustomButton(
-                          label: Get.find<UserController>().user?.role == 'parent'
+                          label: Get.find<UserController>().user?.role ==
+                              'parent'
                               ? 'Save & Continue'
                               : "Next",
                           onPressed: () {

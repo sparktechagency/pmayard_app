@@ -83,7 +83,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                   if( user!.role == 'professional')...[
                     CustomTextField(
-                      labelText: 'Bio',
+                      labelText: 'Bio maruf',
                       controller: _userController.bioController,
                       hintText: '',
                     )

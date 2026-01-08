@@ -250,6 +250,7 @@ class AuthController extends GetxController {
           Get.offAllNamed(AppRoutes.completeProfileParent);
         }
       } else if (isActive && roleId != null && roleId.isNotEmpty) {
+        await Get.find<UserController>().userData();
         Get.offAllNamed(AppRoutes.customBottomNavBar);
         Get.find<CustomBottomNavBarController>().onChange(0);
       }
