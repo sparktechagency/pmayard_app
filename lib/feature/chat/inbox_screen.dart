@@ -44,6 +44,7 @@ class _InboxScreenState extends State<InboxScreen> {
       paddingSide: 6.w,
       appBar: CustomAppBar(
         backAction: () {
+          _chatController.selectedValueType.value = 'individual';
           _socketChatController.removeListeners(chatID);
           Get.back();
         },
