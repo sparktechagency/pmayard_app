@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
@@ -79,103 +80,111 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// =================== Assign New Professional Button are here ======================
-                  if(role == 'parent')
-                      Padding(
-                          padding: EdgeInsets.only(
-                            top: 30.h,
-                            left: 25.h,
-                            right: 25.h,
-                            bottom: 10.h,
-                          ),
-                          child: CustomButton(
-                            width: double.maxFinite,
-                            height: 52.h,
-                            fontSize: 10.sp,
-                            backgroundColor: AppColors.primaryColor,
-                            onPressed: () => assignProfessionalPopupModal(context),
-                            title: Text(
-                              'Assign New Professional',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0XFF0D0D0D),
-                              ),
-                            ),
+                  if (role == 'parent')
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: 30.h,
+                        left: 25.h,
+                        right: 25.h,
+                        bottom: 10.h,
+                      ),
+                      child: CustomButton(
+                        width: double.maxFinite,
+                        height: 52.h,
+                        fontSize: 10.sp,
+                        backgroundColor: AppColors.primaryColor,
+                        onPressed: () => assignProfessionalPopupModal(context),
+                        title: Text(
+                          'Assign New Professional',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0XFF0D0D0D),
                           ),
                         ),
+                      ),
+                    ),
 
                   /// ===================>>>> Assigned Section <<<================== ///
-                  CustomText(
-                    top: 24.h,
-                    bottom: 24.h,
-                    left: 16.w,
-                    right: 16.w,
-                    text:
-                        'Assigned ${userController.user?.roleId?.name == 'professionals' ? 'Parents' : 'Professionals'}',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
+                  GetBuilder<UserController>(
+                    builder: (controller) {
+                      return CustomText(
+                        top: 24.h,
+                        bottom: 24.h,
+                        left: 16.w,
+                        right: 16.w,
+                        text:
+                            'Assigned ${controller.user?.role == 'professional' ? 'Parents' : 'Professionals'}',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
+                      );
+                    },
                   ),
 
                   // Assign Related Work
-                  GetBuilder<AssignedController>(builder: (controller) {
-                    if (_assignedController.isLoadingAssigned) {
-                      return SizedBox(
-                        height: 180.h,
-                        child: ShimmerHelper.assignedCardsShimmer(),
-                      );
-                    }
+                  GetBuilder<AssignedController>(
+                    builder: (controller) {
+                      if (_assignedController.isLoadingAssigned) {
+                        return SizedBox(
+                          height: 180.h,
+                          child: ShimmerHelper.assignedCardsShimmer(),
+                        );
+                      }
 
-                    final assignedList = _assignedController.assignModel;
+                      final assignedList = _assignedController.assignModel;
 
-                    if (assignedList.isEmpty) {
-                      return SizedBox(
-                        height: 180.h,
-                        child: Center(
-                          child: CustomText(
-                            text:
-                                'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
-                            fontSize: 14.sp,
+                      if (assignedList.isEmpty) {
+                        return SizedBox(
+                          height: 180.h,
+                          child: Center(
+                            child: CustomText(
+                              text:
+                                  'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
+                              fontSize: 14.sp,
+                            ),
                           ),
+                        );
+                      }
+                      return SizedBox(
+                        height: 198.h,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          itemCount: assignedList.length,
+                          itemBuilder: (context, index) {
+                            final item = assignedList[index];
+                            final professionalItem =
+                                assignedList[index].professional;
+                            final parentItem = assignedList[index].parent;
+
+                            String name = '';
+                            String imageUrl = '';
+                            String userRole = '';
+
+                            if (role == 'professional') {
+                              name = parentItem?.name ?? '';
+                              imageUrl = parentItem?.profileImage ?? '';
+                              userRole = parentItem?.user?.role ?? '';
+                            } else if (role == 'parent') {
+                              name = professionalItem?.name ?? '';
+                              imageUrl = professionalItem?.profileImage ?? '';
+                              userRole = professionalItem?.user?.role ?? '';
+                            }
+
+                            return AssignedCardWidget(
+                              index: index,
+                              name: name,
+                              role: userRole,
+                              imageUrl: imageUrl,
+                              sub: role == 'parent' ? item.subject : null,
+                              sessionID: item.sId ?? '',
+                              chatID: item.conversationId ?? '',
+                            );
+                          },
                         ),
                       );
-                    }
-                    return SizedBox(
-                      height: 198.h,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        itemCount: assignedList.length,
-                        itemBuilder: (context, index) {
-                          final item = assignedList[index];
-                          final professionalItem = assignedList[index].professional;
-                          final parentItem = assignedList[index].parent;
-
-                          String name = '';
-                          String imageUrl = '';
-                          String userRole = '';
-
-                          if (role == 'professional') {
-                            name = parentItem?.name ?? '';
-                            imageUrl = parentItem?.profileImage ?? '';
-                            userRole = parentItem?.user?.role ?? '';
-                          } else if (role == 'parent') {
-                            name = professionalItem?.name ?? '';
-                            imageUrl = professionalItem?.profileImage ?? '';
-                            userRole = professionalItem?.user?.role ?? '';
-                          }
-
-                          return AssignedCardWidget(
-                            index: index,
-                            name: name,
-                            role: userRole,
-                            imageUrl: imageUrl,
-                            sub: role == 'parent' ? item.subject : null,
-                            sessionID: item.sId ?? '', chatID: item.conversationId ?? '',
-                          );
-                        },
-                      ),
-                    );
-                  }),
+                    },
+                  ),
 
                   /// ===================>>>> Upcoming Sessions Section <<<================== ///
                   CustomText(
@@ -237,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // Format the subtitle
                         final subtitle = hasDateTime
-                            ? '${TimeFormatHelper.formatDate(DateTime.parse(date))} at $day'
+                            ? '${TimeFormatHelper.formatDate(DateTime.parse(date))} at ${DateFormat('h:mm a').format(DateTime.parse(date.toString()))}'
                             : 'Waiting';
 
                         return Padding(

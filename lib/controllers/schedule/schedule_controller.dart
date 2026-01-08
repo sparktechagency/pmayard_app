@@ -15,9 +15,6 @@ class ScheduleController extends GetxController {
   Future<void> editSchedule(String roleID,Map<String,dynamic> body) async {
     isLoading = true;
     update();
-
-
-
     final response = await ApiClient.patch(
       ApiUrls.editSchedule(roleID),
       body,
@@ -29,7 +26,6 @@ class ScheduleController extends GetxController {
     } else {
       showToast(responseBody['message']);
     }
-
     isLoading = false;
     update();
   }

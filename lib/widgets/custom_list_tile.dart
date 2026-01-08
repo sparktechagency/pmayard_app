@@ -4,7 +4,7 @@ import '../app/utils/app_colors.dart';
 import '../widgets/widgets.dart';
 
 class CustomListTile extends StatelessWidget {
-  const CustomListTile({super.key, this.title, this.subTitle, this.image, this.imageRadius = 18, this.trailing,  this.selectedColor, this.onTap, this.activeColor, this.statusColor, this.borderColor, this.borderRadius, this.titleFontSize, this.subtitleFontSize, this.titleColor, this.contentPaddingHorizontal, this.contentPaddingVertical,});
+  const CustomListTile({super.key, this.title, this.subTitle, this.image, this.imageRadius = 18, this.trailing,  this.selectedColor, this.onTap, this.activeColor, this.statusColor, this.borderColor, this.borderRadius, this.titleFontSize, this.subtitleFontSize, this.titleColor, this.contentPaddingHorizontal, this.contentPaddingVertical, this.subject,});
 
   final String? title,subTitle,image;
   final double imageRadius;
@@ -20,7 +20,7 @@ class CustomListTile extends StatelessWidget {
   final double? subtitleFontSize;
   final double? contentPaddingHorizontal;
   final double? contentPaddingVertical;
-
+  final String? subject;
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -29,7 +29,8 @@ class CustomListTile extends StatelessWidget {
       shape: RoundedRectangleBorder(
         side: BorderSide(color: borderColor ?? Colors.transparent),
         borderRadius: BorderRadius.circular(borderRadius ?? 0),
-      ),      onTap: onTap,
+      ),
+      onTap: onTap,
       //selectedColor: selectedColor,
      // selected: selectedColor != null ? true : false,
       contentPadding: EdgeInsets.symmetric(horizontal: contentPaddingHorizontal ?? 6.h ,vertical: contentPaddingVertical ?? 0),
@@ -50,20 +51,33 @@ class CustomListTile extends StatelessWidget {
                   child: Icon(Icons.circle,color: activeColor,size: 12.r,))),
         ],
       ),
-      title: CustomText(
-        color: titleColor,
-        textAlign: TextAlign.left,
-        text: title ?? '',
-        fontSize: titleFontSize,
-        fontWeight:  FontWeight.w500,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomText(
+            color: titleColor,
+            textAlign: TextAlign.left,
+            text: title ?? '',
+            fontSize: titleFontSize,
+            fontWeight:  FontWeight.w600,
+          ),
+          if( subject != null )
+          CustomText(
+            color: titleColor,
+            textAlign: TextAlign.left,
+            text: subject ?? '',
+            fontSize:subtitleFontSize ?? 12.sp,
+            fontWeight:  FontWeight.w500,
+          )
+        ],
       ),
       subtitle: subTitle != null ? CustomText(
         left: 4,
         textAlign: TextAlign.left,
         text: subTitle ??'',
         fontWeight:  FontWeight.w500,
-        fontSize: subtitleFontSize ?? 10.sp,
-        color: statusColor ?? AppColors.appGreyColor,
+        fontSize: subtitleFontSize ?? 12.sp,
+        color: statusColor ?? titleColor,
       ) : null,
       trailing: trailing != null
           ? ConstrainedBox(

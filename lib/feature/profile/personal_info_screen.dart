@@ -25,13 +25,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
   final _userController = Get.find<UserController>();
+  late final user = _userController.user;
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       appBar: CustomAppBar(
         borderColor: AppColors.secondaryColor,
-        title: 'Personal Info',
+        title: user!.role == 'parent' ? 'Edit Information' : 'Personal Info',
       ),
 
       body: SingleChildScrollView(
@@ -80,49 +81,63 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     controller: _userController.nameController,
                     hintText: '',
                   ),
-                  CustomTextField(
-                    labelText: 'Bio',
-                    controller: _userController.bioController,
-                    hintText: '',
-                  ),
+                  if( user!.role == 'professional')...[
+                    CustomTextField(
+                      labelText: 'Bio maruf',
+                      controller: _userController.bioController,
+                      hintText: '',
+                    )
+                  ],
+
+                  if( user!.role == 'parent')...[
+                    CustomTextField(
+                      labelText: 'Phone',
+                      controller: _userController.phoneController,
+                      hintText: '',
+                    )
+                  ],
+
 
                   // Multiple Subject Related work are here
-                  GestureDetector(
-                    onTapDown: (TapDownDetails details) async {
-                      final currentSubjects = _userController
-                          .subjectsController
-                          .text
-                          .split(", ")
-                          .where((s) => s.isNotEmpty)
-                          .toList();
+                  if( user!.role == 'professional')...[
+                    GestureDetector(
+                      onTapDown: (TapDownDetails details) async {
+                        final currentSubjects = _userController
+                            .subjectsController
+                            .text
+                            .split(", ")
+                            .where((s) => s.isNotEmpty)
+                            .toList();
 
-                      final selectedList =
-                          await MenuShowHelper.showMultiSelectMenu(
-                            context: context,
-                            details: details,
-                            options: MenuShowHelper.subjects,
-                            preSelectedItems: currentSubjects,
-                          );
+                        final selectedList =
+                        await MenuShowHelper.showMultiSelectMenu(
+                          context: context,
+                          details: details,
+                          options: MenuShowHelper.subjects,
+                          preSelectedItems: currentSubjects,
+                        );
 
-                      if (selectedList != null) {
-                        _userController.subjectsController.text = selectedList
-                            .join(", ");
+                        if (selectedList != null) {
+                          _userController.subjectsController.text = selectedList
+                              .join(", ");
 
-                        _userController.subjectList
-                          ..clear()
-                          ..addAll(selectedList);
-                      }
-                    },
-                    child: AbsorbPointer(
-                      child: CustomTextField(
-                        suffixIcon: Icon(Icons.keyboard_arrow_down),
-                        readOnly: true,
-                        labelText: 'Subjects You Teach',
-                        controller: _userController.subjectsController,
-                        hintText: "Subjects You Teach",
+                          _userController.subjectList
+                            ..clear()
+                            ..addAll(selectedList);
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: CustomTextField(
+                          suffixIcon: Icon(Icons.keyboard_arrow_down),
+                          readOnly: true,
+                          labelText: 'Subjects You Teach',
+                          controller: _userController.subjectsController,
+                          hintText: "Subjects You Teach",
+                        ),
                       ),
                     ),
-                  ),
+                  ],
+
 
                   SizedBox(height: 60.h),
                   GetBuilder<UserController>(

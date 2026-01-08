@@ -13,6 +13,9 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   flutter_screenutil: ^5.9.3
+  firebase_core: ^4.3.0
+  flutter_local_notifications:
+  firebase_messaging: ^16.1.0
   fluttertoast: ^8.2.12
   flutter_svg: ^2.2.0
   get: ^4.7.2

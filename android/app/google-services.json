@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "335756895720",
+    "project_id": "lms-project-c392d",
+    "storage_bucket": "lms-project-c392d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335756895720:android:bd377b8b57bf63ded8305d",
+        "android_client_info": {
+          "package_name": "com.example.pmayard_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlq1ezb48kNAqNb9SR7sNsCtIMtjv14Oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

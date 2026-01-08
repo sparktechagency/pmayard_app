@@ -19,12 +19,7 @@ import 'package:record/record.dart';
 class ChatController extends GetxController {
   final TextEditingController searchController = TextEditingController();
 
-  // bool isLoadingChat = false;
   RxBool isLoadingChat = false.obs;
-
-  // List<ChatModelData> chatData = [];
-  // List<GroupChatMessageModel> groupChatData = [];
-  //
 
   var chatData = <ChatModelData>[].obs;
   var groupChatData = <GroupModelData>[].obs;
@@ -51,7 +46,6 @@ class ChatController extends GetxController {
     {'label': 'Announcement', 'value': 'group'},
   ];
 
-  // String selectedValueType = 'individual';
 
   RxString selectedValueType = 'individual'.obs;
 
@@ -70,7 +64,6 @@ class ChatController extends GetxController {
     chatData.clear();
     groupChatData.clear();
     isLoadingChat.value = true;
-    // isLoadingChat = true;
     update();
 
     final response = await ApiClient.getData(ApiUrls.conversations(type));
@@ -80,17 +73,14 @@ class ChatController extends GetxController {
       if (selectedValueType.value == 'individual') {
         final chats = data.map((item) => ChatModelData.fromJson(item)).toList();
         chatData.addAll(chats);
-        filteredChatData.value = List.from(chatData); // keep filtered copy
-        print('=============> Message $chats');
+        filteredChatData.value = List.from(chatData);
       } else if (selectedValueType.value == 'group') {
         final chats = data
             .map((item) => GroupModelData.fromJson(item))
             .toList();
         groupChatData.addAll(chats);
-        print('=====================> group $chats');
       }
     }
-    // isLoadingChat = false;
     isLoadingChat.value = false;
     update();
   }
@@ -207,27 +197,25 @@ class ChatController extends GetxController {
         }
       }
 
-      // AudioRecorder initialize
+
       audioRecorder = AudioRecorder();
 
-      // Permission check
       if (await audioRecorder!.hasPermission() == false) {
         showToast('Recording permission denied');
         return;
       }
 
-      // টেম্পোরারি ডিরেক্টরি
       final directory = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-      // M4A format (AAC codec) - Best quality, Backend MP3 এ convert করবে
+
       audioPath = '${directory.path}/recording_$timestamp.m4a';
 
       final config = RecordConfig(
-        encoder: AudioEncoder.aacLc, // AAC-LC codec (Best quality)
-        bitRate: 128000, // 128 kbps (Good quality)
-        sampleRate: 44100, // Standard audio quality
-        numChannels: 1, // Mono recording
+        encoder: AudioEncoder.aacLc,
+        bitRate: 128000,
+        sampleRate: 44100,
+        numChannels: 1,
       );
 
       await audioRecorder!.start(config, path: audioPath!);
@@ -260,18 +248,18 @@ class ChatController extends GetxController {
     }
   }
 
-  // রেকর্ডিং বন্ধ করা এবং পাঠানো
+
   Future<void> stopRecording(String conversationID) async {
     try {
       if (!isRecording || audioRecorder == null) return;
 
-      // Stop recording
+
       final path = await audioRecorder!.stop();
 
       isRecording = false;
       showGlowEffect = false;
 
-      // টাইমার বন্ধ
+
       recordingTimer?.cancel();
       recordingTimer = null;
       glowTimer?.cancel();
@@ -279,16 +267,12 @@ class ChatController extends GetxController {
 
       update();
 
-      print('Recording stopped: $path');
 
-      // অডিও ফাইল পাঠানো
       if (path != null && File(path).existsSync()) {
         final audioFile = File(path);
         final fileSize = await audioFile.length();
 
-        print('Audio file size: ${fileSize / 1024} KB');
 
-        // File size validation (1KB - 10MB)
         if (fileSize > 1000 && fileSize < 10 * 1024 * 1024) {
           await sendAudioFile(conversationID, audioFile);
         } else {
@@ -298,14 +282,10 @@ class ChatController extends GetxController {
         }
       }
 
-      // Dispose recorder
       audioRecorder?.dispose();
       audioRecorder = null;
 
     } catch (e) {
-      print('Stop recording error: $e');
-
-
       isRecording = false;
       showGlowEffect = false;
       recordingTimer?.cancel();
@@ -341,9 +321,7 @@ class ChatController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        print('Audio sent successfully');
 
-        // Temp file delete
         if (await audioFile.exists()) {
           await audioFile.delete();
         }
@@ -377,7 +355,6 @@ class ChatController extends GetxController {
       glowTimer = null;
       recordingDuration = Duration.zero;
 
-      // টেম্প ফাইল ডিলিট
       if (audioPath != null && File(audioPath!).existsSync()) {
         await File(audioPath!).delete();
       }
@@ -392,7 +369,7 @@ class ChatController extends GetxController {
 
   Future<int> _getAndroidVersion() async {
     if (Platform.isAndroid) {
-      return 33; // Default to latest
+      return 33;
     }
     return 0;
   }
@@ -405,6 +382,5 @@ class ChatController extends GetxController {
     audioPlayer.dispose();
     super.onClose();
   }
-
 
 }

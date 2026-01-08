@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class AppColors {
   static const Color bgColor = Color(0xffF3EFEF);
   static const Color primaryColor = Color(0xffEFBF04);
@@ -15,10 +17,10 @@ class AppColors {
   static const Color darkColor = Color(0xff000000);
   static const Color successColor = Color(0xff00A213);
   static const Color errorColor = Color(0xffF40000);
-
+  static const Color termsPrivacyColor = Color(0xff0D0D0D);
+  static Color numberInputColor = Colors.grey.shade100;
   static List<Color> splashLinearColors = [
     Color(0xffFFFFFF),
-    Color(0xffEAC75C).withOpacity(0.20),
-
+    Color.fromARGB(51, 234, 199, 92),
   ];
 }

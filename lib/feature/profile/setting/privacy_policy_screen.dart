@@ -4,10 +4,8 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/controllers/legal/legal_controller.dart';
 import 'package:pmayard_app/widgets/custom_loader.dart';
-
 import '../../../app/utils/app_colors.dart';
 import '../../../widgets/custom_app_bar.dart';
-
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 

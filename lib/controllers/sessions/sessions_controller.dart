@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/models/assigned/assign_view_profile_model.dart';
 import 'package:pmayard_app/models/session/my_session_parent_model.dart';
 import 'package:pmayard_app/models/session/my_session_professional_model.dart';
-import 'package:pmayard_app/models/session/session_professional_model_data.dart';
-import 'package:pmayard_app/models/session/session_response_data.dart';
 import 'package:pmayard_app/models/session/upcomming_session_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
@@ -38,11 +35,9 @@ class SessionsController extends GetxController {
           upComingSessionParentList.add(session);
           upComingSessionProfessionalList.add(session);
         }
-
-        print('======>>>>>>> Sessions: ${upComingSession.length}');
       }
     } catch (e) {
-      print('❌ [SESSIONS] Error: $e');
+      // print('❌ [SESSIONS] Error: $e');
     } finally {
       isLoadingSession.value = false;
       update();
@@ -85,7 +80,7 @@ class SessionsController extends GetxController {
       print('Error fetching my sessions: $e');
     } finally {
       isLoadingMySection.value = false;
-      update(); // Notify listeners after data is loaded
+      update();
     }
   }
 

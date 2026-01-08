@@ -10,7 +10,7 @@
 
 
     <application
-        android:label="pmayard_app"
+        android:label=" The official LMS App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

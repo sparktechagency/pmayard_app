@@ -28,7 +28,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
   @override
   void initState() {
-      controller.fetchMySection('');
+    controller.fetchMySection('');
 
     super.initState();
   }
@@ -59,13 +59,10 @@ class _SessionScreenState extends State<SessionScreen> {
                     focusedDay: _focusedDay,
                     selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                     onDaySelected: (selectedDay, focusedDay) {
-
                       String stringDate = selectedDay.toIso8601String().split(
                         'T',
                       )[0];
                       controller.onHandle(stringDate);
-
-                      print('=============> String Dtate $stringDate');
 
                       setState(() {
                         _selectedDay = selectedDay;
@@ -74,7 +71,6 @@ class _SessionScreenState extends State<SessionScreen> {
                         // String formattedDate = "${selectedDay.year}-${selectedDay.month.toString().padLeft(2, '0')}-${selectedDay.day.toString().padLeft(2, '0')}";
                         // controller.fetchMySection(formattedDate);
                       });
-
                     },
                     headerStyle: HeaderStyle(
                       titleTextStyle: TextStyle(fontSize: 12.sp),
@@ -121,21 +117,22 @@ class _SessionScreenState extends State<SessionScreen> {
                       child: ListView.builder(
                         itemCount: sessionController.mySessionData.length,
                         itemBuilder: (context, index) {
-                          final session = sessionController.mySessionData[index];
+                          final session =
+                              sessionController.mySessionData[index];
 
                           // Extract data based on user role
                           String name = '';
                           String imageUrl = '';
+                          String subject = session['subject'];
 
                           if (userRole == 'professional') {
-                            // Check if parent is a Map or just an ID string
                             final parentData = session['parent'];
                             if (parentData is Map<String, dynamic>) {
-                              name = parentData['name']?.toString() ?? 'Unknown';
-                              imageUrl = parentData['profileImage']?.toString() ?? '';
+                              name =
+                                  parentData['name']?.toString() ?? 'Unknown';
+                              imageUrl =
+                                  parentData['profileImage']?.toString() ?? '';
                             } else if (parentData is String) {
-                              // If it's just an ID, you might need to fetch parent details separately
-                              // Or handle it differently based on your data structure
                               name = 'Parent';
                               imageUrl = '';
                             }
@@ -143,8 +140,13 @@ class _SessionScreenState extends State<SessionScreen> {
                             // For parent role
                             final professionalData = session['professional'];
                             if (professionalData is Map<String, dynamic>) {
-                              name = professionalData['name']?.toString() ?? 'Unknown';
-                              imageUrl = professionalData['profileImage']?.toString() ?? '';
+                              name =
+                                  professionalData['name']?.toString() ??
+                                  'Unknown';
+                              imageUrl =
+                                  professionalData['profileImage']
+                                      ?.toString() ??
+                                  '';
                             } else if (professionalData is String) {
                               name = 'Professional';
                               imageUrl = '';
@@ -153,8 +155,10 @@ class _SessionScreenState extends State<SessionScreen> {
 
                           final String day = session['day']?.toString() ?? '';
                           final String date = session['date']?.toString() ?? '';
-                          final String status = session['status']?.toString() ?? 'Pending';
-                          final String sessionId = session['_id']?.toString() ?? '';
+                          final String status =
+                              session['status']?.toString() ?? 'Pending';
+                          final String sessionId =
+                              session['_id']?.toString() ?? '';
 
                           return Padding(
                             padding: EdgeInsets.symmetric(
@@ -168,13 +172,18 @@ class _SessionScreenState extends State<SessionScreen> {
                                 if (date.isNotEmpty) {
                                   try {
                                     final parsedDate = DateTime.parse(date);
-                                    timeString = TimeFormatHelper.timeWithAMPM(parsedDate) ?? 'Waiting';
+                                    timeString =
+                                        TimeFormatHelper.timeWithAMPM(
+                                          parsedDate,
+                                        ) ??
+                                        'Waiting';
                                   } catch (e) {
                                     debugPrint('Error parsing date: $e');
                                   }
                                 }
 
                                 return CustomListTile(
+                                  subject: subject,
                                   contentPaddingVertical: 6.h,
                                   borderRadius: 8.r,
                                   borderColor: AppColors.borderColor,
@@ -185,50 +194,67 @@ class _SessionScreenState extends State<SessionScreen> {
                                   titleFontSize: 16.sp,
                                   trailing: status == 'Confirmed'
                                       ? Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => CustomDialog(
-                                                title: "You sure you want to cancel the session?",
-                                                confirmButtonColor: const Color(0xffF40000),
-                                                confirmButtonText: 'Yes',
-                                                onCancel: () => Get.back(),
-                                                onConfirm: () => controller.completeSessionDBHandler(
-                                                  sessionId,
-                                                  'Canceled',
-                                                ),
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => CustomDialog(
+                                                      title:
+                                                          "You sure you want to cancel the session?",
+                                                      confirmButtonColor:
+                                                          const Color(
+                                                            0xffF40000,
+                                                          ),
+                                                      confirmButtonText: 'Yes',
+                                                      onCancel: () =>
+                                                          Get.back(),
+                                                      onConfirm: () {
+                                                        controller
+                                                            .completeSessionDBHandler(
+                                                              sessionId,
+                                                              'Canceled',
+                                                            );
+                                                        Get.back();
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                child: Assets.icons.cleanIcon
+                                                    .svg(),
                                               ),
-                                            );
-                                          },
-                                          child: Assets.icons.cleanIcon.svg(),
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Flexible(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => CustomDialog(
-                                                title: "Do you want to mark this session as completed?",
-                                                confirmButtonText: 'Yes',
-                                                onCancel: () => Get.back(),
-                                                onConfirm: () => controller.completeSessionDBHandler(
-                                                  sessionId,
-                                                  'Completed',
-                                                ),
+                                            ),
+                                            SizedBox(width: 12.w),
+                                            Flexible(
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => CustomDialog(
+                                                      title:
+                                                          "Do you want to mark this session as completed?",
+                                                      confirmButtonText: 'Yes',
+                                                      onCancel: () =>
+                                                          Get.back(),
+                                                      onConfirm: () {
+                                                        controller
+                                                            .completeSessionDBHandler(
+                                                              sessionId,
+                                                              'Completed',
+                                                            );
+                                                        Get.back();
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                child: Assets.icons.success
+                                                    .svg(),
                                               ),
-                                            );
-                                          },
-                                          child: Assets.icons.success.svg(),
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                            ),
+                                          ],
+                                        )
                                       : _buildSessionStatus(status),
                                 );
                               },
@@ -236,7 +262,8 @@ class _SessionScreenState extends State<SessionScreen> {
                           );
                         },
                       ),
-                    );                  },
+                    );
+                  },
                 ),
               ],
             );

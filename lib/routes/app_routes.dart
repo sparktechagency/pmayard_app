@@ -10,6 +10,7 @@ import 'package:pmayard_app/feature/auth/reset_pass/reset_password_screen.dart';
 import 'package:pmayard_app/feature/auth/sign_up/sign_up_screen.dart';
 import 'package:pmayard_app/feature/bottom_nav_bar/customtom_bottom_nav.dart';
 import 'package:pmayard_app/feature/chat/inbox_screen.dart';
+import 'package:pmayard_app/feature/five_zero_screen.dart';
 import 'package:pmayard_app/feature/home/notification/notification_screen.dart';
 import 'package:pmayard_app/feature/not_found_screen.dart';
 import 'package:pmayard_app/feature/onboarding_screen.dart';
@@ -81,6 +82,7 @@ abstract class AppRoutes {
   static const String calenderScreen = '/CalenderScreen';
   static const String setScheduleScreen = '/SetScheduleScreen';
   static const String notFoundScreen = 'NotFoundScreen';
+  static const String fiveZeroScreen = 'five_zero_screen';
 
 
   ///  ============= > routes < ==============
@@ -111,5 +113,6 @@ abstract class AppRoutes {
     calenderScreen : (context) => CalenderScreen(),
     setScheduleScreen: (context) => SetScheduleScreen(),
     notFoundScreen: (context) => NotFoundScreen(),
+    fiveZeroScreen: (context) => FiveZeroScreen(),
   };
 }

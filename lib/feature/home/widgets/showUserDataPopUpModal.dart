@@ -1,6 +1,7 @@
 // Show User Data via Model
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
 
 void showUserData(BuildContext context, dynamic sessionData, String userRole) {
@@ -72,7 +73,10 @@ void showUserData(BuildContext context, dynamic sessionData, String userRole) {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.h),
-            if (day != null && date != null) Text('$date at $day'),
+            if (day != null && date != null)
+              Text(
+                '${DateFormat('M/d/yyyy').format(DateTime.parse(date.toString()))} at ${DateFormat('h:mm a').format(DateTime.parse(date.toString()))}',
+              ),
             SizedBox(height: 16.h),
             // Close button
             CustomButton(

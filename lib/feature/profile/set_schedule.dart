@@ -7,7 +7,6 @@ import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_button.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
-import 'package:pmayard_app/widgets/custom_loader.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 import 'package:pmayard_app/widgets/custom_text.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
@@ -29,17 +28,17 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
   final String role = Get.find<UserController>().user?.role ?? '';
 
-
-
   @override
   void initState() {
-    controller.initScheduleScreen();
     super.initState();
+    // Call after frame is built to avoid setState during build error
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.initScheduleScreen();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return CustomScaffold(
       appBar: CustomAppBar(
         title: role == 'parent' ? 'Availability' : 'Set Schedule',
@@ -58,13 +57,15 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
             ),
           ),
           SizedBox(height: 13.h),
+
+          // Calendar
           GetBuilder<AssignedController>(
               builder: (ctrl) {
                 return CustomContainer(
                   color: Colors.white,
                   child: TableCalendar(
-                    firstDay: DateTime.utc(2020, 1, 1),
-                    lastDay: DateTime.utc(2030, 12, 31),
+                    firstDay: DateTime.now(),
+                    lastDay: DateTime.now().add(Duration(days: 365)),
                     focusedDay: ctrl.focusedDay,
                     selectedDayPredicate: (day) => isSameDay(ctrl.selectedDay, day),
                     headerStyle: HeaderStyle(
@@ -101,8 +102,9 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
               }
           ),
           SizedBox(height: 20.h),
+
           CustomText(
-            text: "Set Time Slot",
+            text: "See Time Slot",
             fontSize: 18.sp,
             fontWeight: FontWeight.w600,
           ),
@@ -114,17 +116,18 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
               CustomContainer(
                 radiusAll: 4.r,
                 paddingAll: 7.r,
-                  color: AppColors.secondaryColor),
+                color: AppColors.secondaryColor,
+              ),
               CustomText(
                 left: 4.w,
                 text: "Available",
               ),
-
-              SizedBox(width: 24.w,),
+              SizedBox(width: 24.w),
               CustomContainer(
-                  radiusAll: 4.r,
-                  paddingAll: 7.r,
-                  color: AppColors.bookedColor),
+                radiusAll: 4.r,
+                paddingAll: 7.r,
+                color: AppColors.bookedColor,
+              ),
               CustomText(
                 left: 4.w,
                 text: "Booked",
@@ -136,13 +139,13 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
           Expanded(
             child: GetBuilder<AssignedController>(
                 builder: (ctrl) {
-                  final dayName = ctrl.getCurrentDayName();
-                  final timeSlots = ctrl.getTimeSlotsForDay(dayName, profileData);
+                  // Get all slots for all days
+                  final allSlots = ctrl.getAllTimeSlotsForAllDays(profileData);
 
-                  if (timeSlots.isEmpty) {
+                  if (allSlots.isEmpty) {
                     return Center(
                       child: Text(
-                        'No slots available for $dayName',
+                        'No slots available',
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: Colors.grey,
@@ -150,18 +153,23 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       ),
                     );
                   }
+
                   return GridView.builder(
-                    itemCount: timeSlots.length,
+                    itemCount: allSlots.length,
                     padding: EdgeInsets.zero,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 109.w / 38.h,
+                      crossAxisCount: 3,
+                      childAspectRatio: 100.w / 45.h,
                       crossAxisSpacing: 8.w,
                       mainAxisSpacing: 8.h,
                     ),
                     itemBuilder: (context, index) {
-                      final slot = timeSlots[index];
-                      final isBooked = slot.status == 'booked';
+                      final slotData = allSlots[index];
+                      final slot = slotData['slot'] as TimeSlots;
+                      final dayName = slotData['day'] as String;
+
+                      // Check if slot is booked (case-insensitive)
+                      final isBooked = slot.status?.toLowerCase() == 'booked';
                       final isSelected = ctrl.selectedTimeSlot?.sId == slot.sId;
 
                       Color backgroundColor;
@@ -169,14 +177,17 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                       Color textColor;
 
                       if (isBooked) {
+                        // Booked slot styling
                         backgroundColor = AppColors.bookedColor;
                         borderColor = Colors.transparent;
                         textColor = Colors.white;
                       } else if (isSelected) {
-                        backgroundColor = AppColors.primaryColor.withOpacity(0.1);
+                        // Selected slot styling
+                        backgroundColor = AppColors.primaryColor;
                         borderColor = AppColors.primaryColor;
-                        textColor = AppColors.primaryColor;
+                        textColor = Colors.white;
                       } else {
+                        // Available slot styling
                         backgroundColor = AppColors.secondaryColor;
                         borderColor = Colors.transparent;
                         textColor = Colors.white;
@@ -184,8 +195,9 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
                       return GestureDetector(
                         onTap: () {
+                          // Only allow selection if not parent and not booked
                           if (role != 'parent' && !isBooked) {
-                            ctrl.onTimeSlotSelected(slot);
+                            ctrl.onTimeSlotSelected(slot, dayName);
                           }
                         },
                         child: AnimatedContainer(
@@ -195,35 +207,29 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                             borderRadius: BorderRadius.circular(8.r),
                             border: Border.all(
                               color: borderColor,
-                              width: (isSelected || isBooked) ? 2 : 1,
+                              width: 1,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.02),
-                                offset: Offset(0, 0),
-                                blurRadius: 3,
-                              ),
-                            ],
                           ),
                           alignment: Alignment.center,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CustomText(
-                                text: '${slot.startTime ?? ''} - ${slot.endTime ?? ''}',
+                                text: '${slot.startTime ?? ''}-${slot.endTime ?? ''}',
                                 fontSize: 12.sp,
                                 color: textColor,
-                                fontWeight: (isSelected || isBooked) ? FontWeight.w600 : FontWeight.w400,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                               ),
-                              // if (isBooked) ...[
-                              //   SizedBox(height: 2.h),
-                              //   CustomText(
-                              //     text: 'Booked',
-                              //     fontSize: 9.sp,
-                              //     color: Colors.orange.shade700,
-                              //     fontWeight: FontWeight.w500,
-                              //   ),
-                              // ],
+                              // Show "Booked" label if slot is booked
+                              if (isBooked) ...[
+                                SizedBox(height: 2.h),
+                                CustomText(
+                                  text: 'Booked',
+                                  fontSize: 9.sp,
+                                  color: textColor.withOpacity(0.9),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -242,8 +248,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
           child: GetBuilder<AssignedController>(
             builder: (ctrl) {
-              return
-                  CustomButton(
+              return CustomButton(
                 onPressed: () {
                   if (ctrl.selectedTimeSlot != null) {
                     ctrl.confirmSchedule(
@@ -255,7 +260,7 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                     );
                   }
                 },
-                label: ctrl.isConfirmScheduleLoading ? "Please wait.." :'Confirm',
+                label: ctrl.isConfirmScheduleLoading ? "Please wait.." : 'Confirm',
               );
             },
           ),

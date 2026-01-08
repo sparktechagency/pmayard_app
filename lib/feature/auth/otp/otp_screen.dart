@@ -19,6 +19,16 @@ class _OtpScreenState extends State<OtpScreen> {
   final String role = Get.arguments['role'];
   final AuthController _authController = Get.find<AuthController>();
 
+  // Time related work
+  final controller = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.timerStart();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -42,19 +52,39 @@ class _OtpScreenState extends State<OtpScreen> {
                 textEditingController: _authController.otpController,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text('Didn\'t get the Code ?'),
-                  TextButton(
-                    onPressed: _onTapResendButtonHandler,
-                    child: Text('Resend'),
+
+            GetBuilder<AuthController>(
+              builder: (cnt) {
+                return Visibility(
+                  visible: cnt.flag,
+                  replacement: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text('Didn\'t get the Code ?'),
+                        TextButton(
+                          onPressed: (){
+                            _onTapResendButtonHandler();
+                            controller.timerStart();
+                          },
+                          child: Text('Resend'),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.all(10.r),
+                          child: Text(cnt.formatTime(cnt.myTime),textAlign: TextAlign.end,)
+                      )
+                    ],
+                  ),
+                );
+              },
             ),
 
             SizedBox(height: 36.h),
@@ -83,7 +113,8 @@ class _OtpScreenState extends State<OtpScreen> {
     if (isSuccess) {
       if (role == 'sign_up') {
         Get.offAllNamed(AppRoutes.loginScreen);
-      } else {
+      }
+      else {
         Get.toNamed(AppRoutes.resetPasswordScreen);
       }
     }

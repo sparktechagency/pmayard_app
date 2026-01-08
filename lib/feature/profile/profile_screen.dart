@@ -66,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
                 // List of Options
                 ProfileListTile(
                   icon: Assets.icons.profile.svg(),
-                  title: "Personal Info",
+                  title: Get.find<UserController>().user?.role == 'parent'  ? 'General Information' : "Personal Info",
                   onTap: () {
                     Get.toNamed(AppRoutes.personalInfoScreen);
                   },

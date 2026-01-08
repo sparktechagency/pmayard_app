@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../controllers/auth/auth_controller.dart';
 import '../../../widgets/widgets.dart';
@@ -106,9 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onSingUp() {
+    print(ApiUrls.baseUrl);
     if (!_globalKey.currentState!.validate()) return;
-    //Get.toNamed(AppRoutes.completeProfileFirstPage);
     _authController.login();
   }
-
 }

@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:pmayard_app/models/notification/notification_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
-import 'package:pmayard_app/widgets/custom_tost_message.dart';
 
 class NotificationController extends GetxController{
   @override
@@ -25,7 +24,6 @@ class NotificationController extends GetxController{
         final data = response.body['data']['result'] ?? [];
         final items = data.map((e) => NotificationModel.fromJson(e)).toList();
         notificationModelData.addAll(items);
-        print('==============================>>>>>>>>>>>>>>>>>>>>> $items');
 
       }else{
        // showToast('Something went wrong');

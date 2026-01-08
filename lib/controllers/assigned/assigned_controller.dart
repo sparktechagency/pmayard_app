@@ -35,7 +35,6 @@ class AssignedController extends GetxController {
     update();
   }
 
-
   bool isLoadingVerify = false;
 
   final TextEditingController professionalAssignController =
@@ -45,7 +44,7 @@ class AssignedController extends GetxController {
     isLoadingVerify = true;
     update();
 
-    final response = await ApiClient.postData(ApiUrls.verifySession,{
+    final response = await ApiClient.postData(ApiUrls.verifySession, {
       "code": professionalAssignController.text.trim()
     });
 
@@ -95,42 +94,46 @@ class AssignedController extends GetxController {
     update();
   }
 
-// Add these properties to your AssignedController class
-  String selectedDate = '';
-  TimeSlots? selectedTimeSlot;
-  bool isConfirmScheduleLoading = false;
+  // Schedule Screen Properties
   DateTime selectedDay = DateTime.now();
   DateTime focusedDay = DateTime.now();
+  String selectedDate = '';
+  String? selectedDayName;
+  TimeSlots? selectedTimeSlot;
+  bool isConfirmScheduleLoading = false;
 
-// Initialize schedule screen
+  // Initialize schedule screen
   void initScheduleScreen() {
     selectedDay = DateTime.now();
     focusedDay = DateTime.now();
     selectedDate = DateFormat('yyyy-MM-dd').format(selectedDay);
+    selectedDayName = null;
     selectedTimeSlot = null;
+    update();
   }
 
-// Handle day selection
+  // Handle day selection
   void onDaySelected(DateTime selected, DateTime focused) {
     selectedDay = selected;
     focusedDay = focused;
     selectedDate = DateFormat('yyyy-MM-dd').format(selected);
-    selectedTimeSlot = null;
+    selectedTimeSlot = null; // Clear selection when day changes
     update();
   }
 
-// Handle time slot selection
-  void onTimeSlotSelected(TimeSlots slot) {
+  // Handle time slot selection
+  void onTimeSlotSelected(TimeSlots slot, String dayName) {
     selectedTimeSlot = slot;
+    selectedDayName = dayName;
     update();
   }
 
-// Get current day name
+  // Get current day name
   String getCurrentDayName() {
     return DateFormat('EEEE').format(selectedDay);
   }
 
-// Get time slots for specific day
+  // Get time slots for specific day
   List<TimeSlots> getTimeSlotsForDay(String dayName, AssignViewProfileModel? profileData) {
     final availability = profileData?.professional?.availability ?? [];
     final dayAvailability = availability.firstWhere(
@@ -140,7 +143,53 @@ class AssignedController extends GetxController {
     return dayAvailability.timeSlots ?? [];
   }
 
-// Updated confirmSchedule method
+  // Get all time slots for all days (without day filter)
+  List<Map<String, dynamic>> getAllTimeSlotsForAllDays(AssignViewProfileModel? profileData) {
+    if (profileData?.professional?.availability == null) return [];
+
+    List<Map<String, dynamic>> allSlots = [];
+
+    for (var dayAvailability in profileData!.professional!.availability!) {
+      if (dayAvailability.timeSlots != null && dayAvailability.timeSlots!.isNotEmpty) {
+        for (var slot in dayAvailability.timeSlots!) {
+          allSlots.add({
+            'day': dayAvailability.day ?? 'Unknown',
+            'slot': slot,
+          });
+        }
+      }
+    }
+
+    return allSlots;
+  }
+
+  // Get all availability with days organized
+  List<Map<String, dynamic>> getAllAvailabilityWithDays(AssignViewProfileModel? profileData) {
+    if (profileData?.professional?.availability == null) return [];
+
+    List<Map<String, dynamic>> allAvailability = [];
+
+    // Order days properly (Monday to Sunday)
+    final dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    for (String dayName in dayOrder) {
+      final dayAvailability = profileData!.professional!.availability!.firstWhere(
+            (a) => a.day?.toLowerCase() == dayName.toLowerCase(),
+        orElse: () => Availability(),
+      );
+
+      if (dayAvailability.timeSlots != null && dayAvailability.timeSlots!.isNotEmpty) {
+        allAvailability.add({
+          'day': dayName,
+          'slots': dayAvailability.timeSlots!,
+        });
+      }
+    }
+
+    return allAvailability;
+  }
+
+  // Confirm schedule method
   Future<void> confirmSchedule({String sessionID = ''}) async {
     if (selectedTimeSlot == null) {
       showToast('Please select a time slot');

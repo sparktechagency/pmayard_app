@@ -87,7 +87,7 @@ class ResourceController extends GetxController {
         metarialsModel.addAll(data);
       }
     }else{
-      showToast('Someting went wrong');
+      showToast('Some ting went wrong');
     }
   }
 }

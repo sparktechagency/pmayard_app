@@ -9,7 +9,7 @@ class SocketChatController extends GetxController {
   SocketServices socketService = SocketServices();
   final ChatController _chatController = Get.find<ChatController>();
 
-  // Add ScrollController
+  /// Add ScrollController
   final ScrollController scrollController = ScrollController();
 
   /// ===============> Listen for new messages via socket.
@@ -30,7 +30,7 @@ class SocketChatController extends GetxController {
     });
   }
 
-  // Function to scroll to bottom
+  /// Function to scroll to bottom
   void scrollToBottom() {
     if (scrollController.hasClients) {
       Future.delayed(const Duration(milliseconds: 100), () {

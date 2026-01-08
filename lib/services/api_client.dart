@@ -6,6 +6,7 @@ import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:pmayard_app/routes/app_routes.dart';
 
 import '../app/helpers/prefs_helper.dart';
 import '../app/utils/app_constants.dart';
@@ -76,6 +77,7 @@ class ApiClient extends GetxService {
       return const Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
+
 
   //==========================================> Patch Data <======================================
   static Future<Response> patch(String uri, dynamic body,
@@ -395,6 +397,13 @@ class ApiClient extends GetxService {
       statusCode: response.statusCode,
       statusText: response.reasonPhrase,
     );
+
+    if (response0.statusCode != null &&
+        response0.statusCode! >= 500 &&
+        response0.statusCode! < 600) {
+        Get.offAndToNamed(AppRoutes.fiveZeroScreen);
+    }
+
     if (response0.statusCode != 200 &&
         response0.body != null &&
         response0.body is! String) {

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
 import 'package:pmayard_app/models/user_model/user_data_model.dart';
-import 'package:pmayard_app/routes/app_routes.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
@@ -31,10 +30,6 @@ class UserController extends GetxController {
     isUserDataComing = false;
     update();
   }
-
-
-
-
   /// ========================>>> profile edit controller =======================>>>
   late TextEditingController emailController = TextEditingController(
     text: user?.email ?? '',
@@ -46,12 +41,14 @@ class UserController extends GetxController {
     text: user!.roleId?.bio ?? '',
   );
 
+  late TextEditingController phoneController = TextEditingController(
+    text: user!.roleId?.phoneNumber ?? '',
+  );
   File? selectedImage;
 
   late TextEditingController subjectsController = TextEditingController(
-      text: user?.roleId?.subjects?.map((s) => s).join(', ') ?? ''
+    text: user?.roleId?.subjects?.map((s) => s).join(', ') ?? '',
   );
-
 
   final List<String> subjectList = [];
   List<Map<String, dynamic>> availability = [];
@@ -69,7 +66,8 @@ class UserController extends GetxController {
 
   /// Update Profile related work are here
   bool isProfileUpdateLoader = false;
-  Future<void>profileUpdate() async {
+
+  Future<void> profileUpdate() async {
     isProfileUpdateLoader = true;
     update();
 
@@ -80,19 +78,22 @@ class UserController extends GetxController {
 
     final requestBody = {
       'data': jsonEncode({
-        // 'email' : emailController.text.trim(),
-        'name' : nameController.text.trim(),
-        'bio' : bioController.text.trim(),
-        'subjects' : subjectList,
+        'name': nameController.text.trim(),
+        'bio': bioController.text.trim(),
+        'subjects': subjectList,
       }),
     };
 
-    final response = await ApiClient.patchMultipartData(ApiUrls.editProfile,requestBody,multipartBody: multipartBody);
+    final response = await ApiClient.patchMultipartData(
+      ApiUrls.editProfile,
+      requestBody,
+      multipartBody: multipartBody,
+    );
 
-    if( response.statusCode == 200 ){
+    if (response.statusCode == 200) {
       Get.back();
       Get.find<UserController>().userData();
-    }else{
+    } else {
       showToast('Something Went Wrong');
     }
 
