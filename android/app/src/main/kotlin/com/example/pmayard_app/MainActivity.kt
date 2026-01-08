@@ -1,4 +1,4 @@
-package com.example.pmayard_app
+package com.fondationlms.theofficiallmsapp
 
 import io.flutter.embedding.android.FlutterActivity
 

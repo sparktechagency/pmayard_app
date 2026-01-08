@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pmayard_app"
+    namespace = "com.fondationlms.theofficiallmsapp"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.pmayard_app"
+        applicationId = "com.fondationlms.theofficiallmsapp"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

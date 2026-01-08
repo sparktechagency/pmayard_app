@@ -68,10 +68,10 @@ flutter_gen:
 flutter_icons:
   android: true
   ios: true
-  remove_alpha_ios: true
-  image_path: "assets/images/app_logo.png"
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_foreground: "assets/icon/icon.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/app_logo.png"
+
 
 flutter:
   uses-material-design: true
