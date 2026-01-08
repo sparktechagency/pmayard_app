@@ -384,7 +384,15 @@ class AuthController extends GetxController {
   /// <======================= Log out related work are here  ===========================>
   void logOut() async {
     await PrefsHelper.remove(AppConstants.bearerToken);
+
     await PrefsHelper.remove(AppConstants.role);
+    await PrefsHelper.remove(AppConstants.bio);
+    await PrefsHelper.remove(AppConstants.image);
+    await PrefsHelper.remove(AppConstants.userId);
+    await PrefsHelper.remove(AppConstants.email);
+    await PrefsHelper.remove(AppConstants.name);
+    await PrefsHelper.remove(AppConstants.phone);
+
     Get.find<UserController>().user = null;
     Get.find<AssignedController>().assignModel.clear();
     Get.find<SessionsController>().upComingSessionProfessionalList.clear();
