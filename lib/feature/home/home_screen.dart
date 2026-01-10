@@ -13,6 +13,7 @@ import 'package:pmayard_app/feature/home/widgets/assign_professional_popup_modal
 import 'package:pmayard_app/feature/home/widgets/assigned_card_widget.dart';
 import 'package:pmayard_app/feature/home/widgets/showUserDataPopUpModal.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (controller) {
             final userData = controller.user;
             return CustomListTile(
-              image: userData?.roleId?.profileImage,
+              image: '${ApiUrls.imageBaseUrl}${userData?.roleId?.profileImage!.url}',
               imageRadius: 24.r,
               contentPaddingHorizontal: 16.w,
               titleColor: Colors.white,
@@ -231,13 +232,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (role == 'professional') {
                           final session = sessionData[index];
                           name = session.parent?.name ?? 'Unknown';
-                          imageUrl = session.parent?.profileImage ?? '';
+                          imageUrl = '${ApiUrls.imageBaseUrl}${session.parent?.profileImage}';
                           day = session.day ?? '';
                           date = session.date ?? '';
                         } else {
                           final session = sessionData[index];
                           name = session.professional?.name ?? 'Unknown';
-                          imageUrl = session.professional?.profileImage ?? '';
+                          imageUrl = '${ApiUrls.imageBaseUrl}${session.professional?.profileImage}';
                           day = session.day ?? '';
                           date = session.date ?? '';
                         }

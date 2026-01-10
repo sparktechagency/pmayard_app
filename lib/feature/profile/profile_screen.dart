@@ -5,6 +5,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/auth/auth_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/feature/profile/widgets/profile_list_tile.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 
 import '../../custom_assets/assets.gen.dart';
 import '../../routes/app_routes.dart';
@@ -35,7 +36,7 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       userDataRole?.profileImage != null
                           ? CustomNetworkImage(
-                              imageUrl: userDataRole?.profileImage ?? '',
+                              imageUrl: '${ApiUrls.imageBaseUrl}${userDataRole?.profileImage!.url}' ?? '',
                               height: 80.h,
                               width: 80.w,
                               borderRadius: 44.r,
