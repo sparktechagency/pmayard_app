@@ -215,7 +215,7 @@ class AssignedController extends GetxController {
 
       if (response.statusCode == 200) {
         showToast('Schedule confirmed successfully');
-        Get.back();
+        Get.toNamed(AppRoutes.customBottomNavBar);
       } else {
         showToast('Failed to confirm schedule');
       }

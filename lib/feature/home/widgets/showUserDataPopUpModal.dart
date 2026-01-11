@@ -1,31 +1,58 @@
-// Show User Data via Model
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:pmayard_app/widgets/custom_button.dart';
+import 'package:pmayard_app/app/utils/app_colors.dart';
+import 'package:pmayard_app/services/api_urls.dart';
+import 'package:pmayard_app/widgets/widgets.dart';
 
-void showUserData(BuildContext context, dynamic sessionData, String userRole) {
+void showUserData(BuildContext context, dynamic session, String userRole) {
   String name = '';
   String imageUrl = '';
   String? day;
   String? date;
-  String? role = '';
+  String? roleLabel = '';
   String? subject;
+
+  // Assign data based on user role
   if (userRole == 'professional') {
-    name = sessionData.parent?.name ?? 'Unknown';
-    imageUrl = sessionData.parent?.profileImage ?? '';
-    day = sessionData.day;
-    date = sessionData.date;
-    role = 'Professional';
-    subject = sessionData.subject;
+    name = session.parent?.name ?? 'Unknown';
+    imageUrl = '${ApiUrls.imageBaseUrl}${session.parent?.profileImage?.url ?? ''}';
+    day = session.day;
+    date = session.date;
+    roleLabel = 'Parent';
+    subject = session.subject;
   } else if (userRole == 'parent') {
-    name = sessionData.professional?.name ?? 'Unknown';
-    imageUrl = sessionData.professional?.profileImage ?? '';
-    day = sessionData.day;
-    date = sessionData.date;
-    role = 'Parent';
-    subject = sessionData.subject;
+    name = session.professional?.name ?? 'Unknown';
+    imageUrl = '${ApiUrls.imageBaseUrl}${session.professional?.profileImage?.url ?? ''}';
+    day = session.day;
+    date = session.date;
+    roleLabel = 'Professional';
+    subject = session.subject;
   }
+
+  // Safe Date Parsing
+  DateTime? dateTime;
+  if (date != null && date.isNotEmpty) {
+    try {
+      dateTime = DateTime.parse(date);
+    } catch (e) {
+      dateTime = null;
+    }
+  }
+
+  // Format date and time
+  final formattedDate = dateTime != null
+      ? DateFormat('dd/MM/yy').format(dateTime)
+      : '';
+  final formattedTime = dateTime != null
+      ? DateFormat('h:mm a').format(dateTime)
+      : '';
+
+  // Combine for subtitle
+  final sessionSubtitle = (day != null && dateTime != null)
+      ? '$formattedDate at $formattedTime'
+      : 'Waiting';
+
   showDialog(
     context: context,
     builder: (context) => Dialog(
@@ -45,40 +72,39 @@ void showUserData(BuildContext context, dynamic sessionData, String userRole) {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
+            SizedBox(height: 16.h),
             if (imageUrl.isNotEmpty)
               Center(
-                child: CircleAvatar(
-                  radius: 30.r,
-                  backgroundImage: NetworkImage(imageUrl),
+                child: CustomNetworkImage(
+                  backgroundColor: AppColors.grayShade100,
+                  boxShape: BoxShape.circle,
+                  imageUrl: (imageUrl.isNotEmpty)
+                      ? imageUrl
+                      : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                 ),
               ),
             SizedBox(height: 16.h),
             Text(
-              '$role Name',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              '$roleLabel Name',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.h),
-            // Name
             Text(name, style: TextStyle(fontSize: 14)),
             SizedBox(height: 16.h),
             Text(
-              'Subjects',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              'Subject',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.h),
-            Text('$subject'),
+            Text(subject ?? 'N/A'),
             SizedBox(height: 16.h),
             Text(
               'Session Time',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.h),
-            if (day != null && date != null)
-              Text(
-                '${DateFormat('M/d/yyyy').format(DateTime.parse(date.toString()))} at ${DateFormat('h:mm a').format(DateTime.parse(date.toString()))}',
-              ),
+            Text(sessionSubtitle),
             SizedBox(height: 16.h),
-            // Close button
             CustomButton(
               onPressed: () => Navigator.pop(context),
               title: Text(

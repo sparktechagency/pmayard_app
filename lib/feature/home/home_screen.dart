@@ -164,11 +164,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (role == 'professional') {
                               name = parentItem?.name ?? '';
-                              imageUrl = parentItem?.profileImage ?? '';
+                              imageUrl = '${ApiUrls.imageBaseUrl}${parentItem?.profileImage!.url}';
                               userRole = parentItem?.user?.role ?? '';
                             } else if (role == 'parent') {
                               name = professionalItem?.name ?? '';
-                              imageUrl = professionalItem?.profileImage ?? '';
+                              imageUrl = '${ApiUrls.imageBaseUrl}${professionalItem?.profileImage!.url}';
                               userRole = professionalItem?.user?.role ?? '';
                             }
 
@@ -193,27 +193,99 @@ class _HomeScreenState extends State<HomeScreen> {
                     bottom: 10.h,
                     left: 16.w,
                     right: 16.w,
-                    text: 'Upcoming Sessions',
+                    text: role == 'professional' ? 'Upcoming Sessions' : 'Today’s Schedule',
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
-                  Obx(() {
+                  // Obx(() {
+                  //   if (_sessionsController.isLoadingSession.value) {
+                  //     return ShimmerHelper.upcomingSessionsShimmer();
+                  //   }
+                  //
+                  //   final sessionData = role == 'professional'
+                  //       ? _sessionsController.upComingSessionParentList
+                  //       : _sessionsController.upComingSessionProfessionalList;
+                  //
+                  //   if (sessionData.isEmpty) {
+                  //     return Padding(
+                  //       padding: EdgeInsets.all(16.0),
+                  //       child: Text('No upcoming sessions'),
+                  //     );
+                  //   }
+                  //
+                  //   return ListView.builder(
+                  //     physics: NeverScrollableScrollPhysics(),
+                  //     itemCount: sessionData.length,
+                  //     shrinkWrap: true,
+                  //     itemBuilder: (context, index) {
+                  //       final session = sessionData[index];
+                  //
+                  //       String name = role == 'professional'
+                  //           ? session.parent?.name ?? 'Unknown'
+                  //           : session.professional?.name ?? 'Unknown';
+                  //
+                  //       String imageUrl = role == 'professional'
+                  //           ? '${ApiUrls.imageBaseUrl}${session.parent?.profileImage?.url ?? ''}'
+                  //           : '${ApiUrls.imageBaseUrl}${session.professional?.profileImage?.url ?? ''}';
+                  //
+                  //       String? day = session.day ?? '';
+                  //       String? date = session.date ?? '';
+                  //
+                  //       final hasDateTime = day.isNotEmpty && date.isNotEmpty;
+                  //
+                  //       final DateTime? dateTime = date.isNotEmpty ? DateTime.tryParse(date) : null;
+                  //
+                  //       final datePart = dateTime != null
+                  //           ? DateFormat('dd/MM/yy').format(dateTime)
+                  //           : '';
+                  //
+                  //       final formattedTime = dateTime != null
+                  //           ? DateFormat('h:mm a').format(dateTime)
+                  //           : '';
+                  //
+                  //       final subtitle = hasDateTime && dateTime != null
+                  //           ? '$datePart at $formattedTime'
+                  //           : 'Waiting';
+                  //
+                  //       return Padding(
+                  //         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                  //         child: CustomListTile(
+                  //           contentPaddingVertical: 6.h,
+                  //           borderRadius: 8.r,
+                  //           borderColor: AppColors.borderColor,
+                  //           image: imageUrl,
+                  //           title: name,
+                  //           subTitle: subtitle,
+                  //           titleFontSize: 16.sp,
+                  //           trailing: hasDateTime
+                  //               ? CustomButton(
+                  //             radius: 8.r,
+                  //             height: 25.h,
+                  //             fontSize: 10.sp,
+                  //             onPressed: () => showUserData(context, subtitle, imageUrl),
+                  //             label: 'View Detail',
+                  //           )
+                  //               : null,
+                  //         ),
+                  //       );
+                  //     },
+                  //   );
+                  // }),
+
+                  if( role == 'professional')
+                    Obx(() {
                     if (_sessionsController.isLoadingSession.value) {
                       return ShimmerHelper.upcomingSessionsShimmer();
                     }
+
                     final sessionData = role == 'professional'
                         ? _sessionsController.upComingSessionParentList
                         : _sessionsController.upComingSessionProfessionalList;
 
                     if (sessionData.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40.h),
-                          child: CustomText(
-                            text: 'No upcoming sessions',
-                            fontSize: 14.sp,
-                          ),
-                        ),
+                      return Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('No upcoming sessions'),
                       );
                     }
 
@@ -222,39 +294,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: sessionData.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        String name = '';
-                        String imageUrl = '';
-                        String? day;
-                        String? date;
-
                         final session = sessionData[index];
 
-                        if (role == 'professional') {
-                          final session = sessionData[index];
-                          name = session.parent?.name ?? 'Unknown';
-                          imageUrl = '${ApiUrls.imageBaseUrl}${session.parent?.profileImage}';
-                          day = session.day ?? '';
-                          date = session.date ?? '';
-                        } else {
-                          final session = sessionData[index];
-                          name = session.professional?.name ?? 'Unknown';
-                          imageUrl = '${ApiUrls.imageBaseUrl}${session.professional?.profileImage}';
-                          day = session.day ?? '';
-                          date = session.date ?? '';
-                        }
-                        final hasDateTime =
-                            (day.isNotEmpty) && (date.isNotEmpty);
+                        String name = role == 'professional'
+                            ? session.parent?.name ?? 'Unknown'
+                            : session.professional?.name ?? 'Unknown';
 
-                        // Format the subtitle
-                        final subtitle = hasDateTime
-                            ? '${TimeFormatHelper.formatDate(DateTime.parse(date))} at ${DateFormat('h:mm a').format(DateTime.parse(date.toString()))}'
+                        String imageUrl = role == 'professional'
+                            ? '${ApiUrls.imageBaseUrl}${session.parent?.profileImage?.url ?? ''}'
+                            : '${ApiUrls.imageBaseUrl}${session.professional?.profileImage?.url ?? ''}';
+
+                        String? day = session.day ?? '';
+                        String? date = session.date ?? '';
+
+                        final hasDateTime = day.isNotEmpty && date.isNotEmpty;
+
+                        final DateTime? dateTime = date.isNotEmpty ? DateTime.tryParse(date) : null;
+
+                        final datePart = dateTime != null
+                            ? DateFormat('dd/MM/yy').format(dateTime)
+                            : '';
+
+                        final formattedTime = dateTime != null
+                            ? DateFormat('h:mm a').format(dateTime)
+                            : '';
+
+                        final subtitle = hasDateTime && dateTime != null
+                            ? '$datePart at $formattedTime'
                             : 'Waiting';
 
                         return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 6.h,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
                           child: CustomListTile(
                             contentPaddingVertical: 6.h,
                             borderRadius: 8.r,
@@ -265,19 +335,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             titleFontSize: 16.sp,
                             trailing: hasDateTime
                                 ? CustomButton(
-                                    radius: 8.r,
-                                    height: 25.h,
-                                    fontSize: 10.sp,
-                                    onPressed: () =>
-                                        showUserData(context, session, role),
-                                    label: 'View Detail',
-                                  )
+                              radius: 8.r,
+                              height: 25.h,
+                              fontSize: 10.sp,
+                              onPressed: () => showUserData(context, session, role),
+                              label: 'View Detail',
+                            )
                                 : null,
                           ),
                         );
                       },
                     );
                   }),
+                  if( role == 'parent' )
+                    Text('Parent'),
                   SizedBox(height: 44.h),
                 ],
               );

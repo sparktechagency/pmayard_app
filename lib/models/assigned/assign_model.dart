@@ -1,5 +1,3 @@
-
-
 class AssignModelData {
   String? sId;
   Parent? parent;
@@ -51,7 +49,7 @@ class Parent {
   String? sId;
   User? user;
   String? name;
-  String? profileImage;
+  ProfileImage? profileImage;
 
   Parent({this.sId, this.user, this.name, this.profileImage});
 
@@ -59,7 +57,9 @@ class Parent {
     sId = json['_id'];
     user = json['user'] != null ? new User.fromJson(json['user']) : null;
     name = json['name'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
   }
 }
 
@@ -74,5 +74,17 @@ class User {
     sId = json['_id'];
     email = json['email'];
     role = json['role'];
+  }
+}
+
+class ProfileImage {
+  String? path;
+  String? url;
+
+  ProfileImage({this.path, this.url});
+
+  ProfileImage.fromJson(Map<String, dynamic> json) {
+    path = json['path'];
+    url = json['url'];
   }
 }

@@ -7,6 +7,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_container.dart';
 import 'package:pmayard_app/widgets/custom_dialog.dart';
@@ -120,7 +121,6 @@ class _SessionScreenState extends State<SessionScreen> {
                           final session =
                               sessionController.mySessionData[index];
 
-                          // Extract data based on user role
                           String name = '';
                           String imageUrl = '';
                           String subject = session['subject'];
@@ -130,23 +130,22 @@ class _SessionScreenState extends State<SessionScreen> {
                             if (parentData is Map<String, dynamic>) {
                               name =
                                   parentData['name']?.toString() ?? 'Unknown';
+
                               imageUrl =
-                                  parentData['profileImage']?.toString() ?? '';
+                                  "${ApiUrls.imageBaseUrl}${parentData['profileImage']!['url']}";
                             } else if (parentData is String) {
                               name = 'Parent';
                               imageUrl = '';
                             }
-                          } else {
-                            // For parent role
+                          }
+                          if (userRole == 'parent')  {
                             final professionalData = session['professional'];
                             if (professionalData is Map<String, dynamic>) {
                               name =
                                   professionalData['name']?.toString() ??
                                   'Unknown';
                               imageUrl =
-                                  professionalData['profileImage']
-                                      ?.toString() ??
-                                  '';
+                                  "${ApiUrls.imageBaseUrl}${professionalData['profileImage']!['url']}";
                             } else if (professionalData is String) {
                               name = 'Professional';
                               imageUrl = '';

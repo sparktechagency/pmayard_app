@@ -22,7 +22,8 @@ class SetScheduleScreen extends StatefulWidget {
 }
 
 class _SetScheduleScreenState extends State<SetScheduleScreen> {
-  final AssignViewProfileModel? profileData = Get.arguments as AssignViewProfileModel?;
+  final AssignViewProfileModel? profileData =
+      Get.arguments as AssignViewProfileModel?;
 
   final controller = Get.find<AssignedController>();
 
@@ -60,46 +61,47 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
 
           // Calendar
           GetBuilder<AssignedController>(
-              builder: (ctrl) {
-                return CustomContainer(
-                  color: Colors.white,
-                  child: TableCalendar(
-                    firstDay: DateTime.now(),
-                    lastDay: DateTime.now().add(Duration(days: 365)),
-                    focusedDay: ctrl.focusedDay,
-                    selectedDayPredicate: (day) => isSameDay(ctrl.selectedDay, day),
-                    headerStyle: HeaderStyle(
-                      formatButtonVisible: false,
-                      titleCentered: false,
-                      rightChevronVisible: false,
-                      leftChevronVisible: false,
-                      titleTextStyle: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onDaySelected: (selected, focused) {
-                      ctrl.onDaySelected(selected, focused);
-                    },
-                    calendarFormat: CalendarFormat.week,
-                    availableGestures: AvailableGestures.all,
-                    calendarStyle: CalendarStyle(
-                      selectedDecoration: BoxDecoration(
-                        color: AppColors.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      selectedTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      todayDecoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
+            builder: (ctrl) {
+              return CustomContainer(
+                color: Colors.white,
+                child: TableCalendar(
+                  firstDay: DateTime.now(),
+                  lastDay: DateTime.now().add(Duration(days: 365)),
+                  focusedDay: ctrl.focusedDay,
+                  selectedDayPredicate: (day) =>
+                      isSameDay(ctrl.selectedDay, day),
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: false,
+                    rightChevronVisible: false,
+                    leftChevronVisible: false,
+                    titleTextStyle: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                );
-              }
+                  onDaySelected: (selected, focused) {
+                    ctrl.onDaySelected(selected, focused);
+                  },
+                  calendarFormat: CalendarFormat.week,
+                  availableGestures: AvailableGestures.all,
+                  calendarStyle: CalendarStyle(
+                    selectedDecoration: BoxDecoration(
+                      color: AppColors.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedTextStyle: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: AppColors.primaryColor.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           SizedBox(height: 20.h),
 
@@ -118,125 +120,117 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
                 paddingAll: 7.r,
                 color: AppColors.secondaryColor,
               ),
-              CustomText(
-                left: 4.w,
-                text: "Available",
-              ),
+              CustomText(left: 4.w, text: "Available"),
               SizedBox(width: 24.w),
               CustomContainer(
                 radiusAll: 4.r,
                 paddingAll: 7.r,
                 color: AppColors.bookedColor,
               ),
-              CustomText(
-                left: 4.w,
-                text: "Booked",
-              ),
+              CustomText(left: 4.w, text: "Booked"),
             ],
           ),
           SizedBox(height: 10.h),
 
           Expanded(
             child: GetBuilder<AssignedController>(
-                builder: (ctrl) {
-                  // Get all slots for all days
-                  final allSlots = ctrl.getAllTimeSlotsForAllDays(profileData);
+              builder: (ctrl) {
+                // Get all slots for all days
+                final allSlots = ctrl.getAllTimeSlotsForAllDays(profileData);
 
-                  if (allSlots.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No slots available',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: Colors.grey,
+                if (allSlots.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No slots available',
+                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    ),
+                  );
+                }
+
+                return GridView.builder(
+                  itemCount: allSlots.length,
+                  padding: EdgeInsets.zero,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 100.w / 45.h,
+                    crossAxisSpacing: 8.w,
+                    mainAxisSpacing: 8.h,
+                  ),
+                  itemBuilder: (context, index) {
+                    final slotData = allSlots[index];
+                    final slot = slotData['slot'] as TimeSlots;
+                    final dayName = slotData['day'] as String;
+
+                    // Check if slot is booked (case-insensitive)
+                    final isBooked = slot.status?.toLowerCase() == 'booked';
+                    final isSelected = ctrl.selectedTimeSlot?.sId == slot.sId;
+
+                    Color backgroundColor;
+                    Color borderColor;
+                    Color textColor;
+
+                    if (isBooked) {
+                      // Booked slot styling
+                      backgroundColor = AppColors.bookedColor;
+                      borderColor = Colors.transparent;
+                      textColor = Colors.white;
+                    } else if (isSelected) {
+                      // Selected slot styling
+                      backgroundColor = AppColors.primaryColor;
+                      borderColor = AppColors.primaryColor;
+                      textColor = Colors.white;
+                    } else {
+                      // Available slot styling
+                      backgroundColor = AppColors.secondaryColor;
+                      borderColor = Colors.transparent;
+                      textColor = Colors.white;
+                    }
+
+                    return GestureDetector(
+                      onTap: () {
+                        // Only allow selection if not parent and not booked
+                        if (role != 'parent' && !isBooked) {
+                          ctrl.onTimeSlotSelected(slot, dayName);
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: borderColor, width: 1),
+                        ),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomText(
+                              text:
+                                  '${slot.startTime ?? ''}-${slot.endTime ?? ''}',
+                              fontSize: 12.sp,
+                              color: textColor,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                            // Show "Booked" label if slot is booked
+                            if (isBooked) ...[
+                              SizedBox(height: 2.h),
+                              CustomText(
+                                text: 'Booked',
+                                fontSize: 9.sp,
+                                color: textColor.withOpacity(0.9),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ],
+                            CustomText(text: '${slot.status}', fontSize: 10.sp,color: Colors.white,),
+                          ],
                         ),
                       ),
                     );
-                  }
-
-                  return GridView.builder(
-                    itemCount: allSlots.length,
-                    padding: EdgeInsets.zero,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 100.w / 45.h,
-                      crossAxisSpacing: 8.w,
-                      mainAxisSpacing: 8.h,
-                    ),
-                    itemBuilder: (context, index) {
-                      final slotData = allSlots[index];
-                      final slot = slotData['slot'] as TimeSlots;
-                      final dayName = slotData['day'] as String;
-
-                      // Check if slot is booked (case-insensitive)
-                      final isBooked = slot.status?.toLowerCase() == 'booked';
-                      final isSelected = ctrl.selectedTimeSlot?.sId == slot.sId;
-
-                      Color backgroundColor;
-                      Color borderColor;
-                      Color textColor;
-
-                      if (isBooked) {
-                        // Booked slot styling
-                        backgroundColor = AppColors.bookedColor;
-                        borderColor = Colors.transparent;
-                        textColor = Colors.white;
-                      } else if (isSelected) {
-                        // Selected slot styling
-                        backgroundColor = AppColors.primaryColor;
-                        borderColor = AppColors.primaryColor;
-                        textColor = Colors.white;
-                      } else {
-                        // Available slot styling
-                        backgroundColor = AppColors.secondaryColor;
-                        borderColor = Colors.transparent;
-                        textColor = Colors.white;
-                      }
-
-                      return GestureDetector(
-                        onTap: () {
-                          // Only allow selection if not parent and not booked
-                          if (role != 'parent' && !isBooked) {
-                            ctrl.onTimeSlotSelected(slot, dayName);
-                          }
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          decoration: BoxDecoration(
-                            color: backgroundColor,
-                            borderRadius: BorderRadius.circular(8.r),
-                            border: Border.all(
-                              color: borderColor,
-                              width: 1,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                text: '${slot.startTime ?? ''}-${slot.endTime ?? ''}',
-                                fontSize: 12.sp,
-                                color: textColor,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                              ),
-                              // Show "Booked" label if slot is booked
-                              if (isBooked) ...[
-                                SizedBox(height: 2.h),
-                                CustomText(
-                                  text: 'Booked',
-                                  fontSize: 9.sp,
-                                  color: textColor.withOpacity(0.9),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -244,28 +238,28 @@ class _SetScheduleScreenState extends State<SetScheduleScreen> {
       bottomNavigationBar: role == 'parent'
           ? SizedBox.shrink()
           : SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-          child: GetBuilder<AssignedController>(
-            builder: (ctrl) {
-              return CustomButton(
-                onPressed: () {
-                  if (ctrl.selectedTimeSlot != null) {
-                    ctrl.confirmSchedule(
-                      sessionID: profileData?.sId ?? '',
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                child: GetBuilder<AssignedController>(
+                  builder: (ctrl) {
+                    return CustomButton(
+                      onPressed: () {
+                        if (ctrl.selectedTimeSlot != null) {
+                          ctrl.confirmSchedule(
+                            sessionID: profileData?.sId ?? '',
+                          );
+                        } else {
+                          showToast('Please select a time slot');
+                        }
+                      },
+                      label: ctrl.isConfirmScheduleLoading
+                          ? "Please wait.."
+                          : 'Confirm',
                     );
-                  } else {
-                    showToast(
-                      'Please select a time slot',
-                    );
-                  }
-                },
-                label: ctrl.isConfirmScheduleLoading ? "Please wait.." : 'Confirm',
-              );
-            },
-          ),
-        ),
-      ),
+                  },
+                ),
+              ),
+            ),
     );
   }
 }
