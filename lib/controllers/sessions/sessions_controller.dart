@@ -59,6 +59,34 @@ class SessionsController extends GetxController {
     }
   }
 
+  bool isLoadingTodaySessions = false;
+  final RxList<UpComingSessionModel> todaySessionData = <UpComingSessionModel>[].obs;
+  Future<void> fetchTodaySessions(String formatted) async{
+    isLoadingTodaySessions = true;
+    update();
+    try {
+      final response = await ApiClient.getData(ApiUrls.todaySessions(formatted));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> datas = response.body['data'] ?? [];
+
+        for (var item in datas) {
+          final session = UpComingSessionModel.fromJson(item);
+          todaySessionData.add(session);
+        }
+
+        print("✅ Sessions loaded: ${todaySessionData.length}");
+      } else {
+        print("❌ API Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('❌ [SESSIONS] Error: $e');
+    } finally {
+      isLoadingTodaySessions = false;
+      update();
+    }
+  }
+
   // =================  MY Sessions (Using Raw Maps - No Models) =====================
   final isLoadingMySection = false.obs;
   final mySessionData = <Map<String, dynamic>>[].obs;

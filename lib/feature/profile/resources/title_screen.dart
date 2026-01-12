@@ -46,20 +46,41 @@ class _TitleScreenState extends State<TitleScreen> {
       ),
       body: GetBuilder<ResourceController>(
         builder: (controller) {
+          // Show loading indicator
+          if (controller.isLoadingMaterial) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          // Show empty state
+          if (controller.metarialsModel.isEmpty) {
+            return Center(
+              child: Text(
+                'No materials available',
+                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+              ),
+            );
+          }
+
+          // Show list
           return ListView.separated(
             shrinkWrap: true,
             padding: EdgeInsets.only(top: 10.h),
-            itemCount: controller.metarialsModel.length ?? 0,
-            itemBuilder: (context, index) => ResourceGradeWidget(
-              title: controller.metarialsModel[index].title,
-              downloader: () {
-                _downloadFile(
-                  controller.metarialsModel[index].fileUrl,
-                  controller.metarialsModel[index].title,
-                );
-              },
-              icon: Icons.download,
-            ),
+            itemCount: controller.metarialsModel.length,
+            itemBuilder: (context, index) {
+              final material = controller.metarialsModel[index];
+              return ResourceGradeWidget(
+                title: material.title ?? 'Untitled',
+                downloader: () {
+                  final fileUrl = material.fileUrl?.url;
+                  if (fileUrl != null && fileUrl.isNotEmpty) {
+                    _downloadFile(fileUrl, material.title ?? 'file');
+                  } else {
+                    showToast("File URL not available");
+                  }
+                },
+                icon: Icons.download,
+              );
+            },
             separatorBuilder: (context, index) => SizedBox(height: 15.h),
           );
         },

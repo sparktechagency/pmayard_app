@@ -5,6 +5,7 @@ import 'package:pmayard_app/app/helpers/simmer_helper.dart';
 import 'package:pmayard_app/app/helpers/time_format.dart';
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import '../../app/utils/app_colors.dart';
 import '../../widgets/widgets.dart';
 
@@ -98,7 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 );
                               },
                               image:
-                              chatItem.users?.first.roleId?.profileImage ??
+                              '${ApiUrls.imageBaseUrl}${chatItem.users?.first.roleId?.profileImage}'
                                   'N/A',
                               title: chatItem.users?.first.roleId?.name ?? 'N/A',
                               subTitle: chatItem.lastMsg?.messageType == 'text'

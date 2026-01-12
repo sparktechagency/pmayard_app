@@ -36,6 +36,9 @@ class ApiUrls {
   static const String assigned = '/sessions/assigned-roles';
   static const String verifySession = '/parents/verify-session';
   static const String upcomingSessions = '/sessions/upcoming-sessions';
+  static String todaySessions(String formattedDate) {
+    return '/sessions/upcoming-sessions?date=$formattedDate';
+  }
   static const String notification = '/notifications';
 
   //static String sessionViewProfile(String id) => '/sessions/$id/role';
@@ -49,7 +52,6 @@ class ApiUrls {
   static String sendAttachments(String conversationID) => '/attachments/$conversationID/send-attachment';
 
   // Resource
-
   static String gradeSearch( String searchTerm ) => '/grades/?searchTerm=$searchTerm';
   static String subjectsSearch( String userId ) => '/subjects/$userId';
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
@@ -58,7 +60,6 @@ class ApiUrls {
   static String editAvailabilitySchedule( String availabilityID ) => '/professionals/$availabilityID/availability';
   static String confirmSchedule( String userID ) => '/professionals/$userID/confirm-session';
   static String editSchedule( String roleID ) => '/professionals/$roleID/availability';
-
 
   static String eventGet(String date) {
     return date.isNotEmpty ? '/events/?eventDate=$date' : '/events/';

@@ -8,15 +8,16 @@ class ChatModelData {
   int? iV;
   LastMsg? lastMsg;
 
-  ChatModelData(
-      {this.sId,
-        this.type,
-        this.users,
-        this.isDeleted,
-        this.createdAt,
-        this.updatedAt,
-        this.iV,
-        this.lastMsg});
+  ChatModelData({
+    this.sId,
+    this.type,
+    this.users,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
+    this.iV,
+    this.lastMsg,
+  });
 
   ChatModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -31,8 +32,9 @@ class ChatModelData {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
-    lastMsg =
-    json['lastMsg'] != null ? new LastMsg.fromJson(json['lastMsg']) : null;
+    lastMsg = json['lastMsg'] != null
+        ? new LastMsg.fromJson(json['lastMsg'])
+        : null;
   }
 }
 
@@ -47,13 +49,13 @@ class Users {
 
   Users.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    roleId =
-    json['roleId'] != null ? new RoleId.fromJson(json['roleId']) : null;
+    roleId = json['roleId'] != null
+        ? new RoleId.fromJson(json['roleId'])
+        : null;
     roleRef = json['roleRef'];
     email = json['email'];
     role = json['role'];
   }
-
 }
 
 class RoleId {
@@ -68,7 +70,6 @@ class RoleId {
     name = json['name'];
     profileImage = json['profileImage'];
   }
-
 }
 
 class LastMsg {
@@ -79,7 +80,14 @@ class LastMsg {
   String? messageType;
   String? createdAt;
 
-  LastMsg({this.sId, this.senderId, this.messageText, this.isRead,this.messageType,this.createdAt});
+  LastMsg({
+    this.sId,
+    this.senderId,
+    this.messageText,
+    this.isRead,
+    this.messageType,
+    this.createdAt,
+  });
 
   LastMsg.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
