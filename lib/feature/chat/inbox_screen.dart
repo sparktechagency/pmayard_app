@@ -5,6 +5,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/chat/chat_controller.dart';
 import 'package:pmayard_app/controllers/chat/chat_listen_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/chat_card.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_list_tile.dart';
@@ -51,7 +52,7 @@ class _InboxScreenState extends State<InboxScreen> {
         titleWidget: GetBuilder<ChatController>(
           builder: (controller) {
             return CustomListTile(
-              image: controller.inboxData?.oppositeUser?.userImage ?? '',
+              image: '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
               statusColor: Colors.grey,
               title: controller.inboxData?.oppositeUser?.userName ?? 'Admin',
             );
@@ -89,7 +90,7 @@ class _InboxScreenState extends State<InboxScreen> {
                     final message = controller.inboxData?.messages?
                         [index];
                     List<String>? fileUrls = message?.attachmentId
-                        ?.map((attachment) => attachment.fileUrl as String)
+                        ?.map((attachment) => attachment.fileUrl.toString())
                         .toList();
                     // ever( controller.inboxData?.messages!, (_){
                     //   controller.scrollBottom();
@@ -97,7 +98,7 @@ class _InboxScreenState extends State<InboxScreen> {
 
                     return ChatBubbleMessage(
                       profileImage:
-                          controller.inboxData?.oppositeUser?.userImage ?? '',
+                      '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
                       images:  message?.messageType == 'attachments' ? fileUrls : null,
                       audioUrls: message?.messageType == 'audio' ? fileUrls : null,
                       text: message?.messageText ?? '',

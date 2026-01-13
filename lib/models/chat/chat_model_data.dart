@@ -1,74 +1,93 @@
 class ChatModelData {
   String? sId;
   String? type;
-  List<Users>? users;
+  List<String>? users;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   int? iV;
+  OtherUser? otherUser;
   LastMsg? lastMsg;
 
-  ChatModelData({
-    this.sId,
-    this.type,
-    this.users,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-    this.iV,
-    this.lastMsg,
-  });
+  ChatModelData(
+      {this.sId,
+        this.type,
+        this.users,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV,
+        this.otherUser,
+        this.lastMsg});
 
   ChatModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     type = json['type'];
-    if (json['users'] != null) {
-      users = <Users>[];
-      json['users'].forEach((v) {
-        users!.add(new Users.fromJson(v));
-      });
-    }
+    users = json['users'].cast<String>();
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
-    lastMsg = json['lastMsg'] != null
-        ? new LastMsg.fromJson(json['lastMsg'])
+    otherUser = json['otherUser'] != null
+        ? new OtherUser.fromJson(json['otherUser'])
         : null;
+    lastMsg =
+    json['lastMsg'] != null ? new LastMsg.fromJson(json['lastMsg']) : null;
   }
+
 }
 
-class Users {
+class OtherUser {
   String? sId;
   RoleId? roleId;
-  String? roleRef;
   String? email;
   String? role;
+  String? profileImage;
 
-  Users({this.sId, this.roleId, this.roleRef, this.email, this.role});
+  OtherUser({this.sId, this.roleId, this.email, this.role, this.profileImage});
 
-  Users.fromJson(Map<String, dynamic> json) {
+  OtherUser.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    roleId = json['roleId'] != null
-        ? new RoleId.fromJson(json['roleId'])
-        : null;
-    roleRef = json['roleRef'];
+    roleId =
+    json['roleId'] != null ? new RoleId.fromJson(json['roleId']) : null;
     email = json['email'];
     role = json['role'];
+    profileImage = json['profileImage'];
   }
 }
 
 class RoleId {
   String? sId;
   String? name;
-  String? profileImage;
+  ProfileImage? profileImage;
 
   RoleId({this.sId, this.name, this.profileImage});
 
   RoleId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
+  }
+}
+
+class ProfileImage {
+  String? path;
+  String? url;
+
+  ProfileImage({this.path, this.url});
+
+  ProfileImage.fromJson(Map<String, dynamic> json) {
+    path = json['path'];
+    url = json['url'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['path'] = this.path;
+    data['url'] = this.url;
+    return data;
   }
 }
 
@@ -80,14 +99,13 @@ class LastMsg {
   String? messageType;
   String? createdAt;
 
-  LastMsg({
-    this.sId,
-    this.senderId,
-    this.messageText,
-    this.isRead,
-    this.messageType,
-    this.createdAt,
-  });
+  LastMsg(
+      {this.sId,
+        this.senderId,
+        this.messageText,
+        this.isRead,
+        this.messageType,
+        this.createdAt});
 
   LastMsg.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

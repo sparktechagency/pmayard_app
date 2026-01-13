@@ -37,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     buttons: _chatController.chatType,
                     selectedValue: _chatController.selectedValueType.value,
                     onTap: (value) => _chatController.onTapChatType(value),
-                  ),
+              ),
 
               if(_chatController.selectedValueType.value != 'group')...[
                 SizedBox(height: 12.h),
@@ -77,44 +77,47 @@ class _ChatScreenState extends State<ChatScreen> {
                       if (_chatController.chatData.isEmpty) {
                         return Center(child: Text('No chats available'));
                       }
-                      return ListView.builder(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemCount: _chatController.filteredChatData.length,
-                        itemBuilder: (context, index) {
-                          final chatItem = _chatController.filteredChatData[index];
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 8.0.h),
-                            child: CustomListTile(
-                              selectedColor:
-                              chatItem.lastMsg != null &&
-                                  chatItem.lastMsg?.isRead != true
-                                  ? Color(0xffDAE9F3)
-                                  : null,
-                              borderColor: AppColors.appGreyColor.withOpacity(0.1),
-                              borderRadius: 8.r,
-                              onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.inboxScreen,
-                                  arguments: {'chatId' : chatItem.sId ?? '',},
+                      return GetBuilder<ChatController>(
+                          builder: (controller) {
+                            return ListView.builder(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemCount: _chatController.filteredChatData.length,
+                              itemBuilder: (context, index) {
+                                final chatItem = _chatController.filteredChatData[index];
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: 8.0.h),
+                                  child: CustomListTile(
+                                    selectedColor:
+                                    chatItem.lastMsg != null &&
+                                        chatItem.lastMsg?.isRead != true
+                                        ? Color(0xffDAE9F3)
+                                        : null,
+                                    borderColor: AppColors.appGreyColor.withOpacity(0.1),
+                                    borderRadius: 8.r,
+                                    onTap: () {
+                                      Get.toNamed(
+                                        AppRoutes.inboxScreen,
+                                        arguments: {'chatId' : chatItem.sId ?? '',},
+                                      );
+                                    },
+                                    image:
+                                    '${ApiUrls.imageBaseUrl}${chatItem.otherUser?.roleId?.profileImage?.url ?? ''}',
+                                    title: chatItem.otherUser?.roleId?.name ?? 'N/A',
+                                    subTitle: chatItem.lastMsg?.messageType == 'text'
+                                        ? chatItem.lastMsg?.messageText ?? ''
+                                        : chatItem.lastMsg?.messageType ?? '',
+                                    trailing: CustomText(
+                                      text: TimeFormatHelper.timeFormat(
+                                        chatItem.lastMsg?.createdAt ?? '',
+                                      ),
+                                      color: AppColors.appGreyColor,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
                                 );
                               },
-                              image:
-                              '${ApiUrls.imageBaseUrl}${chatItem.users?.first.roleId?.profileImage}'
-                                  'N/A',
-                              title: chatItem.users?.first.roleId?.name ?? 'N/A',
-                              subTitle: chatItem.lastMsg?.messageType == 'text'
-                                  ? chatItem.lastMsg?.messageText ?? ''
-                                  : chatItem.lastMsg?.messageType ?? '',
-                              trailing: CustomText(
-                                text: TimeFormatHelper.timeFormat(
-                                  chatItem.lastMsg?.createdAt ?? '',
-                                ),
-                                color: AppColors.appGreyColor,
-                                fontSize: 10.sp,
-                              ),
-                            ),
-                          );
-                        },
+                            );
+                          },
                       );
 
                     } else {

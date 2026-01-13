@@ -1,14 +1,14 @@
 class ApiUrls {
 
   // Base, Image, Socket
-  // static const String baseUrl = "https://mihadhome4000.merinasib.shop/api/v1";
-  static const String baseUrl = "https://api.fondationlms.org/api/v1";
+  static const String baseUrl = "https://mihadhome4000.merinasib.shop/api/v1";
+  // static const String baseUrl = "https://api.fondationlms.org/api/v1";
 
-  // static const String imageBaseUrl = "https://mihadhome4000.merinasib.shop";
-  static const String imageBaseUrl = "https://api.fondationlms.org";
+  static const String imageBaseUrl = "https://mihadhome4000.merinasib.shop";
+  // static const String imageBaseUrl = "https://api.fondationlms.org";
 
-  // static const String socketUrl = "https://mihadhome4000.merinasib.shop";
-  static const String socketUrl = "https://api.fondationlms.org";
+  static const String socketUrl = "https://mihadhome4000.merinasib.shop";
+  // static const String socketUrl = "https://api.fondationlms.org";
 
   // Authentication
   static const String userData = '/users/me';

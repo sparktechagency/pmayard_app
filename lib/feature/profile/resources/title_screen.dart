@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/resources/resource_controller.dart';
 import 'package:pmayard_app/feature/profile/resources/resources_widgets/ResourceGradeWidget.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/custom_app_bar.dart';
 import 'package:pmayard_app/widgets/custom_scaffold.dart';
 import 'package:pmayard_app/widgets/custom_tost_message.dart';
@@ -68,12 +69,16 @@ class _TitleScreenState extends State<TitleScreen> {
             itemCount: controller.metarialsModel.length,
             itemBuilder: (context, index) {
               final material = controller.metarialsModel[index];
+              final fileUrlPath = material.fileUrl?.url ?? '';
+              final fullUrl = fileUrlPath.isNotEmpty
+                  ? '${ApiUrls.imageBaseUrl}$fileUrlPath'
+                  : '';
+
               return ResourceGradeWidget(
                 title: material.title ?? 'Untitled',
                 downloader: () {
-                  final fileUrl = material.fileUrl?.url;
-                  if (fileUrl != null && fileUrl.isNotEmpty) {
-                    _downloadFile(fileUrl, material.title ?? 'file');
+                  if (fullUrl.isNotEmpty) {
+                    _downloadFile(fullUrl, material.title ?? 'file');
                   } else {
                     showToast("File URL not available");
                   }

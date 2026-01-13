@@ -63,6 +63,7 @@ class SessionsController extends GetxController {
   final RxList<UpComingSessionModel> todaySessionData = <UpComingSessionModel>[].obs;
   Future<void> fetchTodaySessions(String formatted) async{
     isLoadingTodaySessions = true;
+    todaySessionData.clear();
     update();
     try {
       final response = await ApiClient.getData(ApiUrls.todaySessions(formatted));

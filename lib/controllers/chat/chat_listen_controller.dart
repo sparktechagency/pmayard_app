@@ -52,7 +52,7 @@ class SocketChatController extends GetxController {
       attachmentId: msg?.attachment?.map((a) {
         return AttachmentId(
           sId: a.id,
-          fileUrl: a.fileUrl,
+          fileUrl: a.fileUrl?.url,
           mimeType: a.mimeType,
         );
       }).toList(),

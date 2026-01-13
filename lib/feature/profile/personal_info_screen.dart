@@ -29,6 +29,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late final user = _userController.user;
 
   @override
+  void initState() {
+    super.initState();
+    if( mounted ){
+      _userController.user;
+      Get.find<UserController>();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       appBar: CustomAppBar(
