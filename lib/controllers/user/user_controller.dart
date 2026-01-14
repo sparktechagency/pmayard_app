@@ -26,29 +26,45 @@ class UserController extends GetxController {
     final response = await ApiClient.getData(ApiUrls.userData);
     if (response.statusCode == 200) {
       user = UserModelData.fromJson(response.body['data']);
+      initiateUserData();
     }
     isUserDataComing = false;
     update();
   }
   /// ========================>>> profile edit controller =======================>>>
-  late TextEditingController emailController = TextEditingController(
-    text: user?.email ?? '',
-  );
-  late TextEditingController nameController = TextEditingController(
-    text: user!.roleId?.name ?? '',
-  );
-  late TextEditingController bioController = TextEditingController(
-    text: user!.roleId?.bio ?? '',
-  );
 
-  late TextEditingController phoneController = TextEditingController(
-    text: user!.roleId?.phoneNumber ?? '',
-  );
+  late TextEditingController emailController ;
+  late TextEditingController nameController ;
+  late TextEditingController bioController ;
+  late TextEditingController phoneController ;
   File? selectedImage;
+  late TextEditingController subjectsController ;
 
-  late TextEditingController subjectsController = TextEditingController(
-    text: user?.roleId?.subjects?.map((s) => s).join(', ') ?? '',
-  );
+  // initiateUserData(){
+  //   emailController.text = user?.email ?? '';
+  //   nameController.text = user!.roleId?.name ?? '';
+  //   bioController.text = user!.roleId?.bio ?? '';
+  //   phoneController.text = user!.roleId?.phoneNumber ?? '';
+  //   subjectsController.text = user?.roleId?.subjects.map((s) => s).join(', ') ?? '';
+  // }
+
+  initiateUserData(){
+    emailController = TextEditingController(text: user?.email ?? '',);
+     nameController = TextEditingController(text: user!.roleId?.name ?? '',);
+     bioController = TextEditingController(text: user!.roleId?.bio ?? '',);
+     phoneController = TextEditingController(text: user!.roleId?.phoneNumber ?? '',);
+    subjectsController = TextEditingController(text: user?.roleId?.subjects.map((s) => s).join(', ') ?? '',);
+  }
+
+  initiateUserDataClear(){
+    emailController.clear();
+    nameController.clear();
+    bioController.clear();
+    phoneController.clear();
+    subjectsController.clear();
+  }
+
+
 
   final List<String> subjectList = [];
   List<Map<String, dynamic>> availability = [];
@@ -91,6 +107,7 @@ class UserController extends GetxController {
     );
 
     if (response.statusCode == 200) {
+      initiateUserDataClear();
       Get.back();
       Get.find<UserController>().userData();
     } else {
@@ -100,4 +117,15 @@ class UserController extends GetxController {
     isProfileUpdateLoader = false;
     update();
   }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    nameController.dispose();
+    bioController.dispose();
+    phoneController.dispose();
+    subjectsController.dispose();
+    super.onClose();
+  }
+
 }

@@ -71,8 +71,8 @@ class AuthController extends GetxController {
         AppConstants.role,
         responseBody['role'] ?? '',
       );
-      Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       cleanFieldRegister();
+      Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
     } else {
       showToast(responseBody['message']);
     }
@@ -343,11 +343,9 @@ class AuthController extends GetxController {
 
   /// <=============== Change passport related work are here ========================
   bool isChangePassword = false;
-  final TextEditingController currentPasswordTEController =
-      TextEditingController(text: '');
-  final TextEditingController newPasswordTEController = TextEditingController(text: '');
-  final TextEditingController confirmPasswordTEController =
-      TextEditingController(text: '');
+  final TextEditingController currentPasswordTEController = TextEditingController();
+  final TextEditingController newPasswordTEController = TextEditingController();
+  final TextEditingController confirmPasswordTEController = TextEditingController();
 
   void changePassword() async {
     isChangePassword = true;
@@ -382,6 +380,7 @@ class AuthController extends GetxController {
     currentPasswordTEController.clear();
   }
 
+
   /// <======================= Log out related work are here  ===========================>
   void logOut() async {
     await PrefsHelper.clearAllDatas();
@@ -408,6 +407,7 @@ class AuthController extends GetxController {
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordTEController.dispose();
     confirmPassController.dispose();
     otpController.dispose();
     loginEmailController.dispose();
