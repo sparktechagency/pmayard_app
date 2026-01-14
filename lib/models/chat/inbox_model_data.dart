@@ -1,3 +1,4 @@
+
 class InboxModelData {
   OppositeUser? oppositeUser;
   List<Messages>? messages;
@@ -53,80 +54,72 @@ class UserImage {
 class Messages {
   String? sId;
   String? conversationId;
-  SenderId? senderId;
+  String? senderId;
   List<AttachmentId>? attachmentId;
+  String? messageText;
   bool? isRead;
   String? messageType;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   int? iV;
-  String? messageText;
 
   Messages(
       {this.sId,
         this.conversationId,
         this.senderId,
         this.attachmentId,
+        this.messageText,
         this.isRead,
         this.messageType,
         this.isDeleted,
         this.createdAt,
         this.updatedAt,
-        this.iV,
-        this.messageText});
+        this.iV});
 
   Messages.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
+    senderId = json['sender_id'];
     conversationId = json['conversation_id'];
-    senderId = json['sender_id'] != null
-        ? new SenderId.fromJson(json['sender_id'])
-        : null;
+    sId = json['_id'];
     if (json['attachment_id'] != null) {
       attachmentId = <AttachmentId>[];
       json['attachment_id'].forEach((v) {
         attachmentId!.add(new AttachmentId.fromJson(v));
       });
     }
+    messageText = json['message_text'];
     isRead = json['is_read'];
     messageType = json['message_type'];
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
-    messageText = json['message_text'];
-  }
-}
-
-class SenderId {
-  String? sId;
-  Null? roleId;
-  String? email;
-  String? role;
-
-  SenderId({this.sId, this.roleId, this.email, this.role});
-
-  SenderId.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    roleId = json['roleId'];
-    email = json['email'];
-    role = json['role'];
   }
 }
 
 class AttachmentId {
   String? sId;
-  dynamic? fileUrl;
+  UserImage? fileUrl;
   String? mimeType;
 
   AttachmentId({this.sId, this.fileUrl, this.mimeType});
 
   AttachmentId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    fileUrl = json['fileUrl'];
+    fileUrl = json['fileUrl'] != null
+        ? new UserImage.fromJson(json['fileUrl'])
+        : null;
     mimeType = json['mimeType'];
   }
 }
+
+
+
+
+
+
+
+
 class SocketModelData {
   String? conversationId;
   Message? message;
@@ -145,7 +138,7 @@ class SocketModelData {
 class Message {
   String? senderId;
   String? lastMessage;
-  List<Attachment>? attachment;
+  List<AttachmentId>? attachment;
   String? messageType;
   String? timestamp;
 
@@ -160,10 +153,10 @@ class Message {
   Message.fromJson(Map<String, dynamic> json) {
     senderId = json['sender_id'];
     lastMessage = json['lastMessage'];
-    if (json['attachment'] != null) {
-      attachment = <Attachment>[];
-      json['attachment'].forEach((v) {
-        attachment!.add(Attachment.fromJson(v));
+    if (json['attachment_id'] != null) {
+      attachment = <AttachmentId>[];
+      json['attachment_id'].forEach((v) {
+        attachment!.add(new AttachmentId.fromJson(v));
       });
     }
     messageType = json['message_type'];
@@ -171,23 +164,4 @@ class Message {
   }
 }
 
-class Attachment {
-  String? id;
-  UserImage? fileUrl;  // String, NOT an object
-  String? mimeType;
-  String? fileName;
 
-  Attachment({
-    this.id,
-    this.fileUrl,
-    this.mimeType,
-    this.fileName,
-  });
-
-  Attachment.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    fileUrl = json['fileUrl'];  // Direct string assignment
-    mimeType = json['mimeType'];
-    fileName = json['fileName'];
-  }
-}

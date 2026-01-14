@@ -28,7 +28,8 @@ class _InboxScreenState extends State<InboxScreen> {
   final String chatID = Get.arguments['chatId'] as String;
 
   final ChatController _chatController = Get.find<ChatController>();
-  final SocketChatController _socketChatController = Get.find<SocketChatController>();
+  final SocketChatController _socketChatController =
+      Get.find<SocketChatController>();
 
   @override
   void initState() {
@@ -52,7 +53,8 @@ class _InboxScreenState extends State<InboxScreen> {
         titleWidget: GetBuilder<ChatController>(
           builder: (controller) {
             return CustomListTile(
-              image: '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
+              image:
+                  '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
               statusColor: Colors.grey,
               title: controller.inboxData?.oppositeUser?.userName ?? 'Admin',
             );
@@ -87,24 +89,27 @@ class _InboxScreenState extends State<InboxScreen> {
                   ),
                   itemCount: controller.inboxData?.messages?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final message = controller.inboxData?.messages?
-                        [index];
+                    final message = controller.inboxData?.messages?[index];
                     List<String>? fileUrls = message?.attachmentId
-                        ?.map((attachment) => attachment.fileUrl.toString())
+                        ?.map(
+                          (attachment) =>
+                              '${ApiUrls.imageBaseUrl}${attachment.fileUrl?.url}',
+                        )
                         .toList();
-                    // ever( controller.inboxData?.messages!, (_){
-                    //   controller.scrollBottom();
-                    // });
 
                     return ChatBubbleMessage(
                       profileImage:
-                      '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
-                      images:  message?.messageType == 'attachments' ? fileUrls : null,
-                      audioUrls: message?.messageType == 'audio' ? fileUrls : null,
+                          '${ApiUrls.imageBaseUrl}${controller.inboxData?.oppositeUser?.userImage?.url ?? ''}',
+                      images: message?.messageType == 'attachments'
+                          ? fileUrls
+                          : null,
+                      audioUrls: message?.messageType == 'audio'
+                          ? fileUrls
+                          : null,
                       text: message?.messageText ?? '',
                       time: message?.createdAt ?? '',
                       isMe:
-                          message?.senderId?.sId ==
+                          message?.senderId ==
                           Get.find<UserController>().user?.sId,
                     );
                   },
@@ -139,7 +144,10 @@ class _InboxScreenState extends State<InboxScreen> {
               children: [
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 14.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(14.r),
@@ -151,7 +159,9 @@ class _InboxScreenState extends State<InboxScreen> {
                           height: 20.w,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation(AppColors.secondaryColor),
+                            valueColor: AlwaysStoppedAnimation(
+                              AppColors.secondaryColor,
+                            ),
                           ),
                         ),
                         SizedBox(width: 12.w),
@@ -170,7 +180,7 @@ class _InboxScreenState extends State<InboxScreen> {
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           );
@@ -226,12 +236,12 @@ class _InboxScreenState extends State<InboxScreen> {
                         : Colors.transparent,
                     boxShadow: controller.showGlowEffect
                         ? [
-                      BoxShadow(
-                        color: AppColors.errorColor.withOpacity(0.1),
-                        blurRadius: 15,
-                        spreadRadius: 5,
-                      ),
-                    ]
+                            BoxShadow(
+                              color: AppColors.errorColor.withOpacity(0.1),
+                              blurRadius: 15,
+                              spreadRadius: 5,
+                            ),
+                          ]
                         : [],
                   ),
                   child: Icon(
@@ -251,34 +261,35 @@ class _InboxScreenState extends State<InboxScreen> {
               // 📤 SEND / CANCEL BUTTON
               controller.isRecording
                   ? CustomContainer(
-                onTap: () {
-                  controller.cancelRecording();
-                },
-                paddingVertical: 12.r,
-                paddingHorizontal: 12.r,
-                shape: BoxShape.circle,
-                color: AppColors.appGreyColor,
-                child: Icon(Icons.close, color: Colors.white),
-              )
+                      onTap: () {
+                        controller.cancelRecording();
+                      },
+                      paddingVertical: 12.r,
+                      paddingHorizontal: 12.r,
+                      shape: BoxShape.circle,
+                      color: AppColors.appGreyColor,
+                      child: Icon(Icons.close, color: Colors.white),
+                    )
                   : CustomContainer(
-                onTap: () {
-                  if (controller.messageController.text.isNotEmpty) {
-                    controller.sendMessage(chatID);
-                    controller.messageController.clear();
-                  }
-                },
-                paddingVertical: 12.r,
-                paddingHorizontal: 12.r,
-                shape: BoxShape.circle,
-                color: AppColors.secondaryColor,
-                child: Assets.icons.massegeSend.svg(),
-              ),
+                      onTap: () {
+                        if (controller.messageController.text.isNotEmpty) {
+                          controller.sendMessage(chatID);
+                          controller.messageController.clear();
+                        }
+                      },
+                      paddingVertical: 12.r,
+                      paddingHorizontal: 12.r,
+                      shape: BoxShape.circle,
+                      color: AppColors.secondaryColor,
+                      child: Assets.icons.massegeSend.svg(),
+                    ),
             ],
           ),
         );
       },
     );
   }
+
   @override
   dispose() {
     _socketChatController.removeListeners(chatID);
