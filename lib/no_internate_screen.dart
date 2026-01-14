@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/custom_assets/assets.gen.dart';
-import 'package:pmayard_app/feature/five_zero_screen.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class NoInterNetScreen extends StatelessWidget {

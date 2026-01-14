@@ -102,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     },
                                     image:
                                     '${ApiUrls.imageBaseUrl}${chatItem.otherUser?.roleId?.profileImage?.url ?? ''}',
-                                    title: chatItem.otherUser?.roleId?.name ?? 'N/A',
+                                    title: chatItem.otherUser?.role == 'admin' ? 'Admin' : chatItem.otherUser?.roleId?.name ?? 'N/A',
                                     subTitle: chatItem.lastMsg?.messageType == 'text'
                                         ? chatItem.lastMsg?.messageText ?? ''
                                         : chatItem.lastMsg?.messageType ?? '',

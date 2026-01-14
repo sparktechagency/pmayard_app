@@ -169,4 +169,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       ),
     );
   }
+  @override
+  void dispose() {
+    _userController.emailController.dispose();
+    _userController.nameController.dispose();
+    _userController.subjectsController.dispose();
+    _userController.phoneController.dispose();
+    _userController.bioController.dispose();
+    super.dispose();
+  }
 }

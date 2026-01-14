@@ -26,7 +26,7 @@ class _FiveZeroScreenState extends State<FiveZeroScreen> {
     });
 
     try {
-      final response = await ApiClient.getData(ApiUrls.socketUrl);
+      final response = await ApiClient.getData(ApiUrls.imageBaseUrl);
 
       if (response.statusCode == 200) {
         _onServerOnline();
