@@ -344,10 +344,10 @@ class AuthController extends GetxController {
   /// <=============== Change passport related work are here ========================
   bool isChangePassword = false;
   final TextEditingController currentPasswordTEController =
-      TextEditingController();
-  final TextEditingController newPasswordTEController = TextEditingController();
+      TextEditingController(text: '');
+  final TextEditingController newPasswordTEController = TextEditingController(text: '');
   final TextEditingController confirmPasswordTEController =
-      TextEditingController();
+      TextEditingController(text: '');
 
   void changePassword() async {
     isChangePassword = true;
@@ -362,11 +362,12 @@ class AuthController extends GetxController {
     if (response.statusCode == 200) {
       await PrefsHelper.setString(
         AppConstants.bearerToken,
-        response.body['accessToken'],
+        response.body['data']['accessToken'],
       );
       UserController().userData();
       showToast(response.body['message']);
       clearChangePasswordField();
+      Get.back();
     } else {
       showToast(response.body['message']);
     }
