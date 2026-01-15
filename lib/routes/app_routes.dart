@@ -22,6 +22,7 @@ import 'package:pmayard_app/feature/profile/resources/subject_screen.dart';
 import 'package:pmayard_app/feature/profile/set_schedule.dart';
 import 'package:pmayard_app/feature/profile/setting/about_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/change%20password/setting_change_password.dart';
+import 'package:pmayard_app/feature/profile/setting/legal_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/privacy_policy_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/setting_screen.dart';
 import 'package:pmayard_app/feature/profile/setting/terms_screen.dart';
@@ -83,16 +84,16 @@ abstract class AppRoutes {
   static const String setScheduleScreen = '/SetScheduleScreen';
   static const String notFoundScreen = 'NotFoundScreen';
   static const String fiveZeroScreen = 'five_zero_screen';
-
+  static const String legalScreen = '/legal_screen';
 
   ///  ============= > routes < ==============
   static final routes = <String, WidgetBuilder>{
     splashScreen : (context) => SplashScreen(),
     customBottomNavBar : (context) => CustomBottomNavBar(),
     settingScreen : (context) => SettingScreen(),
-    termsScreen : (context) => TermsScreen(),
-    policyScreen : (context) => PrivacyPolicyScreen(),
-    aboutScreen : (context) => AboutScreen(),
+    // termsScreen : (context) => TermsScreen(),
+    // policyScreen : (context) => PrivacyPolicyScreen(),
+    // aboutScreen : (context) => AboutScreen(),
     changePassScreen : (context) => SettingChangePassword(),
     personalInfoScreen : (context) => PersonalInfoScreen(),
     inboxScreen : (context) => InboxScreen(),
@@ -114,5 +115,6 @@ abstract class AppRoutes {
     setScheduleScreen: (context) => SetScheduleScreen(),
     notFoundScreen: (context) => NotFoundScreen(),
     fiveZeroScreen: (context) => FiveZeroScreen(),
+    legalScreen: (context) => LegalScreen(),
   };
 }
