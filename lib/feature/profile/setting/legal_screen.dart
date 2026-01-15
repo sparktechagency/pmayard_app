@@ -24,7 +24,7 @@ class _LegalScreenState extends State<LegalScreen> {
     title = Get.arguments?['title'] ?? 'Legal Contract';
 
     controller.getLegalController(
-      url: Get.arguments["title"] == "Term & Condition"
+      url: Get.arguments["title"] == "Terms & Conditions"
           ? "/terms"
           : Get.arguments["title"] == "Privacy Policy"
           ? "/privacy"

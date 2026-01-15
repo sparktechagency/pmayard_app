@@ -153,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                               recognizer: TapGestureRecognizer()
-                                ..onTap = () => Get.toNamed(AppRoutes.termsScreen),
+                                ..onTap = () => Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Conditions'}),
                             ),
                             TextSpan(
                               text: ' & ',
@@ -167,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 color: AppColors.termsPrivacyColor,
                               ),
                               recognizer: TapGestureRecognizer()
-                                ..onTap = () => Get.toNamed(AppRoutes.policyScreen),
+                                ..onTap = () => Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Privacy Policy'}),
                             ),
                           ],
                         ),

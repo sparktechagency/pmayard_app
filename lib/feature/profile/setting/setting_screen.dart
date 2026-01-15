@@ -33,9 +33,9 @@ class SettingScreen extends StatelessWidget {
 
           _buildSettingTile(
             icon: Assets.icons.terms.svg(),
-            label: 'Terms & Condition',
+            label: 'Terms & Conditions',
             onTap: () {
-              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Condition'});
+              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Conditions'});
             },
           ),
 
