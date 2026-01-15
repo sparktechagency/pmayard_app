@@ -16,7 +16,7 @@ class SessionsController extends GetxController {
   final RxList<UpComingSessionModel> upComingSessionProfessionalList = <UpComingSessionModel>[].obs;
 
   final isLoadingSession = false.obs;
-  
+
   Future<void> getSessions() async {
     upComingSession.clear();
     upComingSessionParentList.clear();
@@ -29,17 +29,61 @@ class SessionsController extends GetxController {
 
       if (response.statusCode == 200) {
         final List<dynamic> datas = response.body['data'] ?? [];
+
         for (var item in datas) {
+          // Convert JSON into your model
           final session = UpComingSessionModel.fromJson(item);
+
+          // Add to main list
           upComingSession.add(session);
-          upComingSessionParentList.add(session);
-          upComingSessionProfessionalList.add(session);
+
+          // Add to role-specific lists
+          if (session.parent != null) {
+            upComingSessionParentList.add(session);
+          }
+
+          if (session.professional != null) {
+            upComingSessionProfessionalList.add(session);
+          }
         }
+
+        print("✅ Sessions loaded: ${upComingSession.length}");
+      } else {
+        print("❌ API Error: ${response.statusCode}");
       }
     } catch (e) {
-      // print('❌ [SESSIONS] Error: $e');
+      print('❌ [SESSIONS] Error: $e');
     } finally {
       isLoadingSession.value = false;
+      update();
+    }
+  }
+
+  bool isLoadingTodaySessions = false;
+  final RxList<UpComingSessionModel> todaySessionData = <UpComingSessionModel>[].obs;
+  Future<void> fetchTodaySessions(String formatted) async{
+    isLoadingTodaySessions = true;
+    todaySessionData.clear();
+    update();
+    try {
+      final response = await ApiClient.getData(ApiUrls.todaySessions(formatted));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> datas = response.body['data'] ?? [];
+
+        for (var item in datas) {
+          final session = UpComingSessionModel.fromJson(item);
+          todaySessionData.add(session);
+        }
+
+        print("✅ Sessions loaded: ${todaySessionData.length}");
+      } else {
+        print("❌ API Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('❌ [SESSIONS] Error: $e');
+    } finally {
+      isLoadingTodaySessions = false;
       update();
     }
   }
@@ -74,7 +118,7 @@ class SessionsController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = response.body['data'] ?? [];
         mySessionData.assignAll(data.cast<Map<String, dynamic>>());
-        debugPrint('Fetched ${mySessionData.length} my sessions');
+        debugPrint('Fetched  ${mySessionData.length} my sessions');
       }
     } catch (e) {
       print('Error fetching my sessions: $e');

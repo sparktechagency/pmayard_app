@@ -89,5 +89,7 @@ class ResourceController extends GetxController {
     }else{
       showToast('Some ting went wrong');
     }
+    isLoadingMaterial = false;
+    update();
   }
 }

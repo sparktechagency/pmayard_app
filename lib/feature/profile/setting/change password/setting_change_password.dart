@@ -23,6 +23,10 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
       appBar: CustomAppBar(
         title: 'Change Password',
         borderColor: AppColors.secondaryColor,
+        backAction: (){
+          authController.clearChangePasswordField();
+          Get.back();
+        },
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -70,14 +74,13 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
               ),
               CustomTextField(
                 labelText: 'Confirm Password',
-                controller: authController.confirmPassController,
+                controller: authController.confirmPasswordTEController,
                 hintText: "Confirm Password",
                 isPassword: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm password is required';
-                  } else if (value !=
-                      authController.newPasswordTEController.text) {
+                  } else if (value != authController.newPasswordTEController.text) {
                     return 'Passwords do not match';
                   }
                   return null;

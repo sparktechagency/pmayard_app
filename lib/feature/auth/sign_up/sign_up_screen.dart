@@ -113,8 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm password is required';
-                  } else if (value !=
-                      _registerController.passwordController.text) {
+                  } else if (value != _registerController.passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;

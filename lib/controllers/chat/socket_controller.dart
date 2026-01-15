@@ -50,15 +50,10 @@ class SocketChatController extends GetxController {
     return Messages(
       sId: "",
       conversationId: socketData.conversationId,
-      senderId: SenderId(
-        sId: msg?.senderId,
-        email: null,
-        role: null,
-        roleId: null,
-      ),
+      senderId: msg?.senderId ?? '',
       attachmentId: msg?.attachment?.map((a) {
         return AttachmentId(
-          sId: a.id,
+          sId: a.sId,
           fileUrl: a.fileUrl,
           mimeType: a.mimeType,
         );

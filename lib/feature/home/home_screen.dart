@@ -13,6 +13,7 @@ import 'package:pmayard_app/feature/home/widgets/assign_professional_popup_modal
 import 'package:pmayard_app/feature/home/widgets/assigned_card_widget.dart';
 import 'package:pmayard_app/feature/home/widgets/showUserDataPopUpModal.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 import 'package:pmayard_app/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,13 +26,24 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final AssignedController _assignedController = Get.find<AssignedController>();
   final SessionsController _sessionsController = Get.find<SessionsController>();
+  final userRole = Get.find<UserController>().user?.role ?? '';
+
+  late String formattedDate;
 
   @override
   void initState() {
     super.initState();
+    formattedDate =DateTime.now().toIso8601String().split('T')[0];
+    // formattedDate = '2026-01-16';
+
     if (_assignedController.assignModel.isEmpty) {
       _assignedController.getAssigned();
+    }
+
+    if (userRole == 'professional') {
       _sessionsController.getSessions();
+    } else if (userRole == 'parent') {
+      _sessionsController.fetchTodaySessions(formattedDate);
     }
   }
 
@@ -44,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (controller) {
             final userData = controller.user;
             return CustomListTile(
-              image: userData?.roleId?.profileImage,
+              image: '${ApiUrls.imageBaseUrl}${userData?.roleId?.profileImage!.url}',
               imageRadius: 24.r,
               contentPaddingHorizontal: 16.w,
               titleColor: Colors.white,
@@ -69,7 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.primaryColor,
         onRefresh: () async {
           await _assignedController.getAssigned();
-          await _sessionsController.getSessions();
+
+          if (userRole == 'professional') {
+            await _sessionsController.getSessions();
+          } else if (userRole == 'parent') {
+            _sessionsController.todaySessionData.clear();
+            await _sessionsController.fetchTodaySessions(formattedDate);
+          }
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -79,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// =================== Assign New Professional Button are here ======================
+                  /// =================== Assign New Professional Button ======================
                   if (role == 'parent')
                     Padding(
                       padding: EdgeInsets.only(
@@ -114,14 +132,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         left: 16.w,
                         right: 16.w,
                         text:
-                            'Assigned ${controller.user?.role == 'professional' ? 'Parents' : 'Professionals'}',
+                        'Assigned ${controller.user?.role == 'professional' ? 'Parents' : 'Professionals'}',
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
                       );
                     },
                   ),
 
-                  // Assign Related Work
+                  // Assigned Cards
                   GetBuilder<AssignedController>(
                     builder: (controller) {
                       if (_assignedController.isLoadingAssigned) {
@@ -139,12 +157,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Center(
                             child: CustomText(
                               text:
-                                  'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
+                              'No assigned ${role == 'professional' ? 'parents' : 'professionals'}',
                               fontSize: 14.sp,
                             ),
                           ),
                         );
                       }
+
                       return SizedBox(
                         height: 198.h,
                         child: ListView.builder(
@@ -153,8 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: assignedList.length,
                           itemBuilder: (context, index) {
                             final item = assignedList[index];
-                            final professionalItem =
-                                assignedList[index].professional;
+                            final professionalItem = assignedList[index].professional;
                             final parentItem = assignedList[index].parent;
 
                             String name = '';
@@ -163,11 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             if (role == 'professional') {
                               name = parentItem?.name ?? '';
-                              imageUrl = parentItem?.profileImage ?? '';
+                              imageUrl = '${ApiUrls.imageBaseUrl}${parentItem?.profileImage!.url}';
                               userRole = parentItem?.user?.role ?? '';
                             } else if (role == 'parent') {
                               name = professionalItem?.name ?? '';
-                              imageUrl = professionalItem?.profileImage ?? '';
+                              imageUrl = '${ApiUrls.imageBaseUrl}${professionalItem?.profileImage!.url}';
                               userRole = professionalItem?.user?.role ?? '';
                             }
 
@@ -186,102 +204,273 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
 
-                  /// ===================>>>> Upcoming Sessions Section <<<================== ///
+                  /// ===================>>>> Sessions Section <<<================== ///
                   CustomText(
                     top: 24.h,
                     bottom: 10.h,
                     left: 16.w,
                     right: 16.w,
-                    text: 'Upcoming Sessions',
+                    text: role == 'professional'
+                        ? 'Upcoming Sessions'
+                        : 'Today\'s Schedule',
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
-                  Obx(() {
-                    if (_sessionsController.isLoadingSession.value) {
-                      return ShimmerHelper.upcomingSessionsShimmer();
-                    }
-                    final sessionData = role == 'professional'
-                        ? _sessionsController.upComingSessionParentList
-                        : _sessionsController.upComingSessionProfessionalList;
 
-                    if (sessionData.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40.h),
-                          child: CustomText(
-                            text: 'No upcoming sessions',
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      );
-                    }
+                  // ============= PROFESSIONAL: Upcoming Sessions =============
+                  if (role == 'professional')
+                    Obx(() {
+                      if (_sessionsController.isLoadingSession.value) {
+                        return ShimmerHelper.upcomingSessionsShimmer();
+                      }
 
-                    return ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: sessionData.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        String name = '';
-                        String imageUrl = '';
-                        String? day;
-                        String? date;
+                      final sessionData = _sessionsController.upComingSessionParentList;
 
-                        final session = sessionData[index];
-
-                        if (role == 'professional') {
-                          final session = sessionData[index];
-                          name = session.parent?.name ?? 'Unknown';
-                          imageUrl = session.parent?.profileImage ?? '';
-                          day = session.day ?? '';
-                          date = session.date ?? '';
-                        } else {
-                          final session = sessionData[index];
-                          name = session.professional?.name ?? 'Unknown';
-                          imageUrl = session.professional?.profileImage ?? '';
-                          day = session.day ?? '';
-                          date = session.date ?? '';
-                        }
-                        final hasDateTime =
-                            (day.isNotEmpty) && (date.isNotEmpty);
-
-                        // Format the subtitle
-                        final subtitle = hasDateTime
-                            ? '${TimeFormatHelper.formatDate(DateTime.parse(date))} at ${DateFormat('h:mm a').format(DateTime.parse(date.toString()))}'
-                            : 'Waiting';
-
+                      if (sessionData.isEmpty) {
                         return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 6.h,
-                          ),
-                          child: CustomListTile(
-                            contentPaddingVertical: 6.h,
-                            borderRadius: 8.r,
-                            borderColor: AppColors.borderColor,
-                            image: imageUrl,
-                            title: name,
-                            subTitle: subtitle,
-                            titleFontSize: 16.sp,
-                            trailing: hasDateTime
-                                ? CustomButton(
-                                    radius: 8.r,
-                                    height: 25.h,
-                                    fontSize: 10.sp,
-                                    onPressed: () =>
-                                        showUserData(context, session, role),
-                                    label: 'View Detail',
-                                  )
-                                : null,
+                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                          child: Center(
+                            child: CustomText(
+                              text: 'No upcoming sessions',
+                              fontSize: 14.sp,
+                              color: Colors.grey,
+                            ),
                           ),
                         );
+                      }
+
+                      return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: sessionData.length,
+                        itemBuilder: (context, index) {
+                          final session = sessionData[index];
+
+                          String name = session.parent?.name ?? 'Unknown';
+                          String imageUrl = '${ApiUrls.imageBaseUrl}${session.parent?.profileImage?.url ?? ''}';
+                          String? day = session.day ?? '';
+                          String? date = session.date ?? '';
+
+                          final hasDateTime = day.isNotEmpty && date.isNotEmpty;
+                          final DateTime? dateTime = date.isNotEmpty ? DateTime.tryParse(date) : null;
+
+                          final datePart = dateTime != null
+                              ? DateFormat('dd/MM/yy').format(dateTime)
+                              : '';
+
+                          final formattedTime = dateTime != null
+                              ? DateFormat('h:mm a').format(dateTime)
+                              : '';
+
+                          final subtitle = hasDateTime && dateTime != null
+                              ? '$datePart at $formattedTime'
+                              : 'Waiting';
+
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                            child: CustomListTile(
+                              contentPaddingVertical: 6.h,
+                              borderRadius: 8.r,
+                              borderColor: AppColors.borderColor,
+                              image: imageUrl,
+                              title: name,
+                              subTitle: subtitle,
+                              titleFontSize: 16.sp,
+                              trailing: hasDateTime
+                                  ? CustomButton(
+                                radius: 8.r,
+                                height: 25.h,
+                                fontSize: 10.sp,
+                                onPressed: () => showUserData(context, session, role),
+                                label: 'View Detail',
+                              )
+                                  : null,
+                            ),
+                          );
+                        },
+                      );
+                    }),
+
+                  // ============= PARENT: Today's Schedule =============
+                  // FIXED: Changed Obx to GetBuilder since isLoadingTodaySessions is not RxBool
+                  if (role == 'parent')
+                    GetBuilder<SessionsController>(
+                      builder: (sessionController) {
+                        // Show shimmer while loading
+                        if (sessionController.isLoadingTodaySessions) {
+                          return ShimmerHelper.upcomingSessionsShimmer();
+                        }
+
+                        final todaySessions = sessionController.todaySessionData;
+
+                        // Show empty state
+                        if (todaySessions.isEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40.h),
+                            child: Center(
+                              child: CustomText(
+                                text: 'No sessions scheduled for today',
+                                fontSize: 14.sp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
+                        }
+
+                        // Display today's sessions
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: todaySessions.length,
+                          itemBuilder: (context, index) {
+                            final session = todaySessions[index];
+
+                            // Extract session data
+                            String professionalName = session.professional?.name ?? 'Unknown';
+                            String imageUrl = '${ApiUrls.imageBaseUrl}${session.professional?.profileImage?.url ?? ''}';
+                            String subject = session.subject ?? 'N/A';
+                            String status = session.status ?? 'Pending';
+                            String sessionId = session.sId ?? '';
+                            String? date = session.date ?? '';
+
+                            // Format time
+                            String timeString = 'Waiting';
+                            if (date.isNotEmpty) {
+                              try {
+                                final parsedDate = DateTime.parse(date);
+                                final startTime = session.time?.startTime ?? '';
+                                final endTime = session.time?.endTime ?? '';
+
+                                if (startTime.isNotEmpty && endTime.isNotEmpty) {
+                                  timeString = '$startTime - $endTime';
+                                } else {
+                                  timeString = TimeFormatHelper.timeWithAMPM(parsedDate) ?? 'Waiting';
+                                }
+                              } catch (e) {
+                                debugPrint('Error parsing date: $e');
+                              }
+                            }
+
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 6.h,
+                              ),
+                              child: CustomListTile(
+                                subject: subject,
+                                contentPaddingVertical: 6.h,
+                                borderRadius: 8.r,
+                                borderColor: AppColors.borderColor,
+                                image: imageUrl,
+                                imageRadius: 24.r,
+                                title: professionalName,
+                                subTitle: timeString,
+                                titleFontSize: 16.sp,
+                                trailing: status == 'Confirmed'
+                                    ? Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Cancel Button
+                                    GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => CustomDialog(
+                                            title: "Are you sure you want to cancel this session?",
+                                            confirmButtonColor: const Color(0xffF40000),
+                                            confirmButtonText: 'Yes, Cancel',
+                                            onCancel: () => Get.back(),
+                                            onConfirm: () {
+                                              _sessionsController.completeSessionDBHandler(
+                                                sessionId,
+                                                'Canceled',
+                                              );
+                                              Get.back();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Assets.icons.cleanIcon.svg(),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    // Complete Button
+                                    GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => CustomDialog(
+                                            title: "Do you want to mark this session as completed?",
+                                            confirmButtonText: 'Yes, Complete',
+                                            onCancel: () => Get.back(),
+                                            onConfirm: () {
+                                              _sessionsController.completeSessionDBHandler(
+                                                sessionId,
+                                                'Completed',
+                                              );
+                                              Get.back();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Assets.icons.success.svg(),
+                                    ),
+                                  ],
+                                )
+                                    : _buildSessionStatus(status),
+                              ),
+                            );
+                          },
+                        );
                       },
-                    );
-                  }),
+                    ),
+
                   SizedBox(height: 44.h),
                 ],
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Build Session Status Badge
+  Widget _buildSessionStatus(String status) {
+    String value = status;
+    Color bgColor = Color(0xFF0ABAB5);
+
+    switch (status) {
+      case 'Completed':
+        value = 'Completed';
+        bgColor = const Color(0xFFC2B067);
+        break;
+      case 'Canceled':
+      case 'Cancelled':
+        value = 'Cancelled';
+        bgColor = const Color(0xFFF40000);
+        break;
+      case 'Pending':
+        value = 'Pending';
+        bgColor = const Color(0xFF0ABAB5);
+        break;
+      default:
+        value = status;
+        bgColor = const Color(0xFF0ABAB5);
+        break;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 15.w),
+      decoration: BoxDecoration(
+        color: bgColor.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(30.r),
+      ),
+      child: Text(
+        value,
+        style: TextStyle(
+          color: bgColor,
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w400,
         ),
       ),
     );

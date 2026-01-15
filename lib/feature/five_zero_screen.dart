@@ -26,7 +26,7 @@ class _FiveZeroScreenState extends State<FiveZeroScreen> {
     });
 
     try {
-      final response = await ApiClient.getData(ApiUrls.terms);
+      final response = await ApiClient.getData(ApiUrls.imageBaseUrl);
 
       if (response.statusCode == 200) {
         _onServerOnline();
@@ -54,6 +54,7 @@ class _FiveZeroScreenState extends State<FiveZeroScreen> {
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         PrefsHelper.remove(AppConstants.bearerToken);
+        PrefsHelper.clearAllDatas();
         Get.offAllNamed(AppRoutes.loginScreen);
       }
     });

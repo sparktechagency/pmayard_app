@@ -1,33 +1,46 @@
-class MetarialsModel{
-  String id;
-  String subjectId;
-  String title;
-  String fileUrl;
-  String mimeType;
-  bool isDeleted;
-  DateTime createdAt;
-  DateTime updatedAt;
+class MetarialsModel {
+  String? sId;
+  String? subjectId;
+  String? title;
+  FileUrl? fileUrl;
+  String? mimeType;
+  bool? isDeleted;
+  String? createdAt;
+  String? updatedAt;
 
   MetarialsModel({
-    required this.id,
-    required this.subjectId,
-    required this.title,
-    required this.fileUrl,
-    required this.mimeType,
-    required this.isDeleted,
-    required this.createdAt,
-    required this.updatedAt,
+    this.sId,
+    this.subjectId,
+    this.title,
+    this.fileUrl,
+    this.mimeType,
+    this.isDeleted,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory MetarialsModel.fromJson(Map<String, dynamic> json) => MetarialsModel(
-    id: json["_id"],
-    subjectId: json["subjectId"],
-    title: json["title"],
-    fileUrl: json["fileUrl"],
-    mimeType: json["mimeType"],
-    isDeleted: json["isDeleted"],
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-  );
+  MetarialsModel.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    subjectId = json['subjectId'];
+    title = json['title'];
+    fileUrl = json['fileUrl'] != null
+        ? FileUrl.fromJson(json['fileUrl'])
+        : null;
+    mimeType = json['mimeType'];
+    isDeleted = json['isDeleted'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
 }
 
+class FileUrl {
+  String? path;
+  String? url;
+
+  FileUrl({this.path, this.url});
+
+  FileUrl.fromJson(Map<String, dynamic> json) {
+    path = json['path'];
+    url = json['url'];
+  }
+}

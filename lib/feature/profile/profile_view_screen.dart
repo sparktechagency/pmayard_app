@@ -7,6 +7,7 @@ import 'package:pmayard_app/app/utils/app_colors.dart';
 import 'package:pmayard_app/controllers/sessions/sessions_controller.dart';
 import 'package:pmayard_app/controllers/user/user_controller.dart';
 import 'package:pmayard_app/routes/app_routes.dart';
+import 'package:pmayard_app/services/api_urls.dart';
 
 import '../../widgets/widgets.dart';
 
@@ -54,11 +55,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
           if (Get.find<UserController>().user?.role == 'professional') {
             name = parentProfile?.name ?? '';
-            imageUrl = parentProfile?.profileImage ?? '';
+            imageUrl = '${ApiUrls.imageBaseUrl}${parentProfile?.profileImage!.url}';
             userRole =  'parent';
           } else if (Get.find<UserController>().user?.role == 'parent') {
             name = professionalProfile?.name ?? '';
-            imageUrl = professionalProfile?.profileImage ?? '';
+            imageUrl = '${ApiUrls.imageBaseUrl}${professionalProfile?.profileImage!.url}';
             userRole = 'professional';
           }
 

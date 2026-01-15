@@ -35,4 +35,8 @@ class PrefsHelper {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return preferences.remove(key);
   }
+  static Future clearAllDatas() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
+  }
 }

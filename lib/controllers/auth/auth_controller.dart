@@ -71,8 +71,8 @@ class AuthController extends GetxController {
         AppConstants.role,
         responseBody['role'] ?? '',
       );
-      Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
       cleanFieldRegister();
+      Get.toNamed(AppRoutes.otpScreen, arguments: {'role': 'sign_up'});
     } else {
       showToast(responseBody['message']);
     }
@@ -185,7 +185,7 @@ class AuthController extends GetxController {
     final requestBody = {
       'email': loginEmailController.text.trim(),
       'password': loginPasswordController.text,
-      'fcmToken' : fcmToken
+      'fcmToken': fcmToken,
     };
 
     try {
@@ -343,11 +343,9 @@ class AuthController extends GetxController {
 
   /// <=============== Change passport related work are here ========================
   bool isChangePassword = false;
-  final TextEditingController currentPasswordTEController =
-      TextEditingController();
+  final TextEditingController currentPasswordTEController = TextEditingController();
   final TextEditingController newPasswordTEController = TextEditingController();
-  final TextEditingController confirmPasswordTEController =
-      TextEditingController();
+  final TextEditingController confirmPasswordTEController = TextEditingController();
 
   void changePassword() async {
     isChangePassword = true;
@@ -362,11 +360,12 @@ class AuthController extends GetxController {
     if (response.statusCode == 200) {
       await PrefsHelper.setString(
         AppConstants.bearerToken,
-        response.body['accessToken'],
+        response.body['data']['accessToken'],
       );
       UserController().userData();
       showToast(response.body['message']);
       clearChangePasswordField();
+      Get.back();
     } else {
       showToast(response.body['message']);
     }
@@ -381,19 +380,10 @@ class AuthController extends GetxController {
     currentPasswordTEController.clear();
   }
 
+
   /// <======================= Log out related work are here  ===========================>
   void logOut() async {
-    await PrefsHelper.remove(AppConstants.bearerToken);
-
-    await PrefsHelper.remove(AppConstants.role);
-    await PrefsHelper.remove(AppConstants.bio);
-    await PrefsHelper.remove(AppConstants.image);
-    await PrefsHelper.remove(AppConstants.userId);
-    await PrefsHelper.remove(AppConstants.email);
-    await PrefsHelper.remove(AppConstants.name);
-    await PrefsHelper.remove(AppConstants.phone);
-
-    Get.find<UserController>().user = null;
+    await PrefsHelper.clearAllDatas();
     Get.find<AssignedController>().assignModel.clear();
     Get.find<SessionsController>().upComingSessionProfessionalList.clear();
     Get.find<SessionsController>().upComingSessionParentList.clear();
@@ -417,6 +407,7 @@ class AuthController extends GetxController {
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordTEController.dispose();
     confirmPassController.dispose();
     otpController.dispose();
     loginEmailController.dispose();

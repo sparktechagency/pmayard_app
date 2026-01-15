@@ -1,6 +1,4 @@
-
 class AssignViewProfileModel {
-  Time? time;
   String? sId;
   Parent? parent;
   Professional? professional;
@@ -17,8 +15,7 @@ class AssignViewProfileModel {
   int? iV;
 
   AssignViewProfileModel(
-      {this.time,
-        this.sId,
+      {this.sId,
         this.parent,
         this.professional,
         this.conversationId,
@@ -34,7 +31,6 @@ class AssignViewProfileModel {
         this.iV});
 
   AssignViewProfileModel.fromJson(Map<String, dynamic> json) {
-    time = json['time'] != null ? new Time.fromJson(json['time']) : null;
     sId = json['_id'];
     parent =
     json['parent'] != null ? new Parent.fromJson(json['parent']) : null;
@@ -55,18 +51,6 @@ class AssignViewProfileModel {
   }
 }
 
-class Time {
-  String? startTime;
-  String? endTime;
-
-  Time({this.startTime, this.endTime});
-
-  Time.fromJson(Map<String, dynamic> json) {
-    startTime = json['startTime'];
-    endTime = json['endTime'];
-  }
-}
-
 class Parent {
   String? sId;
   String? user;
@@ -75,7 +59,7 @@ class Parent {
   String? childsName;
   String? childsGrade;
   String? relationshipWithChild;
-  String? profileImage;
+  ProfileImage? profileImage;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
@@ -103,11 +87,25 @@ class Parent {
     childsName = json['childs_name'];
     childsGrade = json['childs_grade'];
     relationshipWithChild = json['relationship_with_child'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
+  }
+}
+
+class ProfileImage {
+  String? path;
+  String? url;
+
+  ProfileImage({this.path, this.url});
+
+  ProfileImage.fromJson(Map<String, dynamic> json) {
+    path = json['path'];
+    url = json['url'];
   }
 }
 
@@ -117,7 +115,7 @@ class Professional {
   String? name;
   String? bio;
   String? phoneNumber;
-  String? profileImage;
+  ProfileImage? profileImage;
   String? qualification;
   List<String>? subjects;
   List<Availability>? availability;
@@ -147,7 +145,9 @@ class Professional {
     name = json['name'];
     bio = json['bio'];
     phoneNumber = json['phoneNumber'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
     qualification = json['qualification'];
     subjects = json['subjects'].cast<String>();
     if (json['availability'] != null) {
@@ -161,7 +161,6 @@ class Professional {
     updatedAt = json['updatedAt'];
     iV = json['__v'];
   }
-
 }
 
 class Availability {
@@ -181,7 +180,6 @@ class Availability {
     }
     sId = json['_id'];
   }
-
 }
 
 class TimeSlots {
@@ -198,5 +196,4 @@ class TimeSlots {
     status = json['status'];
     sId = json['_id'];
   }
-
 }

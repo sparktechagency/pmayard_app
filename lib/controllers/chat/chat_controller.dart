@@ -33,7 +33,7 @@ class ChatController extends GetxController {
       filteredChatData.value = List.from(chatData);
     } else {
       filteredChatData.value = chatData
-          .where((chat) => chat.users?.first.roleId?.name
+          .where((chat) => chat.otherUser?.roleId?.name
           ?.toLowerCase()
           .contains(query.toLowerCase()) ?? false)
           .toList();

@@ -11,7 +11,7 @@ class ChatBubbleMessage extends StatelessWidget {
   final String time;
   final String? text;
   final List<String>? images;
-  final List<String>? audioUrls; // List হিসেবে নিন
+  final List<String>? audioUrls;
   final bool isSeen;
   final bool isMe;
   final String status;
@@ -51,7 +51,8 @@ class ChatBubbleMessage extends StatelessWidget {
               Flexible(
                 child: CustomContainer(
                   paddingAll: 10.r,
-                  color: isMe ? const Color(0xff666978) : const Color(0xffE8E9EB),
+                  color:
+                  isMe ? const Color(0xff666978) : const Color(0xffE8E9EB),
                   bottomRight: 10.r,
                   bottomLeft: 10.r,
                   topLeftRadius: isMe ? 10.r : 0,
@@ -80,12 +81,9 @@ class ChatBubbleMessage extends StatelessWidget {
   }
 
   Widget _buildMessageContent() {
-    // অডিও মেসেজ শো করার জন্য
     if (audioUrls != null && audioUrls!.isNotEmpty) {
       return AudioPlayerWidget(audioUrls: audioUrls!, isMe: isMe);
-    }
-    // টেক্সট মেসেজ শো করার জন্য
-    else if (text?.isNotEmpty == true) {
+    } else if (text?.isNotEmpty == true) {
       return CustomText(
         maxline: 10,
         fontSize: 12.sp,
@@ -94,9 +92,7 @@ class ChatBubbleMessage extends StatelessWidget {
         color: isMe ? Colors.white : Colors.grey.shade800,
         text: text!,
       );
-    }
-    // ইমেজ মেসেজ শো করার জন্য
-    else if (images != null && images!.isNotEmpty) {
+    } else if (images != null && images!.isNotEmpty) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -107,11 +103,9 @@ class ChatBubbleMessage extends StatelessWidget {
               child: SizedBox(
                 width: 188.w,
                 child: BubbleNormalImage(
-                  id: url ?? '',
-                  image: CustomNetworkImage(
-                    imageUrl: url,
-                    fit: BoxFit.cover,
-                  ),
+                  id: url,
+                  image:
+                  CustomNetworkImage(imageUrl: url, fit: BoxFit.cover),
                   color: Colors.transparent,
                   tail: true,
                 ),
@@ -157,6 +151,9 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       duration: const Duration(milliseconds: 600),
     );
 
+    // ✅ PRELOAD AUDIO (FIX)
+    _player.setSourceUrl(widget.audioUrls.first);
+
     _player.onDurationChanged.listen((d) {
       setState(() => _duration = d);
     });
@@ -179,9 +176,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       await _player.pause();
       _eqController.stop();
     } else {
-      await _player.play(
-        UrlSource(widget.audioUrls.first),
-      );
+      await _player.resume();
       _eqController.repeat();
     }
 
@@ -207,12 +202,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       constraints: BoxConstraints(maxWidth: 250.w),
       decoration: BoxDecoration(
-        color: widget.isMe ? const Color(0xff666978) : const Color(0xffE8E9EB),
+        color:
+        widget.isMe ? const Color(0xff666978) : const Color(0xffE8E9EB),
         borderRadius: BorderRadius.circular(14.r),
       ),
       child: Row(
         children: [
-          // PLAY BUTTON
           GestureDetector(
             onTap: _playPause,
             child: Container(
@@ -230,25 +225,25 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
               ),
             ),
           ),
-
           SizedBox(width: 10.w),
-
-          // EQUALIZER BARS
           AnimatedBuilder(
             animation: _eqController,
             builder: (_, __) {
               return Row(
                 children: List.generate(6, (i) {
-                  double height = 6 + (10 * (i % 2 == 0 ? _eqController.value : (1 - _eqController.value)));
+                  double height = 6 +
+                      (10 *
+                          (i % 2 == 0
+                              ? _eqController.value
+                              : (1 - _eqController.value)));
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 2.w),
                     child: Container(
                       width: 3.w,
                       height: height.h,
                       decoration: BoxDecoration(
-                        color: widget.isMe
-                            ? Colors.white
-                            : Colors.black87,
+                        color:
+                        widget.isMe ? Colors.white : Colors.black87,
                         borderRadius: BorderRadius.circular(4.r),
                       ),
                     ),
@@ -257,12 +252,13 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget>
               );
             },
           ),
+          const Spacer(),
 
-          Spacer(),
-
-          // TIME TEXT
+          // ✅ FIXED TIME TEXT (ONLY INFECTED PART)
           Text(
-            _fmt(_position),
+            _position == Duration.zero
+                ? _fmt(_duration)
+                : _fmt(_position),
             style: TextStyle(
               fontSize: 10.sp,
               color: widget.isMe

@@ -15,30 +15,28 @@ class UpComingSessionModel {
   String? updatedAt;
   int? iV;
 
-  UpComingSessionModel({
-    this.time,
-    this.sId,
-    this.parent,
-    this.professional,
-    this.conversationId,
-    this.day,
-    this.date,
-    this.subject,
-    this.status,
-    this.code,
-    this.isSessionVerified,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-    this.iV,
-  });
+  UpComingSessionModel(
+      {this.time,
+        this.sId,
+        this.parent,
+        this.professional,
+        this.conversationId,
+        this.day,
+        this.date,
+        this.subject,
+        this.status,
+        this.code,
+        this.isSessionVerified,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
 
   UpComingSessionModel.fromJson(Map<String, dynamic> json) {
     time = json['time'] != null ? new Time.fromJson(json['time']) : null;
     sId = json['_id'];
-    parent = json['parent'] != null
-        ? new Parent.fromJson(json['parent'])
-        : null;
+    parent =
+    json['parent'] != null ? new Parent.fromJson(json['parent']) : null;
     professional = json['professional'] != null
         ? new Professional.fromJson(json['professional'])
         : null;
@@ -83,26 +81,25 @@ class Parent {
   String? childsName;
   String? childsGrade;
   String? relationshipWithChild;
-  String? profileImage;
+  ProfileImage? profileImage;
   bool? isDeleted;
   String? createdAt;
   String? updatedAt;
   int? iV;
 
-  Parent({
-    this.sId,
-    this.user,
-    this.name,
-    this.phoneNumber,
-    this.childsName,
-    this.childsGrade,
-    this.relationshipWithChild,
-    this.profileImage,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-    this.iV,
-  });
+  Parent(
+      {this.sId,
+        this.user,
+        this.name,
+        this.phoneNumber,
+        this.childsName,
+        this.childsGrade,
+        this.relationshipWithChild,
+        this.profileImage,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
 
   Parent.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -112,7 +109,9 @@ class Parent {
     childsName = json['childs_name'];
     childsGrade = json['childs_grade'];
     relationshipWithChild = json['relationship_with_child'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
     isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -132,13 +131,25 @@ class User {
   }
 }
 
+class ProfileImage {
+  String? path;
+  String? url;
+
+  ProfileImage({this.path, this.url});
+
+  ProfileImage.fromJson(Map<String, dynamic> json) {
+    path = json['path'];
+    url = json['url'];
+  }
+}
+
 class Professional {
   String? sId;
   User? user;
   String? name;
   String? bio;
   String? phoneNumber;
-  String? profileImage;
+  ProfileImage? profileImage;
   String? qualification;
   List<String>? subjects;
   bool? isDeleted;
@@ -146,20 +157,19 @@ class Professional {
   String? updatedAt;
   int? iV;
 
-  Professional({
-    this.sId,
-    this.user,
-    this.name,
-    this.bio,
-    this.phoneNumber,
-    this.profileImage,
-    this.qualification,
-    this.subjects,
-    this.isDeleted,
-    this.createdAt,
-    this.updatedAt,
-    this.iV,
-  });
+  Professional(
+      {this.sId,
+        this.user,
+        this.name,
+        this.bio,
+        this.phoneNumber,
+        this.profileImage,
+        this.qualification,
+        this.subjects,
+        this.isDeleted,
+        this.createdAt,
+        this.updatedAt,
+        this.iV});
 
   Professional.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -167,7 +177,9 @@ class Professional {
     name = json['name'];
     bio = json['bio'];
     phoneNumber = json['phoneNumber'];
-    profileImage = json['profileImage'];
+    profileImage = json['profileImage'] != null
+        ? new ProfileImage.fromJson(json['profileImage'])
+        : null;
     qualification = json['qualification'];
     subjects = json['subjects'].cast<String>();
     isDeleted = json['isDeleted'];
