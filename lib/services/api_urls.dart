@@ -23,9 +23,9 @@ class ApiUrls {
       '/auth/resend-otp/$userEmail';
 
   // Legal
-  static const String terms = '/rules/terms';
-  static const String about = '/rules/aboutus';
-  static const String privacy = '/rules/privacy';
+  static const String terms = '/terms';
+  static const String about = '/about';
+  static const String privacy = '/privacy';
 
   // User Profile Related Work
   static const String updateProfile = '/users/update-profile';
