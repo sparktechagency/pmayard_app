@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pmayard_app/app/helpers/photo_picker_helper.dart';
+import 'package:pmayard_app/app/helpers/prefs_helper.dart';
+import 'package:pmayard_app/app/utils/app_constants.dart';
 import 'package:pmayard_app/models/user_model/user_data_model.dart';
 import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
@@ -11,8 +13,17 @@ import 'package:pmayard_app/widgets/custom_tost_message.dart';
 class UserController extends GetxController {
   @override
   void onInit() {
-    userData();
     super.onInit();
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    final token = await PrefsHelper.getString(AppConstants.bearerToken);
+    if (token.isEmpty) {
+      print('Token is missing or empty');
+      return;
+    }
+    await userData();
   }
 
   /// ========================>>> user data controller =======================>>>
@@ -31,40 +42,35 @@ class UserController extends GetxController {
     isUserDataComing = false;
     update();
   }
+
   /// ========================>>> profile edit controller =======================>>>
 
-  late TextEditingController emailController ;
-  late TextEditingController nameController ;
-  late TextEditingController bioController ;
-  late TextEditingController phoneController ;
+  late TextEditingController emailController;
+  late TextEditingController nameController;
+  late TextEditingController bioController;
+  late TextEditingController phoneController;
   File? selectedImage;
-  late TextEditingController subjectsController ;
+  late TextEditingController subjectsController;
 
-  // initiateUserData(){
-  //   emailController.text = user?.email ?? '';
-  //   nameController.text = user!.roleId?.name ?? '';
-  //   bioController.text = user!.roleId?.bio ?? '';
-  //   phoneController.text = user!.roleId?.phoneNumber ?? '';
-  //   subjectsController.text = user?.roleId?.subjects.map((s) => s).join(', ') ?? '';
-  // }
-
-  initiateUserData(){
-    emailController = TextEditingController(text: user?.email ?? '',);
-     nameController = TextEditingController(text: user!.roleId?.name ?? '',);
-     bioController = TextEditingController(text: user!.roleId?.bio ?? '',);
-     phoneController = TextEditingController(text: user!.roleId?.phoneNumber ?? '',);
-    subjectsController = TextEditingController(text: user?.roleId?.subjects.map((s) => s).join(', ') ?? '',);
+  initiateUserData() {
+    emailController = TextEditingController(text: user?.email ?? '');
+    nameController = TextEditingController(text: user!.roleId?.name ?? '');
+    bioController = TextEditingController(text: user!.roleId?.bio ?? '');
+    phoneController = TextEditingController(
+      text: user!.roleId?.phoneNumber ?? '',
+    );
+    subjectsController = TextEditingController(
+      text: user?.roleId?.subjects.map((s) => s).join(', ') ?? '',
+    );
   }
 
-  initiateUserDataClear(){
+  initiateUserDataClear() {
     emailController.clear();
     nameController.clear();
     bioController.clear();
     phoneController.clear();
     subjectsController.clear();
   }
-
-
 
   final List<String> subjectList = [];
   List<Map<String, dynamic>> availability = [];
@@ -127,5 +133,4 @@ class UserController extends GetxController {
     subjectsController.dispose();
     super.onClose();
   }
-
 }

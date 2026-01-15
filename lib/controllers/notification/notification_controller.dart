@@ -4,11 +4,7 @@ import 'package:pmayard_app/services/api_client.dart';
 import 'package:pmayard_app/services/api_urls.dart';
 
 class NotificationController extends GetxController{
-  @override
-  void onInit(){
-    super.onInit();
-    fetchNotificationData();
-  }
+
   RxBool isLoadingNotification = false.obs;
   RxList notificationModelData = <NotificationModel>[].obs;
 
