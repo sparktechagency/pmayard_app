@@ -35,7 +35,7 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.terms.svg(),
             label: 'Terms & Condition',
             onTap: () {
-              Get.toNamed(AppRoutes.termsScreen);
+              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Condition'});
             },
           ),
 
@@ -43,15 +43,14 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.policy.svg(),
             label: 'Privacy Policy',
             onTap: () {
-              Get.toNamed(AppRoutes.policyScreen);
+              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Privacy Policy'});
             },
           ),
-
           _buildSettingTile(
             icon: Assets.icons.about.svg(),
             label: 'About Us',
             onTap: () {
-              Get.toNamed(AppRoutes.aboutScreen);
+              Get.toNamed(AppRoutes.legalScreen, arguments: {'title': 'About Us'});
             },
           ),
 
