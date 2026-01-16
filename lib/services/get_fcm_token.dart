@@ -28,7 +28,9 @@ class FirebaseNotificationService {
     }
 
     // Initialize local notifications
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    // const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInit = AndroidInitializationSettings('notification_icon'); // <- just name, no @mipmap/
+
     const iosInit = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -66,7 +68,7 @@ class FirebaseNotificationService {
             importance: Importance.max,
             priority: Priority.high,
             playSound: true,
-            icon: '@mipmap/ic_launcher',
+            icon: 'notification_icon',
             styleInformation: BigTextStyleInformation(notification.body ?? '',
                 contentTitle: notification.title ?? ''),
           ),

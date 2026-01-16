@@ -11,18 +11,20 @@ import 'app/dependancy_injaction.dart';
 import 'app/helpers/device_utils.dart';
 import 'app/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(ConnectivityController());
   DeviceUtils.lockDevicePortrait();
-  await Firebase.initializeApp();
 
-  await FirebaseMessaging.instance;
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await FirebaseNotificationService.printFCMToken();
   await FirebaseNotificationService.initialize();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await SocketServices.init();
   runApp(const PmayardApp());
@@ -45,7 +47,14 @@ class PmayardApp extends StatelessWidget {
         themeMode: ThemeMode.light,
         initialBinding: DependencyInjection(),
         routes: AppRoutes.routes,
-        builder: (context, child) => Scaffold(body: NoInterNetScreen(child: child!)),
+        builder: (context, child) {
+          if (child == null) return const SizedBox();
+          return Scaffold(
+            body: NoInterNetScreen(child: child),
+          );
+        },
+
+        // builder: (context, child) => Scaffold(body: NoInterNetScreen(child: child)),
       ),
     );
   }
