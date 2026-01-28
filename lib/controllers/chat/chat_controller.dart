@@ -52,8 +52,10 @@ class ChatController extends GetxController {
   void onTapChatType(String value) {
     if (value == 'group') {
       chatData.clear();
+      update();
     } else {
       groupChatData.clear();
+      update();
     }
     selectedValueType.value = value;
     getChat(selectedValueType.value);
