@@ -66,8 +66,10 @@ class _LegalScreenState extends State<LegalScreen> {
                   Radius.circular(12),
                 ),
               ),
-              child: HtmlWidget(
-                controller.valueText.value.toString(),
+              child: SingleChildScrollView(
+                child: HtmlWidget(
+                  controller.valueText.value.toString(),
+                )
               ),
             ),
           ),
