@@ -108,7 +108,7 @@ class ResourceController extends GetxController {
 
     try {
       final response = await ApiClient.getData(
-          ApiUrls.subjectsSearch(subjectId,  currentSubjectPage)
+          ApiUrls.subjectsSearch(subjectId, currentSubjectPage)
       );
 
       if (response.statusCode == 200) {
@@ -165,35 +165,95 @@ class ResourceController extends GetxController {
     currentSubjectId = null;
     currentSubjectPage = 1;
     hasMoreSubjectData = true;
-    update();
+    // Remove update() call here - it's called from dispose() where widget tree is locked
   }
 
   ///================ Material Related Work ==================
 
+  // Material Pagination Variables
+  String? currentMaterialId;
   bool isLoadingMaterial = false;
+  bool isLoadingMaterialMore = false;
   List<MetarialsModel> metarialsModel = [];
 
-  Future<void> fetchMetarials(String materialsID) async {
-    isLoadingMaterial = true;
-    metarialsModel.clear();
-    update();
+  // Material Pagination Controllers
+  int currentMaterialPage = 1;
+  int totalMaterialPage = 1;
+  bool hasMoreMaterialData = true;
 
-    final response = await ApiClient.getData(
-        ApiUrls.materialsSearch(materialsID)
-    );
-
-    if (response.statusCode == 200) {
-      final items = response.body['data'] ?? [];
-      if (items is List && items.isNotEmpty) {
-        List<MetarialsModel> data = items
-            .map((e) => MetarialsModel.fromJson(e))
-            .toList();
-        metarialsModel.addAll(data);
+  Future<void> fetchMetarials(String materialsID, {bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      isLoadingMaterial = true;
+      currentMaterialId = materialsID;
+      if (!isLoadingMaterialMore) {
+        metarialsModel.clear();
+        currentMaterialPage = 1;
       }
     } else {
-      showToast('Something went wrong');
+      isLoadingMaterialMore = true;
     }
-    isLoadingMaterial = false;
+
     update();
+
+    try {
+      final response = await ApiClient.getData(
+          ApiUrls.materialsSearch(materialsID, currentMaterialPage)
+      );
+
+      if (response.statusCode == 200) {
+        final items = response.body['data'] ?? [];
+        final meta = response.body['meta'] ?? {};
+
+        if (items is List && items.isNotEmpty) {
+          List<MetarialsModel> data = items
+              .map((e) => MetarialsModel.fromJson(e))
+              .toList();
+
+          if (isLoadMore) {
+            metarialsModel.addAll(data);
+          } else {
+            metarialsModel = data;
+          }
+        }
+
+        // Update pagination info
+        currentMaterialPage = meta['page'] ?? currentMaterialPage;
+        totalMaterialPage = meta['totalPage'] ?? 1;
+        hasMoreMaterialData = currentMaterialPage < totalMaterialPage;
+
+      } else {
+        showToast('Something went wrong');
+      }
+    } catch (e) {
+      debugPrint('Fetch materials error: ${e.toString()}');
+      showToast('Network error');
+    } finally {
+      isLoadingMaterial = false;
+      isLoadingMaterialMore = false;
+      update();
+    }
+  }
+
+  Future<void> loadMoreMaterialData() async {
+    if (isLoadingMaterialMore || !hasMoreMaterialData || currentMaterialId == null) {
+      return;
+    }
+    currentMaterialPage++;
+    await fetchMetarials(currentMaterialId!, isLoadMore: true);
+  }
+
+  Future<void> refreshMaterialData() async {
+    if (currentMaterialId == null) return;
+    currentMaterialPage = 1;
+    hasMoreMaterialData = true;
+    await fetchMetarials(currentMaterialId!);
+  }
+
+  void clearMaterialData() {
+    metarialsModel.clear();
+    currentMaterialId = null;
+    currentMaterialPage = 1;
+    hasMoreMaterialData = true;
+    // Remove update() call here - it's called from dispose() where widget tree is locked
   }
 }
