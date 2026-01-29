@@ -23,63 +23,36 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   @override
   void initState() {
     super.initState();
-
-    // 1. Create ScrollController
     _scrollController = ScrollController();
-
-    // 2. Load initial data
-    print('🚀 Initializing screen...');
     controller.fetchResource();
-
-    // 3. Setup scroll listener
     _setupScrollListener();
   }
 
   void _setupScrollListener() {
     _scrollController.addListener(() {
-      // Debug: print scroll position
-      print('📜 Scroll position: ${_scrollController.position.pixels}');
-      print('📜 Max scroll: ${_scrollController.position.maxScrollExtent}');
-      print('📜 Extent after: ${_scrollController.position.extentAfter}');
-
       if (_shouldLoadMore()) {
-        print('🎯 Bottom reached! Loading more data...');
-        controller.loadMoreData();
+        controller.loadMoreResourceData();
       }
     });
   }
 
   bool _shouldLoadMore() {
-    // 1. Check if already loading
     if (controller.isLoadingResourceMore) {
-      print('⏳ Already loading more data...');
+      return false;
+    }
+    if (!controller.hasMoreResourceData) {
       return false;
     }
 
-    // 2. Check if has more data
-    if (!controller.hasMoreData) {
-      print('🏁 No more data to load');
-      return false;
-    }
-
-    // 3. Check if scroll position reached bottom (200px threshold)
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     final distanceFromBottom = maxScroll - currentScroll;
-
-    // Load when 200px from bottom
     bool shouldLoad = distanceFromBottom <= 200.0;
-
-    if (shouldLoad) {
-      // print('📍 Distance from bottom: $distanceFromBottompx (threshold: 200px)');
-    }
-
     return shouldLoad;
   }
 
   @override
   void dispose() {
-    // Dispose ScrollController to prevent memory leaks
     _scrollController.dispose();
     super.dispose();
   }
@@ -93,24 +66,15 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          print('🔄 Pull to refresh triggered');
-          await controller.refreshData();
+          await controller.refreshResourceData();
         },
         child: GetBuilder<ResourceController>(
           builder: (controller) {
-            print('🔄 UI Rebuilding...');
-            print('📊 Current items: ${controller.gradeData.length}');
-            print('📊 Has more data: ${controller.hasMoreData}');
-            print('📊 Is loading more: ${controller.isLoadingResourceMore}');
-
-            // 1. Initial loading state
             if (controller.isLoadingResource && controller.gradeData.isEmpty) {
               return const Center(
                 child: CustomLoader(),
               );
             }
-
-            // 2. Empty state (no data found)
             if (controller.gradeData.isEmpty && !controller.isLoadingResource) {
               return Center(
                 child: Column(
@@ -142,15 +106,10 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                 ),
               );
             }
-
-            // 3. Calculate total items (data + loading indicator if needed)
             int totalItems = controller.gradeData.length;
-            if (controller.hasMoreData) {
-              totalItems = totalItems + 1; // +1 for loading indicator
+            if (controller.hasMoreResourceData) {
+              totalItems = totalItems + 1;
             }
-
-            print('📈 Total items in ListView: $totalItems');
-
             return ListView.separated(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
@@ -162,13 +121,9 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
               ),
               itemCount: totalItems,
               itemBuilder: (context, index) {
-                // 4. Check if this is the loading indicator position
                 if (index == controller.gradeData.length) {
-                  // This is the loading indicator
                   return _buildLoadMoreIndicator();
                 }
-
-                // 5. Normal data item
                 final grade = controller.gradeData[index];
                 return GestureDetector(
                   onTap: () {
@@ -177,7 +132,6 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                       arguments: {
                         "subjectID": grade.id,
                         'gradeName': grade.name,
-                        // 'gradeModel': grade
                       },
                     );
                   },
@@ -188,7 +142,6 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                 );
               },
               separatorBuilder: (context, index) {
-                // 6. Don't add separator after loading indicator
                 if (index == controller.gradeData.length) {
                   return const SizedBox();
                 }
@@ -202,19 +155,15 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   }
 
   Widget _buildLoadMoreIndicator() {
-    print('🎬 Building load more indicator...');
-
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         children: [
-          // Show circular progress if loading
           if (controller.isLoadingResourceMore)
             const Center(
               child: CircularProgressIndicator(),
             )
-          // Show "Load More" text if not loading but has more data
-          else if (controller.hasMoreData)
+          else if (controller.hasMoreResourceData)
             Column(
               children: [
                 Icon(
@@ -232,7 +181,6 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                 ),
               ],
             )
-          // Show end of list message
           else
             Padding(
               padding: EdgeInsets.all(16.h),

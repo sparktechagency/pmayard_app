@@ -15,17 +15,16 @@ class ResourceController extends GetxController {
   bool isLoadingResourceMore = false;
 
   // Pagination Controllers
-  int currentPage = 1;
-  int totalPage = 1;
-  bool hasMoreData = true;
+  int currentResourcePage = 1;
+  int totalResourcePage = 1;
+  bool hasMoreResourceData = true;
 
   Future<void> fetchResource({bool isLoadMore = false}) async {
     if (!isLoadMore) {
       isLoadingResource = true;
-      // Clear data only on first load, not on load more
       if (!isLoadingResourceMore) {
         gradeData.clear();
-        currentPage = 1; // Reset to page 1 on fresh load
+        currentResourcePage = 1;
       }
     } else {
       isLoadingResourceMore = true;
@@ -35,7 +34,7 @@ class ResourceController extends GetxController {
 
     try {
       final response = await ApiClient.getData(
-          ApiUrls.gradeSearch(currentPage)
+          ApiUrls.gradeSearch(currentResourcePage)
       );
 
       if (response.statusCode == 200) {
@@ -48,17 +47,10 @@ class ResourceController extends GetxController {
               .toList();
           gradeData.addAll(items);
         }
-
         // Get pagination info from meta
-        currentPage = meta['page'] ?? currentPage;
-        totalPage = meta['totalPage'] ?? 1;
-        hasMoreData = currentPage < totalPage;
-
-        // Debug prints
-        print('✅ Page loaded: $currentPage');
-        print('✅ Total pages: $totalPage');
-        print('✅ Has more data: $hasMoreData');
-        print('✅ Total items: ${gradeData.length}');
+        currentResourcePage = meta['page'] ?? currentResourcePage;
+        totalResourcePage = meta['totalPage'] ?? 1;
+        hasMoreResourceData = currentResourcePage < totalResourcePage;
 
       } else {
         showToast('Something went wrong');
@@ -73,58 +65,106 @@ class ResourceController extends GetxController {
     }
   }
 
-  Future<void> loadMoreData() async {
-    // Don't load if already loading or no more data
-    if (isLoadingResourceMore || !hasMoreData) {
-      print('❌ Cannot load more: isLoading=$isLoadingResourceMore, hasMore=$hasMoreData');
+  Future<void> loadMoreResourceData() async {
+    if (isLoadingResourceMore || !hasMoreResourceData) {
       return;
     }
-
-    print('⬇️ Loading more data...');
-
-    // Increment page BEFORE API call
-    currentPage++;
-    print('📄 New page: $currentPage');
-
+    currentResourcePage++;
     await fetchResource(isLoadMore: true);
   }
 
-  Future<void> refreshData() async {
-    print('🔄 Refreshing data...');
-    // Reset to page 1
-    currentPage = 1;
-    hasMoreData = true;
+  Future<void> refreshResourceData() async {
+    currentResourcePage = 1;
+    hasMoreResourceData = true;
     await fetchResource();
   }
 
   /// ================== Subject Related Work ==================
 
+  // Subject Pagination Variables
+  String? currentSubjectId;
   bool isLoadingSubject = false;
+  bool isLoadingSubjectMore = false;
   List<GradesModel> subjectDatas = [];
 
-  Future<void> fetchSubjectData(String subjectId) async {
-    isLoadingSubject = true;
-    subjectDatas.clear();
-    update();
+  // Subject Pagination Controllers
+  int currentSubjectPage = 1;
+  int totalSubjectPage = 1;
+  bool hasMoreSubjectData = true;
 
-    final response = await ApiClient.getData(
-        ApiUrls.subjectsSearch(subjectId)
-    );
-
-    if (response.statusCode == 200) {
-      final items = response.body['data'] ?? [];
-
-      if (items is List && items.isNotEmpty) {
-        List<GradesModel> data = items
-            .map((e) => GradesModel.fromJson(e))
-            .toList();
-        subjectDatas.addAll(data);
+  Future<void> fetchSubjectData(String subjectId, {bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      isLoadingSubject = true;
+      currentSubjectId = subjectId;
+      if (!isLoadingSubjectMore) {
+        subjectDatas.clear();
+        currentSubjectPage = 1;
       }
     } else {
-      showToast('Something Went Wrong');
+      isLoadingSubjectMore = true;
     }
 
-    isLoadingSubject = false;
+    update();
+
+    try {
+      final response = await ApiClient.getData(
+          ApiUrls.subjectsSearch(subjectId,  currentSubjectPage)
+      );
+
+      if (response.statusCode == 200) {
+        final items = response.body['data'] ?? [];
+        final meta = response.body['meta'] ?? {};
+
+        if (items is List && items.isNotEmpty) {
+          List<GradesModel> data = items
+              .map((e) => GradesModel.fromJson(e))
+              .toList();
+
+          if (isLoadMore) {
+            subjectDatas.addAll(data);
+          } else {
+            subjectDatas = data;
+          }
+        }
+
+        // Update pagination info
+        currentSubjectPage = meta['page'] ?? currentSubjectPage;
+        totalSubjectPage = meta['totalPage'] ?? 1;
+        hasMoreSubjectData = currentSubjectPage < totalSubjectPage;
+
+      } else {
+        showToast('Something Went Wrong');
+      }
+    } catch (e) {
+      debugPrint('Fetch subject error: ${e.toString()}');
+      showToast('Network error');
+    } finally {
+      isLoadingSubject = false;
+      isLoadingSubjectMore = false;
+      update();
+    }
+  }
+
+  Future<void> loadMoreSubjectData() async {
+    if (isLoadingSubjectMore || !hasMoreSubjectData || currentSubjectId == null) {
+      return;
+    }
+    currentSubjectPage++;
+    await fetchSubjectData(currentSubjectId!, isLoadMore: true);
+  }
+
+  Future<void> refreshSubjectData() async {
+    if (currentSubjectId == null) return;
+    currentSubjectPage = 1;
+    hasMoreSubjectData = true;
+    await fetchSubjectData(currentSubjectId!);
+  }
+
+  void clearSubjectData() {
+    subjectDatas.clear();
+    currentSubjectId = null;
+    currentSubjectPage = 1;
+    hasMoreSubjectData = true;
     update();
   }
 

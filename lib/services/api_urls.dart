@@ -55,7 +55,9 @@ class ApiUrls {
   // https://api.fondationlms.org/api/v1/grades?searchTerm=&page=1&limit=10
   static String gradeSearch( int page ) => '/grades/?searchTerm=&page=$page&limit=10';
 
-  static String subjectsSearch( String userId ) => '/subjects/$userId';
+  // static String subjectsSearch( String userId ) => '/subjects/$userId';
+  static String subjectsSearch( String userId, int page ) => '/subjects/$userId?page=$page&limit=10';
+
   static String materialsSearch( String materialsID ) => '/materials/$materialsID';
 
   static String completeSession(String userID) => '/sessions/$userID/status';
