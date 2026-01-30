@@ -52,9 +52,17 @@ class ApiUrls {
   static String sendAttachments(String conversationID) => '/attachments/$conversationID/send-attachment';
 
   // Resource
-  static String gradeSearch( String searchTerm ) => '/grades/?searchTerm=$searchTerm';
-  static String subjectsSearch( String userId ) => '/subjects/$userId';
-  static String materialsSearch( String materialsID ) => '/materials/$materialsID';
+  // https://api.fondationlms.org/api/v1/grades?searchTerm=&page=1&limit=10
+  static String gradeSearch( int page ) => '/grades/?searchTerm=&page=$page&limit=10';
+
+  // static String subjectsSearch( String userId ) => '/subjects/$userId';
+  static String subjectsSearch( String userId, int page ) => '/subjects/$userId?page=$page&limit=10';
+
+  // static String materialsSearch( String materialsID ) => '/materials/$materialsID';
+
+  static String materialsSearch( String materialsID,int currentPage ) => '/materials/$materialsID?page=$currentPage&limit=10';
+
+
   static String completeSession(String userID) => '/sessions/$userID/status';
   static String professionalAvailability( String scheduleID ) => '/professionals/$scheduleID';
   static String editAvailabilitySchedule( String availabilityID ) => '/professionals/$availabilityID/availability';
