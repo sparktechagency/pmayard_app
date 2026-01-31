@@ -19,67 +19,69 @@ class SettingScreen extends StatelessWidget {
         title: 'Settings',
         borderColor: AppColors.secondaryColor,
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 32.h),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 32.h),
 
-          _buildSettingTile(
-            icon: Assets.icons.password.svg(),
-            label: 'Change Password',
-            onTap: () {
-              Get.toNamed(AppRoutes.changePassScreen);
-            },
-          ),
+            _buildSettingTile(
+              icon: Assets.icons.password.svg(),
+              label: 'Change Password',
+              onTap: () {
+                Get.toNamed(AppRoutes.changePassScreen);
+              },
+            ),
 
-          _buildSettingTile(
-            icon: Assets.icons.terms.svg(),
-            label: 'Terms & Conditions',
-            onTap: () {
-              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Conditions'});
-            },
-          ),
+            _buildSettingTile(
+              icon: Assets.icons.terms.svg(),
+              label: 'Terms & Conditions',
+              onTap: () {
+                Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Terms & Conditions'});
+              },
+            ),
 
-          _buildSettingTile(
-            icon: Assets.icons.policy.svg(),
-            label: 'Privacy Policy',
-            onTap: () {
-              Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Privacy Policy'});
-            },
-          ),
-          _buildSettingTile(
-            icon: Assets.icons.about.svg(),
-            label: 'About Us',
-            onTap: () {
-              Get.toNamed(AppRoutes.legalScreen, arguments: {'title': 'About Us'});
-            },
-          ),
+            _buildSettingTile(
+              icon: Assets.icons.policy.svg(),
+              label: 'Privacy Policy',
+              onTap: () {
+                Get.toNamed(AppRoutes.legalScreen,arguments: {'title': 'Privacy Policy'});
+              },
+            ),
+            _buildSettingTile(
+              icon: Assets.icons.about.svg(),
+              label: 'About Us',
+              onTap: () {
+                Get.toNamed(AppRoutes.legalScreen, arguments: {'title': 'About Us'});
+              },
+            ),
 
-          GetBuilder<AuthController>(
-              builder: (controller){
-                return _buildSettingTile(
-                  icon: Assets.icons.delete.svg(),
-                  label: 'Delete Account',
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => CustomDialog(
-                        title: "Do you want to delete your account?",
-                        confirmButtonText: 'Delete',
-                        confirmButtonColor: AppColors.errorColor,
-                        onCancel: () {
-                          Get.back();
-                        },
-                        onConfirm: () {
-                          controller.deleteUser(Get.find<UserController>().user?.sId ?? '');
-                          // Get.offAllNamed(AppRoutes.signUpScreen);
-                        },
-                      ),
-                    );
-                  },
-                );
-              }
-          ),
-        ],
+            GetBuilder<AuthController>(
+                builder: (controller){
+                  return _buildSettingTile(
+                    icon: Assets.icons.delete.svg(),
+                    label: 'Delete Account',
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => CustomDialog(
+                          title: "Do you want to delete your account?",
+                          confirmButtonText: 'Delete',
+                          confirmButtonColor: AppColors.errorColor,
+                          onCancel: () {
+                            Get.back();
+                          },
+                          onConfirm: () {
+                            controller.deleteUser(Get.find<UserController>().user?.sId ?? '');
+                            // Get.offAllNamed(AppRoutes.signUpScreen);
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }
+            ),
+          ],
+        ),
       ),
     );
   }
